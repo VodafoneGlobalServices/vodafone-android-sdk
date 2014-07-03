@@ -9,6 +9,6 @@ public class ExampleApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Vodafone.init(APPLICATION_ID);
+        Vodafone.init(this, APPLICATION_ID);
     }
 }
