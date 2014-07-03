@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">myapp</string>
+    <string name="resolved">resolved</string>
+    <string name="stillRunning">stillRunning</string>
+    <string name="source">source</string>
+    <string name="token">token</string>
+    <string name="tetheringConflict">tetheringConflict</string>
+    <string name="secure">secure</string>
+    <string name="validated">validated</string>
+</resources>

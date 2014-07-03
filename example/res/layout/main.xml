@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+        >
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/resolved"
+            />
+
+    <TextView
+            android:id="@+id/resolved"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stillRunning"
+            />
+
+    <TextView
+            android:id="@+id/stillRunning"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/source"
+            />
+
+    <TextView
+            android:id="@+id/source"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/token"
+            />
+
+    <TextView
+            android:id="@+id/token"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tetheringConflict"
+            />
+
+    <TextView
+            android:id="@+id/tetheringConflict"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/secure"
+            />
+
+    <TextView
+            android:id="@+id/secure"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/validated"
+            />
+
+    <TextView
+            android:id="@+id/validated"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+</LinearLayout>
+
