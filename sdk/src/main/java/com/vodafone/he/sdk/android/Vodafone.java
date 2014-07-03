@@ -10,7 +10,10 @@ public class Vodafone {
         return null;
     }
 
-    public static void getUserDetails(UserDetailsCallback userDetailsCallback) {
+    public static void getUserDetails(
+            UserDetailsCallback userDetailsCallback,
+            Options options
+    ) {
         // TODO instantiation of backend service if not running
     }
 }

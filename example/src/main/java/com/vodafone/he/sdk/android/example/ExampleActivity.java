@@ -4,10 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.vodafone.he.sdk.android.UserDetails;
-import com.vodafone.he.sdk.android.UserDetailsCallback;
-import com.vodafone.he.sdk.android.Vodafone;
-import com.vodafone.he.sdk.android.VodafoneException;
+import com.vodafone.he.sdk.android.*;
 
 public class ExampleActivity extends Activity {
     private TextView resolved;
@@ -35,8 +32,16 @@ public class ExampleActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        Vodafone.getUserDetails(new UserDetailsCallback() {
 
+        // prepare options for service
+        Options options = Options.builder()
+                .enableSmsValidation()
+                .enableSecureFlow()
+                .setSecureMessage(ExampleConstants.SECURE_MESSAGE)
+                .build();
+
+        // prepare callback for handling responses
+        UserDetailsCallback userDetailsCallback = new UserDetailsCallback() {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 resolved.setText(String.valueOf(userDetails.getResolved()));
@@ -52,6 +57,9 @@ public class ExampleActivity extends Activity {
             public void onError(VodafoneException ex) {
                 Toast.makeText(ExampleActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
-        });
+        };
+
+        // start listening for changes
+        Vodafone.getUserDetails(userDetailsCallback, options);
     }
 }
