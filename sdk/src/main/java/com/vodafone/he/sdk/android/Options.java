@@ -1,5 +1,8 @@
 package com.vodafone.he.sdk.android;
 
+/**
+ * Options used to configure call to backend.
+ */
 public class Options {
     private final boolean smsValidation;
     private final boolean secure;
@@ -27,6 +30,9 @@ public class Options {
         return new Builder();
     }
 
+    /**
+     * Builder class used to initialize Options.
+     */
     public static class Builder {
         private boolean smsValidation = false;
         private boolean secure = false;
