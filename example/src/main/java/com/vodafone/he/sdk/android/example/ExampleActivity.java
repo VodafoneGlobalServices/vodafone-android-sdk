@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.vodafone.he.sdk.android.UserDetails;
-import com.vodafone.he.sdk.android.UserDetailCallback;
+import com.vodafone.he.sdk.android.UserDetailsCallback;
 import com.vodafone.he.sdk.android.Vodafone;
 import com.vodafone.he.sdk.android.VodafoneException;
 
@@ -35,7 +35,7 @@ public class ExampleActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        Vodafone.getUserDetail(new UserDetailCallback() {
+        Vodafone.getUserDetails(new UserDetailsCallback() {
 
             @Override
             public void onSuccess(UserDetails userDetails) {
