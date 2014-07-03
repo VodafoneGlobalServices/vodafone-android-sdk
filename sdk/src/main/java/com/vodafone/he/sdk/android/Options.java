@@ -47,12 +47,33 @@ public class Options {
         }
 
         public Builder setSecureMessage(String message) {
+            if (message == null || message.isEmpty())
+                throw new IllegalArgumentException("Secure message can't be null or empty");
             this.secureMessage = message;
             return this;
         }
 
         public Options build() {
-           return new Options(smsValidation, secure, secureMessage);
+            validate();
+            return new Options(smsValidation, secure, secureMessage);
+        }
+
+        /**
+         * Validates that options are set properly.
+         */
+        private void validate() {
+            secureMessageIsSetIfSecureFlowIsEnabled();
+        }
+
+        /**
+         * Checks is secure message was set if secure flow was enabled
+         * and throws IllegalStateException if it wasn't.
+         */
+        private void secureMessageIsSetIfSecureFlowIsEnabled() {
+            if (secure) {
+                if (secureMessage.isEmpty())
+                    throw new IllegalStateException("Secure message has to be provided if secure flow is enabled");
+            }
         }
     }
 }
