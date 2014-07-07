@@ -8,4 +8,5 @@
     <string name="tetheringConflict">tetheringConflict</string>
     <string name="secure">secure</string>
     <string name="validated">validated</string>
+    <string name="log_in">Log in with Vodafone</string>
 </resources>
