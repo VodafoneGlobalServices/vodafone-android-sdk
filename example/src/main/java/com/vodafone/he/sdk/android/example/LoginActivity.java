@@ -37,17 +37,16 @@ public class LoginActivity extends Activity implements
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // prepare options for service
+                Options options = Options.builder()
+                        .enableSmsValidation()
+                        .enableSecureFlow()
+                        .setSecureMessage(ExampleConstants.SECURE_MESSAGE)
+                        .build();
                 Vodafone.retrieveUserDetails(options);
             }
         });
     }
-
-    // prepare options for service
-    Options options = Options.builder()
-            .enableSmsValidation()
-            .enableSecureFlow()
-            .setSecureMessage(ExampleConstants.SECURE_MESSAGE)
-            .build();
 
     @Override
     protected void onResume() {
