@@ -37,8 +37,8 @@ public class LoginActivity extends Activity implements
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // prepare options for service
-                Options options = Options.builder()
+                // prepare parameters for service
+                UserDetailsRequestParameters options = UserDetailsRequestParameters.builder()
                         .enableSmsValidation()
                         .enableSecureFlow()
                         .setSecureMessage(ExampleConstants.SECURE_MESSAGE)

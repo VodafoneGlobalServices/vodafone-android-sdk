@@ -38,9 +38,9 @@ public class Vodafone {
 
     /**
      * Asynchronous call to backend to get user detail.
-     * @param options options specific to this call
+     * @param parameters parameters specific to this call
      */
-    public static void retrieveUserDetails(Options options) {
+    public static void retrieveUserDetails(UserDetailsRequestParameters parameters) {
         // TODO instantiation of backend service if not running
     }
 

@@ -1,14 +1,14 @@
 package com.vodafone.he.sdk.android;
 
 /**
- * Options used to configure call to backend.
+ * UserDetailsRequestParameters used to configure call to backend.
  */
-public class Options {
+public class UserDetailsRequestParameters {
     private final boolean smsValidation;
     private final boolean secure;
     private final String secureMessage;
 
-    private Options(boolean smsValidation, boolean secure, String secureMessage) {
+    private UserDetailsRequestParameters(boolean smsValidation, boolean secure, String secureMessage) {
         this.smsValidation = smsValidation;
         this.secure = secure;
         this.secureMessage = secureMessage;
@@ -31,7 +31,7 @@ public class Options {
     }
 
     /**
-     * Builder class used to initialize Options.
+     * Builder class used to initialize UserDetailsRequestParameters.
      */
     public static class Builder {
         private boolean smsValidation = false;
@@ -59,9 +59,9 @@ public class Options {
             return this;
         }
 
-        public Options build() {
+        public UserDetailsRequestParameters build() {
             validate();
-            return new Options(smsValidation, secure, secureMessage);
+            return new UserDetailsRequestParameters(smsValidation, secure, secureMessage);
         }
 
         /**
