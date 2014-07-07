@@ -29,37 +29,42 @@ public class ExampleActivity extends Activity {
         validated = (TextView) findViewById(R.id.validated);
     }
 
+    // prepare options for service
+    Options options = Options.builder()
+            .enableSmsValidation()
+            .enableSecureFlow()
+            .setSecureMessage(ExampleConstants.SECURE_MESSAGE)
+            .build();
+
+    // prepare callback for handling responses
+    UserDetailsCallback userDetailsCallback = new UserDetailsCallback() {
+        @Override
+        public void onSuccess(UserDetails userDetails) {
+            resolved.setText(String.valueOf(userDetails.getResolved()));
+            stillRunning.setText(String.valueOf(userDetails.getStillRunning()));
+            source.setText(userDetails.getSource());
+            token.setText(userDetails.getToken());
+            tetheringConflict.setText(String.valueOf(userDetails.getTetheringConflict()));
+            secure.setText(String.valueOf(userDetails.getSecure()));
+            validated.setText(String.valueOf(userDetails.getToken()));
+        }
+
+        @Override
+        public void onError(VodafoneException ex) {
+            Toast.makeText(ExampleActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    };
+
     @Override
     protected void onResume() {
         super.onResume();
-
-        // prepare options for service
-        Options options = Options.builder()
-                .enableSmsValidation()
-                .enableSecureFlow()
-                .setSecureMessage(ExampleConstants.SECURE_MESSAGE)
-                .build();
-
-        // prepare callback for handling responses
-        UserDetailsCallback userDetailsCallback = new UserDetailsCallback() {
-            @Override
-            public void onSuccess(UserDetails userDetails) {
-                resolved.setText(String.valueOf(userDetails.getResolved()));
-                stillRunning.setText(String.valueOf(userDetails.getStillRunning()));
-                source.setText(userDetails.getSource());
-                token.setText(userDetails.getToken());
-                tetheringConflict.setText(String.valueOf(userDetails.getTetheringConflict()));
-                secure.setText(String.valueOf(userDetails.getSecure()));
-                validated.setText(String.valueOf(userDetails.getToken()));
-            }
-
-            @Override
-            public void onError(VodafoneException ex) {
-                Toast.makeText(ExampleActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        };
-
         // start listening for changes
         Vodafone.getUserDetails(userDetailsCallback, options);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Vodafone.unregister(userDetailsCallback);
     }
 }

@@ -36,14 +36,23 @@ public class Vodafone {
 
     /**
      * Asynchronous call to backend to get user detail.
-     * @param userDetailsCallback callback used to handle success and failure
+     * @param callback callback used to handle success and failure
      * @param options options specific to this call
      */
     public static void getUserDetails(
-            UserDetailsCallback userDetailsCallback,
+            UserDetailsCallback callback,
             Options options
     ) {
         // TODO instantiation of backend service if not running
         // TODO add callback to listeners poll
+    }
+
+    /**
+     * Used to unregister callback.
+     * All callbacks should be unregistered
+     * @param callback callback to be unregistered
+     */
+    public static void unregister(UserDetailsCallback callback) {
+        // TODO unregister callback
     }
 }
