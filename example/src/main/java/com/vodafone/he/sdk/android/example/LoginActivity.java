@@ -8,7 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.vodafone.he.sdk.android.*;
 
-public class ExampleActivity extends Activity implements
+public class LoginActivity extends Activity implements
         UserDetailsCallback
 {
     private TextView resolved;
@@ -76,6 +76,6 @@ public class ExampleActivity extends Activity implements
 
     @Override
     public void onUserDetailsError(VodafoneException ex) {
-        Toast.makeText(ExampleActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
+        Toast.makeText(LoginActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
     }
 }
