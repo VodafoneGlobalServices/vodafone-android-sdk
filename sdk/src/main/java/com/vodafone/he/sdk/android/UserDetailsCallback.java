@@ -8,7 +8,7 @@ public interface UserDetailsCallback extends VodafoneCallback {
      * Called when UserDetails get updated.
      * @param userDetails current version of UserDetails
      */
-    void onUserDetailsUpdated(UserDetails userDetails);
+    void onUserDetailsUpdate(UserDetails userDetails);
 
     /**
      * Called when error occurred during retrieving UserDetails.

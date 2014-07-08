@@ -8,8 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.vodafone.he.sdk.android.*;
 
-public class LoginActivity extends Activity implements
-        UserDetailsCallback
+public class LoginActivity extends Activity implements UserDetailsCallback
 {
     private TextView resolved;
     private TextView stillRunning;
@@ -63,7 +62,7 @@ public class LoginActivity extends Activity implements
     }
 
     @Override
-    public void onUserDetailsUpdated(UserDetails userDetails) {
+    public void onUserDetailsUpdate(UserDetails userDetails) {
         resolved.setText(String.valueOf(userDetails.getResolved()));
         stillRunning.setText(String.valueOf(userDetails.getStillRunning()));
         source.setText(userDetails.getSource());
