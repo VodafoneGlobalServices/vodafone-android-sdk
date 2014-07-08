@@ -1,4 +1,4 @@
-package com.vodafone.he.sdk.android.example;
+package com.vodafone.global.sdk;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -22,17 +22,17 @@ public class LoginActivity extends Activity implements UserDetailsCallback
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(com.vodafone.he.sdk.android.R.layout.main);
 
-        resolved = (TextView) findViewById(R.id.resolved);
-        stillRunning = (TextView) findViewById(R.id.stillRunning);
-        source = (TextView) findViewById(R.id.source);
-        token = (TextView) findViewById(R.id.token);
-        tetheringConflict = (TextView) findViewById(R.id.tetheringConflict);
-        secure = (TextView) findViewById(R.id.secure);
-        validated = (TextView) findViewById(R.id.validated);
+        resolved = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.resolved);
+        stillRunning = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.stillRunning);
+        source = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.source);
+        token = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.token);
+        tetheringConflict = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.tetheringConflict);
+        secure = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.secure);
+        validated = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.validated);
 
-        logInButton = (Button) findViewById(R.id.log_in);
+        logInButton = (Button) findViewById(com.vodafone.he.sdk.android.R.id.log_in);
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

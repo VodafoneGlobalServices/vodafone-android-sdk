@@ -6,12 +6,12 @@
     <packaging>apklib</packaging>
 
     <parent>
-        <groupId>com.vodafone.he.sdk.android</groupId>
-        <artifactId>he-sdk</artifactId>
+        <groupId>com.vodafone.global</groupId>
+        <artifactId>sdk-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>sdk</artifactId>
+    <artifactId>android-sdk</artifactId>
 
     <dependencies>
         <dependency>

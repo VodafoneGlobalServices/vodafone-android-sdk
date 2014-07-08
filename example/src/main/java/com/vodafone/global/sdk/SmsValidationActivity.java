@@ -1,4 +1,4 @@
-package com.vodafone.he.sdk.android.example;
+package com.vodafone.global.sdk;
 
 import android.app.Activity;
 import android.os.Bundle;
