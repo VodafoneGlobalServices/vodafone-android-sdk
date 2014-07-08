@@ -1,4 +1,4 @@
-package com.vodafone.he.sdk.android;
+package com.vodafone.global.sdk;
 
 /**
  * UserDetailsRequestParameters used to configure call to backend.

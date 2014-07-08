@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk;
+package com.vodafone.global.sdk.example;
 
 public class ExampleConstants {
     public static String APPLICATION_ID = "";

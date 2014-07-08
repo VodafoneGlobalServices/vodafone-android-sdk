@@ -1,4 +1,4 @@
-package com.vodafone.he.sdk.android;
+package com.vodafone.global.sdk;
 
 public class UserDetails {
     private boolean resolved;

@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk;
+package com.vodafone.global.sdk.example;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.vodafone.he.sdk.android.*;
+import com.vodafone.global.sdk.*;
 
 public class LoginActivity extends Activity implements UserDetailsCallback
 {
@@ -22,17 +22,17 @@ public class LoginActivity extends Activity implements UserDetailsCallback
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.vodafone.he.sdk.android.R.layout.main);
+        setContentView(com.vodafone.global.sdk.example.R.layout.main);
 
-        resolved = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.resolved);
-        stillRunning = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.stillRunning);
-        source = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.source);
-        token = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.token);
-        tetheringConflict = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.tetheringConflict);
-        secure = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.secure);
-        validated = (TextView) findViewById(com.vodafone.he.sdk.android.R.id.validated);
+        resolved = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.resolved);
+        stillRunning = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.stillRunning);
+        source = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.source);
+        token = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.token);
+        tetheringConflict = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.tetheringConflict);
+        secure = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.secure);
+        validated = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.validated);
 
-        logInButton = (Button) findViewById(com.vodafone.he.sdk.android.R.id.log_in);
+        logInButton = (Button) findViewById(com.vodafone.global.sdk.example.R.id.log_in);
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

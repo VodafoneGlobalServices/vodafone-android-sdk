@@ -1,4 +1,4 @@
-package com.vodafone.he.sdk.android;
+package com.vodafone.global.sdk;
 
 /**
  * Super callback. Should only be used as a base for the rest of callbacks.

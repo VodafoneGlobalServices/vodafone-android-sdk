@@ -1,9 +1,9 @@
-package com.vodafone.global.sdk;
+package com.vodafone.global.sdk.example;
 
 import android.app.Application;
-import com.vodafone.he.sdk.android.Vodafone;
+import com.vodafone.global.sdk.Vodafone;
 
-import static com.vodafone.global.sdk.ExampleConstants.APPLICATION_ID;
+import static com.vodafone.global.sdk.example.ExampleConstants.APPLICATION_ID;
 
 public class ExampleApplication extends Application {
     @Override

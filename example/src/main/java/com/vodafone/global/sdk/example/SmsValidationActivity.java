@@ -1,13 +1,13 @@
-package com.vodafone.global.sdk;
+package com.vodafone.global.sdk.example;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import com.vodafone.he.sdk.android.ValidateSmsCallback;
-import com.vodafone.he.sdk.android.Vodafone;
-import com.vodafone.he.sdk.android.VodafoneException;
+import com.vodafone.global.sdk.ValidateSmsCallback;
+import com.vodafone.global.sdk.Vodafone;
+import com.vodafone.global.sdk.VodafoneException;
 
 public class SmsValidationActivity extends Activity implements ValidateSmsCallback {
 
