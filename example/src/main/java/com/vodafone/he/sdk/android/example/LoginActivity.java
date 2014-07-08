@@ -39,8 +39,6 @@ public class LoginActivity extends Activity implements UserDetailsCallback
                 // prepare parameters for service
                 UserDetailsRequestParameters options = UserDetailsRequestParameters.builder()
                         .enableSmsValidation()
-                        .enableSecureFlow()
-                        .setSecureMessage(ExampleConstants.SECURE_MESSAGE)
                         .build();
                 Vodafone.retrieveUserDetails(options);
             }
