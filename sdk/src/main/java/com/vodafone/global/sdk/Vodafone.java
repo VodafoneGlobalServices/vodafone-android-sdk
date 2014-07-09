@@ -22,8 +22,8 @@ public class Vodafone {
             return; // can't initialize SDK twice
         }
 
-        // TODO SDK initialization
         Vodafone.application = app;
+        registrars = prepareRegistrars();
     }
 
     /**
@@ -49,31 +49,13 @@ public class Vodafone {
      * @throws IllegalArgumentException if callback is of unknown type
      */
     public static void register(VodafoneCallback callback) {
-        // TODO need to be refactored so that we don't need to add another `if` each time we want to add new callback
-        if (implementsInterface(callback, UserDetailsCallback.class)) {
-            // TODO register UserDetailsCallback
-        }
-        if (implementsInterface(callback, ValidateSmsCallback.class)) {
-            // TODO register ValidateSmsCallback
-        }
-    }
+        Sets.SetView<Class<?>> knownAndImplementedCallbacksTypes = getKnownAndImplementedCallbacksTypes(callback);
 
-    private static boolean implementsInterface(VodafoneCallback callback, Class callbackType) {
-        for (Class c : callback.getClass().getInterfaces())
-            if (c.equals(callbackType))
-                return true;
-        return false;
-    }
+        if (knownAndImplementedCallbacksTypes.isEmpty())
+            throw new IllegalArgumentException("Unknown type of callback");
 
-    /**
-     * Used to unregister callback.
-     *
-     * @param callback callback to be unregistered
-     * @throws IllegalArgumentException if callback is of unknown type
-     */
-    public static void unregister(VodafoneCallback callback) {
-        // TODO unregister callback
-        // TODO implementation similar to #register(VodafoneCallback)
+        for (Class c : knownAndImplementedCallbacksTypes)
+            registrars.get(c).register(callback);
     }
 
     /**
@@ -83,5 +65,54 @@ public class Vodafone {
      */
     public static void validateSmsCode(String code) {
         // TODO make a request to APIX
+    }
+
+    /**
+     * Used to unregister callback.
+     *
+     * @param callback callback to be unregistered
+     * @throws IllegalArgumentException if callback is of unknown type
+     */
+    public static void unregister(VodafoneCallback callback) {
+        Sets.SetView<Class<?>> knownAndImplementedCallbacksTypes = getKnownAndImplementedCallbacksTypes(callback);
+
+        if (knownAndImplementedCallbacksTypes.isEmpty())
+            throw new IllegalArgumentException("Unknown type of callback");
+
+        for (Class c : knownAndImplementedCallbacksTypes)
+            registrars.get(c).unregister(callback);
+    }
+
+    private static Sets.SetView<Class<?>> getKnownAndImplementedCallbacksTypes(VodafoneCallback callback) {
+        Set<Class<?>> knownCallbackTypes = registrars.keySet();
+        HashSet<Class> implementedCallbackTypes = new HashSet<Class>(Arrays.asList(callback.getClass().getInterfaces()));
+        return Sets.intersection(knownCallbackTypes, implementedCallbackTypes);
+    }
+
+    private static HashMap<Class<?>, Registrar> prepareRegistrars() {
+        HashMap<Class<?>, Registrar> registrars = new HashMap<Class<?>, Registrar>();
+        registrars.put(UserDetailsCallback.class, new Registrar() {
+            @Override
+            public void register(VodafoneCallback callback) {
+                // TODO register
+            }
+
+            @Override
+            public void unregister(VodafoneCallback callback) {
+                // TODO unregister
+            }
+        });
+        registrars.put(ValidateSmsCallback.class, new Registrar() {
+            @Override
+            public void register(VodafoneCallback callback) {
+                // TODO register
+            }
+
+            @Override
+            public void unregister(VodafoneCallback callback) {
+                // TODO unregister
+            }
+        });
+        return registrars;
     }
 }
