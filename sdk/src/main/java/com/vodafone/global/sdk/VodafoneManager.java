@@ -1,34 +1,23 @@
 package com.vodafone.global.sdk;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import com.google.common.collect.Sets;
+import com.squareup.okhttp.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class VodafoneManager {
-    /**
-     * Handler used to invoke callbacks on main thread.
-     */
-    private final Handler handler;
-    /**
-     * Executor used to run requests.
-     */
-    private final ExecutorService executor;
     private static HashMap<Class<?>, Registrar> registrars;
-    private Context context;
+    private final OkHttpClient client;
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+    List<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArrayList<UserDetailsCallback>();
+    List<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArrayList<ValidateSmsCallback>();
 
     public VodafoneManager(Context context) {
-        this.context = context;
-        executor = Executors.newSingleThreadExecutor(); // TODO better single thread executor
-        handler = new Handler(Looper.getMainLooper());
         registrars = prepareRegistrars();
+        client = new OkHttpClient();
     }
 
     public void register(VodafoneCallback callback) {
@@ -59,28 +48,31 @@ class VodafoneManager {
 
     private HashMap<Class<?>, Registrar> prepareRegistrars() {
         HashMap<Class<?>, Registrar> registrars = new HashMap<Class<?>, Registrar>();
+
         registrars.put(UserDetailsCallback.class, new Registrar() {
             @Override
             public void register(VodafoneCallback callback) {
-                // TODO register
+                userDetailsCallbacks.add((UserDetailsCallback) callback);
             }
 
             @Override
             public void unregister(VodafoneCallback callback) {
-                // TODO unregister
+                userDetailsCallbacks.remove(callback);
             }
         });
+
         registrars.put(ValidateSmsCallback.class, new Registrar() {
             @Override
             public void register(VodafoneCallback callback) {
-                // TODO register
+                validateSmsCallbacks.add((ValidateSmsCallback) callback);
             }
 
             @Override
             public void unregister(VodafoneCallback callback) {
-                // TODO unregister
+                validateSmsCallbacks.remove(callback);
             }
         });
+
         return registrars;
     }
 
@@ -90,20 +82,26 @@ class VodafoneManager {
     }
 
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                // TODO perform network request
-            }
-        });
+        String json = "";
+        RequestBody body = RequestBody.create(JSON, json);
+
+        Request request = new Request.Builder()
+                .url("http://hebemock-4953648878.eu-de1.plex.vodafone.com/users/resolve")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new UserDetailsResponseCallback(userDetailsCallbacks));
     }
 
     public void validateSmsCode(String code) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                // TODO perform network request
-            }
-        });
+        String json = "{code:" + code + "}"; // TODO escaping
+        RequestBody body = RequestBody.create(JSON, json);
+
+        Request request = new Request.Builder()
+                .url("http://hebemock-4953648878.eu-de1.plex.vodafone.com/users/tokens/validate/{token}")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new ValidateSmsResponseCallback(validateSmsCallbacks));
     }
 }
