@@ -12,6 +12,7 @@
     <modules>
         <module>sdk</module>
         <module>example</module>
+        <module>test-app</module>
     </modules>
 
     <build>
