@@ -12,6 +12,14 @@
 
     <artifactId>test-app</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.jakewharton</groupId>
+            <artifactId>butterknife</artifactId>
+            <version>5.1.1</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

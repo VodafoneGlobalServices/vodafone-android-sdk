@@ -10,23 +10,27 @@
         android:orientation="horizontal">
 
         <EditText
+            android:id="@+id/et_appId"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="appId" />
 
         <Button
+            android:id="@+id/btn_setAppId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="set" />
     </LinearLayout>
 
     <EditText
+        android:id="@+id/et_iccid"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="ICCID" />
 
     <EditText
+        android:id="@+id/et_token"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="token" />
@@ -37,6 +41,7 @@
         android:orientation="horizontal">
 
         <CheckBox
+            android:id="@+id/cb_smsValidation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -52,12 +57,14 @@
         android:layout_height="wrap_content">
 
         <Button
+            android:id="@+id/btn_retrieve"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="retrieve" />
 
         <Button
+            android:id="@+id/btn_getUserDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -65,16 +72,19 @@
     </LinearLayout>
 
     <EditText
+        android:id="@+id/et_smsCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="SMS code" />
 
     <EditText
+        android:id="@+id/et_tokenSms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="token" />
 
     <Button
+        android:id="@+id/btn_sendSmsCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="send" />
