@@ -64,5 +64,6 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btn_sendSmsCode)
     public void sendSmsCode() {
+        Vodafone.validateSmsCode(smsCode.getText().toString());
     }
 }
