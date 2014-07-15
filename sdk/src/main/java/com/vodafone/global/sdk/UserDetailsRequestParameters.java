@@ -33,6 +33,11 @@ public class UserDetailsRequestParameters {
             return this;
         }
 
+        public Builder setSmsValidation(boolean value) {
+            smsValidation = value;
+            return this;
+        }
+
         public UserDetailsRequestParameters build() {
             return new UserDetailsRequestParameters(smsValidation);
         }
