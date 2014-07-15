@@ -52,6 +52,10 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btn_retrieve)
     public void retrieve() {
+        UserDetailsRequestParameters parameters = UserDetailsRequestParameters.builder()
+                .setSmsValidation(smsValidation.isChecked())
+                .build();
+        Vodafone.retrieveUserDetails(parameters);
     }
 
     @OnClick(R.id.btn_getUserDetails)
