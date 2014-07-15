@@ -1,5 +1,7 @@
 package com.vodafone.global.sdk;
 
+import java.util.Date;
+
 public class UserDetails {
     private boolean resolved;
     private boolean stillRunning;
@@ -7,6 +9,8 @@ public class UserDetails {
     private String token;
     private boolean tetheringConflict;
     private boolean secure;
+    private Date expires;
+    private boolean validated;
 
     public boolean getResolved() {
         return resolved;
@@ -30,5 +34,13 @@ public class UserDetails {
 
     public boolean getSecure() {
         return secure;
+    }
+
+    public Date getExpires() {
+        return expires;
+    }
+
+    public boolean getValidated() {
+        return validated;
     }
 }

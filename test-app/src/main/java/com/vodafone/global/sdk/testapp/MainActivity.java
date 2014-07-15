@@ -1,7 +1,9 @@
 package com.vodafone.global.sdk.testapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.CheckBox;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Vodafone;
 
@@ -60,6 +63,27 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btn_getUserDetails)
     public void getUserDetails() {
+        UserDetails userDetails = Vodafone.getUserDetails();
+        if (userDetails == null) {
+            Toast.makeText(this, "user details aren't cached", Toast.LENGTH_LONG).show();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("User details")
+                    .setMessage("resolved: " + userDetails.getResolved()
+                            + "\nstill running: " + userDetails.getStillRunning()
+                            + "\nsource: " + userDetails.getSource()
+                            + "\ntoken: " + userDetails.getToken()
+                            + "\nexpires: " + userDetails.getExpires()
+                            + "\ntethering conflict: " + userDetails.getTetheringConflict()
+                            + "\nvalidated: " + userDetails.getValidated())
+                    .setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .show();
+        }
     }
 
     @OnClick(R.id.btn_sendSmsCode)
