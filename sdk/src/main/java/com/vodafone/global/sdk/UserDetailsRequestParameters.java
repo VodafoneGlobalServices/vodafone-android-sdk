@@ -10,7 +10,7 @@ public class UserDetailsRequestParameters {
         this.smsValidation = smsValidation;
     }
 
-    public boolean isSmsValidation() {
+    public boolean smsValidation() {
         return smsValidation;
     }
 

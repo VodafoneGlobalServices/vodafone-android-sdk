@@ -24,7 +24,7 @@ public class Vodafone {
         }
 
         Vodafone.application = app;
-        manager = new VodafoneManager(app);
+        manager = new VodafoneManager(app, appId);
     }
 
     /**

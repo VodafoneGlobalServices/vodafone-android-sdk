@@ -3,6 +3,8 @@ package com.vodafone.global.sdk;
 import android.content.Context;
 import com.google.common.collect.Sets;
 import com.squareup.okhttp.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -12,10 +14,15 @@ class VodafoneManager {
     private final OkHttpClient client;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
+    private final String appId;
+
     List<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArrayList<UserDetailsCallback>();
     List<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArrayList<ValidateSmsCallback>();
+    private String sessionToken;
+    private String iccid;
 
-    public VodafoneManager(Context context) {
+    public VodafoneManager(Context context, String appId) {
+        this.appId = appId;
         registrars = prepareRegistrars();
         client = new OkHttpClient();
     }
@@ -82,8 +89,8 @@ class VodafoneManager {
     }
 
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
-        String json = "";
-        RequestBody body = RequestBody.create(JSON, json);
+        String payload = prepareRetrievePayload(parameters);
+        RequestBody body = RequestBody.create(JSON, payload);
 
         Request request = new Request.Builder()
                 .url("http://hebemock-4953648878.eu-de1.plex.vodafone.com/users/resolve")
@@ -93,9 +100,22 @@ class VodafoneManager {
         client.newCall(request).enqueue(new UserDetailsResponseCallback(userDetailsCallbacks));
     }
 
+    private String prepareRetrievePayload(UserDetailsRequestParameters parameters) {
+        try {
+            JSONObject json = new JSONObject();
+            json.put("applicationId", appId);
+            json.put("sessionToken", sessionToken);
+            json.put("iccid", iccid);
+            json.put("smsValidation", parameters.smsValidation());
+            return json.toString();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void validateSmsCode(String code) {
-        String json = "{code:" + code + "}"; // TODO escaping
-        RequestBody body = RequestBody.create(JSON, json);
+        String payload = prepareSmsValidationPayload(code);
+        RequestBody body = RequestBody.create(JSON, payload);
 
         Request request = new Request.Builder()
                 .url("http://hebemock-4953648878.eu-de1.plex.vodafone.com/users/tokens/validate/{token}")
@@ -103,5 +123,15 @@ class VodafoneManager {
                 .build();
 
         client.newCall(request).enqueue(new ValidateSmsResponseCallback(validateSmsCallbacks));
+    }
+
+    private String prepareSmsValidationPayload(String code) {
+        try {
+            JSONObject json = new JSONObject();
+            json.put("code", code);
+            return json.toString();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

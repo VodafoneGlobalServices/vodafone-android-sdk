@@ -2,7 +2,6 @@ package com.vodafone.global.sdk.testapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.*;
 import android.os.Process;
 import com.vodafone.global.sdk.Vodafone;
 
