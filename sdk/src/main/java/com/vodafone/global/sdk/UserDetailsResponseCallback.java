@@ -4,6 +4,7 @@ import android.util.Log;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import org.apache.http.HttpStatus;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ class UserDetailsResponseCallback implements Callback {
         int httpCode = response.code();
 
         switch (httpCode) {
-            case 200:
+            case HttpStatus.SC_OK:
                 try {
                     String httpBody = response.body().string();
                     UserDetails userDetails = UserDetails.fromJson(httpBody);
