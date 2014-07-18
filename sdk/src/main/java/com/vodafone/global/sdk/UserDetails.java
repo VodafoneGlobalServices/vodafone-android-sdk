@@ -1,5 +1,10 @@
 package com.vodafone.global.sdk;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.xml.bind.DatatypeConverter;
+import java.util.Calendar;
 import java.util.Date;
 
 public class UserDetails {
@@ -42,5 +47,23 @@ public class UserDetails {
 
     public boolean getValidated() {
         return validated;
+    }
+
+    public static UserDetails fromJson(String jsonString) throws JSONException {
+        JSONObject json = new JSONObject(jsonString);
+
+        UserDetails userDetails = new UserDetails();
+        userDetails.resolved = json.getBoolean("resolved");
+        userDetails.stillRunning = json.getBoolean("stillRunning");
+        userDetails.source = json.getString("source");
+        userDetails.token = json.getString("token");
+        userDetails.tetheringConflict = json.getBoolean("tetheringConflict");
+        userDetails.secure = json.getBoolean("secure");
+        String date = json.getString("expires");
+        Calendar calendar = DatatypeConverter.parseDateTime(date);
+        userDetails.expires = calendar.getTime();
+        userDetails.validated = json.getBoolean("validated");
+
+        return userDetails;
     }
 }
