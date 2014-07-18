@@ -1,8 +1,11 @@
 package com.vodafone.global.sdk;
 
+import android.util.Log;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,10 +37,18 @@ class ValidateSmsResponseCallback implements Callback {
                 break;
             case 400:
                 // sms validation failed
-                String jsonResponse = response.body().string();
-                // TODO log response
-                for (ValidateSmsCallback callback : validateSmsCallbacks) {
-                    callback.onSmsValidationFailure();
+                try {
+                    JSONObject json = new JSONObject(response.body().string());
+                    String error = json.getString("error");
+                    String errorMessage = json.getString("errorMessage");
+
+                    Log.e("Vodafone", error + ": " + errorMessage);
+
+                    for (ValidateSmsCallback callback : validateSmsCallbacks) {
+                        callback.onSmsValidationFailure();
+                    }
+                } catch (JSONException e) {
+                    Log.e("Vodafone", e.getMessage(), e);
                 }
                 break;
         }
