@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 class UserDetailsResponseCallback implements Callback {
+    private static final String TAG = UserDetailsResponseCallback.class.getSimpleName();
     private List<UserDetailsCallback> userDetailsCallbacks;
 
     public UserDetailsResponseCallback(List<UserDetailsCallback> userDetailsCallbacks) {
@@ -18,7 +19,7 @@ class UserDetailsResponseCallback implements Callback {
 
     @Override
     public void onFailure(Request request, IOException e) {
-        Log.e("Vodafone", e.getMessage(), e);
+        Log.e(TAG, e.getMessage(), e);
 
         for (UserDetailsCallback callback : userDetailsCallbacks) {
             callback.onUserDetailsError(new VodafoneException(e.getMessage(), e));
@@ -38,7 +39,7 @@ class UserDetailsResponseCallback implements Callback {
                         callback.onUserDetailsUpdate(userDetails);
                     }
                 } catch (JSONException e) {
-                    Log.e("Vodafone", e.getMessage(), e);
+                    Log.e(TAG, e.getMessage(), e);
                 }
                 break;
             default:

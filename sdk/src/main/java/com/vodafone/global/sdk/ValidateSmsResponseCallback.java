@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 class ValidateSmsResponseCallback implements Callback {
-
+    private static final String TAG = ValidateSmsResponseCallback.class.getSimpleName();
     private final List<ValidateSmsCallback> validateSmsCallbacks;
 
     public ValidateSmsResponseCallback(List<ValidateSmsCallback> validateSmsCallbacks) {
@@ -42,13 +42,13 @@ class ValidateSmsResponseCallback implements Callback {
                     String error = json.getString("error");
                     String errorMessage = json.getString("errorMessage");
 
-                    Log.e("Vodafone", error + ": " + errorMessage);
+                    Log.e(TAG, error + ": " + errorMessage);
 
                     for (ValidateSmsCallback callback : validateSmsCallbacks) {
                         callback.onSmsValidationFailure();
                     }
                 } catch (JSONException e) {
-                    Log.e("Vodafone", e.getMessage(), e);
+                    Log.e(TAG, e.getMessage(), e);
                 }
                 break;
         }
