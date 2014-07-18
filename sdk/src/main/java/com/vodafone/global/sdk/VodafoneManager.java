@@ -19,12 +19,13 @@ class VodafoneManager {
     List<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArrayList<UserDetailsCallback>();
     List<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArrayList<ValidateSmsCallback>();
     private String sessionToken;
-    private String iccid;
+    private SimSerialNumber iccid;
 
     public VodafoneManager(Context context, String appId) {
         this.appId = appId;
         registrars = prepareRegistrars();
         client = new OkHttpClient();
+        iccid = new SimSerialNumber(context);
     }
 
     public void register(VodafoneCallback callback) {
