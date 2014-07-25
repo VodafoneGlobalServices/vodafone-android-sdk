@@ -2,12 +2,18 @@ package com.vodafone.global.sdk;
 
 import android.content.Context;
 import com.google.common.collect.Sets;
-import com.squareup.okhttp.*;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 class VodafoneManager {
     private static HashMap<Class<?>, Registrar> registrars;
@@ -16,8 +22,8 @@ class VodafoneManager {
 
     private final String appId;
 
-    List<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArrayList<UserDetailsCallback>();
-    List<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArrayList<ValidateSmsCallback>();
+    Set<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArraySet<UserDetailsCallback>();
+    Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
     private String sessionToken;
     private SimSerialNumber iccid;
 

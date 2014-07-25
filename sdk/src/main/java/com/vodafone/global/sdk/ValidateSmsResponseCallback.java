@@ -9,13 +9,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 class ValidateSmsResponseCallback implements Callback {
     private static final String TAG = ValidateSmsResponseCallback.class.getSimpleName();
-    private final List<ValidateSmsCallback> validateSmsCallbacks;
+    private final Set<ValidateSmsCallback> validateSmsCallbacks;
 
-    public ValidateSmsResponseCallback(List<ValidateSmsCallback> validateSmsCallbacks) {
+    public ValidateSmsResponseCallback(Set<ValidateSmsCallback> validateSmsCallbacks) {
         this.validateSmsCallbacks = validateSmsCallbacks;
     }
 

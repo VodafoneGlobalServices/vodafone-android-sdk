@@ -8,13 +8,13 @@ import org.apache.http.HttpStatus;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 class UserDetailsResponseCallback implements Callback {
     private static final String TAG = UserDetailsResponseCallback.class.getSimpleName();
-    private List<UserDetailsCallback> userDetailsCallbacks;
+    private Set<UserDetailsCallback> userDetailsCallbacks;
 
-    public UserDetailsResponseCallback(List<UserDetailsCallback> userDetailsCallbacks) {
+    public UserDetailsResponseCallback(Set<UserDetailsCallback> userDetailsCallbacks) {
         this.userDetailsCallbacks = userDetailsCallbacks;
     }
 
