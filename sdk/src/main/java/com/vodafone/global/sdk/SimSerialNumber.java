@@ -19,10 +19,10 @@ public class SimSerialNumber {
 
         switch (result) {
             case PackageManager.PERMISSION_GRANTED:
-                TelephonyManager systemService = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
-                if (systemService.getSimState() == TelephonyManager.SIM_STATE_READY) {
-                    simSerialNumber = Optional.fromNullable(systemService.getSimSerialNumber());
+                if (telephonyManager.getSimState() == TelephonyManager.SIM_STATE_READY) {
+                    simSerialNumber = Optional.fromNullable(telephonyManager.getSimSerialNumber());
                 } else {
                     simSerialNumber = Optional.absent();
                 }
