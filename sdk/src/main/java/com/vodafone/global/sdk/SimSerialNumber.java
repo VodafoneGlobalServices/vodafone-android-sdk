@@ -4,14 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import com.google.common.base.Optional;
+import timber.log.Timber;
 
 /**
  * Class responsible for retrieving SIM serial number.
  */
 public class SimSerialNumber {
-    private static final String TAG = "SimSerialNumber";
     private final Optional<String> simSerialNumber;
 
     public SimSerialNumber(Context context) {
@@ -30,12 +29,12 @@ public class SimSerialNumber {
                 break;
             case PackageManager.PERMISSION_DENIED:
                 simSerialNumber = Optional.absent();
-                Log.w(TAG, "Application using Vodafone SDK doesn't have READ_PHONE_STATE permission");
+                Timber.w("Application using Vodafone SDK doesn't have READ_PHONE_STATE permission");
                 break;
             default:
                 // can happen only if behavior of Android SDK changed
                 simSerialNumber = Optional.absent();
-                Log.e(TAG, "Unknown type from Context.checkCallingOrSelfPermission");
+                Timber.w("Unknown type from Context.checkCallingOrSelfPermission");
                 break;
         }
     }

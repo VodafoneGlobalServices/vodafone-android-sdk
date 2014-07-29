@@ -1,17 +1,16 @@
 package com.vodafone.global.sdk;
 
-import android.util.Log;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.util.Set;
 
 class UserDetailsResponseCallback implements Callback {
-    private static final String TAG = UserDetailsResponseCallback.class.getSimpleName();
     private Set<UserDetailsCallback> userDetailsCallbacks;
 
     public UserDetailsResponseCallback(Set<UserDetailsCallback> userDetailsCallbacks) {
@@ -20,7 +19,7 @@ class UserDetailsResponseCallback implements Callback {
 
     @Override
     public void onFailure(Request request, IOException e) {
-        Log.e(TAG, e.getMessage(), e);
+        Timber.e(e, e.getMessage());
 
         for (UserDetailsCallback callback : userDetailsCallbacks) {
             callback.onUserDetailsError(new VodafoneException(e.getMessage(), e));
@@ -40,7 +39,7 @@ class UserDetailsResponseCallback implements Callback {
                         callback.onUserDetailsUpdate(userDetails);
                     }
                 } catch (JSONException e) {
-                    Log.e(TAG, e.getMessage(), e);
+                    Timber.e(e, e.getMessage());
                 }
                 break;
             default:
