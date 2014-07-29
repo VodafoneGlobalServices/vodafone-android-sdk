@@ -15,9 +15,36 @@
         <module>test-app</module>
     </modules>
 
+    <repositories>
+        <repository>
+            <id>android</id>
+            <url>${env.ANDROID_HOME}/extras/android/m2repository</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>android</groupId>
+                <artifactId>android</artifactId>
+                <version>4.4.2_r3</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <source>6</source>
+                        <target>6</target>
+                    </configuration>
+                </plugin>
+
                 <plugin>
                     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                     <artifactId>android-maven-plugin</artifactId>

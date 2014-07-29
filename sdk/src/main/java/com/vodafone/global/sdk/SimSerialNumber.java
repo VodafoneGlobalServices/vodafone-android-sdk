@@ -34,7 +34,7 @@ public class SimSerialNumber {
             default:
                 // can happen only if behavior of Android SDK changed
                 simSerialNumber = Optional.absent();
-                Timber.w("Unknown type from Context.checkCallingOrSelfPermission");
+                Timber.e("Unknown type from Context.checkCallingOrSelfPermission");
                 break;
         }
     }
@@ -53,7 +53,11 @@ public class SimSerialNumber {
      * @throws IllegalStateException if the SIM serial number is unavailable ({@link #isPresent} returns {@code false})
      */
     public String get() {
-        return simSerialNumber.get();
+        try {
+            return simSerialNumber.get();
+        } catch (Exception e) {
+            throw new IllegalStateException("SimSerialNumber.get() cannot be called on an absent value");
+        }
     }
 
     /**
