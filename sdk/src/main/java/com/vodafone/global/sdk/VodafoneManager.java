@@ -1,6 +1,7 @@
 package com.vodafone.global.sdk;
 
 import android.content.Context;
+import android.os.Handler;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.squareup.okhttp.MediaType;
@@ -27,6 +28,7 @@ class VodafoneManager {
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
     private SimSerialNumber iccid;
     private Optional<UserDetails> cachedUserDetails;
+    private UserDetailsRequestParameters lastRequestParameters;
 
     public VodafoneManager(Context context, String appId) {
         this.appId = appId;
@@ -34,6 +36,7 @@ class VodafoneManager {
         client = new OkHttpClient();
         iccid = new SimSerialNumber(context);
         register(new CacheUserDetailsCallback());
+        register(new RepeatUserDetailsCallback());
     }
 
     public void register(VodafoneCallback callback) {
@@ -97,6 +100,7 @@ class VodafoneManager {
     }
 
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
+        lastRequestParameters = parameters;
         String payload = prepareRetrievePayload(parameters);
         RequestBody body = RequestBody.create(JSON, payload);
 
@@ -157,6 +161,29 @@ class VodafoneManager {
         @Override
         public void onUserDetailsError(VodafoneException ex) {
             cachedUserDetails = Optional.absent();
+        }
+    }
+
+    /**
+     * Callback used internally to decide if request has to be repeated.
+     */
+    private class RepeatUserDetailsCallback implements UserDetailsCallback {
+        public static final int DELAY_MILLIS = 1000;
+
+        @Override
+        public void onUserDetailsUpdate(UserDetails userDetails) {
+            if (userDetails.getStillRunning()) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        retrieveUserDetails(lastRequestParameters);
+                    }
+                }, DELAY_MILLIS);
+            }
+        }
+
+        @Override
+        public void onUserDetailsError(VodafoneException ex) {
         }
     }
 }
