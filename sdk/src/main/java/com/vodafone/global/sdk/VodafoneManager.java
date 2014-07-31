@@ -1,6 +1,7 @@
 package com.vodafone.global.sdk;
 
 import android.content.Context;
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -24,14 +25,15 @@ class VodafoneManager {
 
     Set<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArraySet<UserDetailsCallback>();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
-    private String sessionToken;
     private SimSerialNumber iccid;
+    private Optional<UserDetails> cachedUserDetails;
 
     public VodafoneManager(Context context, String appId) {
         this.appId = appId;
         registrars = prepareRegistrars();
         client = new OkHttpClient();
         iccid = new SimSerialNumber(context);
+        register(new CacheUserDetailsCallback());
     }
 
     public void register(VodafoneCallback callback) {
@@ -91,8 +93,7 @@ class VodafoneManager {
     }
 
     public UserDetails getUserDetails() {
-        // TODO return cached object
-        return null;
+        return cachedUserDetails.orNull();
     }
 
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
@@ -111,7 +112,9 @@ class VodafoneManager {
         try {
             JSONObject json = new JSONObject();
             json.put("applicationId", appId);
-            json.put("sessionToken", sessionToken);
+            if (cachedUserDetails.isPresent()) {
+                json.put("sessionToken", cachedUserDetails.get().getToken());
+            }
             json.put("iccid", iccid);
             json.put("smsValidation", parameters.smsValidation());
             return json.toString();
@@ -125,7 +128,7 @@ class VodafoneManager {
         RequestBody body = RequestBody.create(JSON, payload);
 
         Request request = new Request.Builder()
-                .url("http://hebemock-4953648878.eu-de1.plex.vodafone.com/users/tokens/validate/{token}")
+                .url("http://hebemock-4953648878.eu-de1.plex.vodafone.com/users/tokens/validate/" + cachedUserDetails.get().getToken())
                 .post(body)
                 .build();
 
@@ -139,6 +142,21 @@ class VodafoneManager {
             return json.toString();
         } catch (JSONException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Callback used internally to cache UserDetails.
+     */
+    private class CacheUserDetailsCallback implements UserDetailsCallback {
+        @Override
+        public void onUserDetailsUpdate(UserDetails userDetails) {
+            cachedUserDetails = Optional.of(userDetails);
+        }
+
+        @Override
+        public void onUserDetailsError(VodafoneException ex) {
+            cachedUserDetails = Optional.absent();
         }
     }
 }
