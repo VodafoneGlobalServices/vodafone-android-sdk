@@ -23,6 +23,7 @@ public class SimSerialNumber {
                 if (telephonyManager.getSimState() == TelephonyManager.SIM_STATE_READY) {
                     simSerialNumber = Optional.fromNullable(telephonyManager.getSimSerialNumber());
                 } else {
+                    Timber.w("SIM card is not ready");
                     simSerialNumber = Optional.absent();
                 }
 
