@@ -1,0 +1,16 @@
+{
+    "HAP": {
+        "protocol": "http",
+        "host": "hebemock-4953648878.eu-de1.plex.vodafone.com",
+        "user_details": {
+            "path": "/users/resolve"
+        }
+    },
+    "APIX": {
+        "protocol": "http",
+        "host": "hebemock-4953648878.eu-de1.plex.vodafone.com",
+        "sms_validation": {
+            "path": "users/tokens/validate"
+        }
+    }
+}

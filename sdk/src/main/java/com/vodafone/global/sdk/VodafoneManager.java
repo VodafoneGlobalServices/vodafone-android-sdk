@@ -23,6 +23,7 @@ class VodafoneManager {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private final String appId;
+    private final Settings settings;
 
     Set<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArraySet<UserDetailsCallback>();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
@@ -35,6 +36,7 @@ class VodafoneManager {
         registrars = prepareRegistrars();
         client = new OkHttpClient();
         iccid = new SimSerialNumber(context);
+        settings = new Settings(context);
         register(new CacheUserDetailsCallback());
         register(new RepeatUserDetailsCallback());
     }
