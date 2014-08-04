@@ -107,7 +107,8 @@ class VodafoneManager {
         RequestBody body = RequestBody.create(JSON, payload);
 
         Request request = new Request.Builder()
-                .url("http://hebemock-4953648878.eu-de1.plex.vodafone.com/users/resolve")
+                .url(settings.hap.protocol + "://" + settings.hap.host
+                        + settings.hap.userDetails.path)
                 .post(body)
                 .build();
 
@@ -134,7 +135,8 @@ class VodafoneManager {
         RequestBody body = RequestBody.create(JSON, payload);
 
         Request request = new Request.Builder()
-                .url("http://hebemock-4953648878.eu-de1.plex.vodafone.com/users/tokens/validate/" + cachedUserDetails.get().getToken())
+                .url(settings.apix.protocol + "://" + settings.apix.host
+                        + settings.apix.smsValidation.path + "/" + cachedUserDetails.get().getToken())
                 .post(body)
                 .build();
 

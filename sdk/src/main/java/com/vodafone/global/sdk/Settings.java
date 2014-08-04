@@ -108,7 +108,7 @@ class Settings {
         }
     }
 
-    private class ApixSettings {
+    class ApixSettings {
         final String protocol;
         final String host;
         final SmsValidationSettings smsValidation;
@@ -141,7 +141,7 @@ class Settings {
             return result;
         }
 
-        private class SmsValidationSettings {
+        class SmsValidationSettings {
             final String path;
 
             public SmsValidationSettings(JSONObject json) throws JSONException {
