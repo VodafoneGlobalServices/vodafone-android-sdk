@@ -15,6 +15,7 @@ import butterknife.OnClick;
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Vodafone;
+import timber.log.Timber;
 
 public class MainActivity extends Activity {
     @InjectView(R.id.et_appId) EditText appId;
@@ -33,10 +34,15 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btn_setAppId)
     public void setAppId() {
-        boolean commitSucceeded = persistAppId(appId.getText().toString());
+        Timber.v("setting app id");
+
+        String appId = this.appId.getText().toString();
+        boolean commitSucceeded = persistAppId(appId);
         if (commitSucceeded) {
+            Timber.d("setting app id succeeded: " + appId);
             Application.exit();
         } else {
+            Timber.e("setting app id failed: " + appId);
             Toast.makeText(this, "saving app id failed", Toast.LENGTH_LONG).show();
         }
     }
@@ -55,6 +61,8 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btn_retrieve)
     public void retrieve() {
+        Timber.v("retrieving user data button clicked");
+
         UserDetailsRequestParameters parameters = UserDetailsRequestParameters.builder()
                 .setSmsValidation(smsValidation.isChecked())
                 .build();
@@ -63,6 +71,8 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btn_getUserDetails)
     public void getUserDetails() {
+        Timber.v("get user data button clicked");
+
         UserDetails userDetails = Vodafone.getUserDetails();
         if (userDetails == null) {
             Toast.makeText(this, "user details aren't cached", Toast.LENGTH_LONG).show();
@@ -88,6 +98,8 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btn_sendSmsCode)
     public void sendSmsCode() {
-        Vodafone.validateSmsCode(smsCode.getText().toString());
+        String code = smsCode.getText().toString();
+        Timber.v("send sms code button clicked, sms code: " + code);
+        Vodafone.validateSmsCode(code);
     }
 }
