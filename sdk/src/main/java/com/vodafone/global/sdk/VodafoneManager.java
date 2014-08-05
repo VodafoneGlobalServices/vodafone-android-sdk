@@ -31,6 +31,12 @@ class VodafoneManager {
     private Optional<UserDetails> cachedUserDetails;
     private UserDetailsRequestParameters lastRequestParameters;
 
+    /**
+     * Initializes SDK Manager for a given application.
+     *
+     * @param context android's context
+     * @param appId application's identification
+     */
     public VodafoneManager(Context context, String appId) {
         this.appId = appId;
         registrars = prepareRegistrars();
@@ -41,6 +47,11 @@ class VodafoneManager {
         register(new RepeatUserDetailsCallback());
     }
 
+    /**
+     * Used to register callbacks.
+     *
+     * @throws IllegalArgumentException if callback is of unknown type
+     */
     public void register(VodafoneCallback callback) {
         Sets.SetView<Class<?>> knownAndImplementedCallbacksTypes = getKnownAndImplementedCallbacksTypes(callback);
 
@@ -51,6 +62,12 @@ class VodafoneManager {
             registrars.get(c).register(callback);
     }
 
+    /**
+     * Used to unregister callback.
+     *
+     * @param callback callback to be unregistered
+     * @throws IllegalArgumentException if callback is of unknown type
+     */
     public void unregister(VodafoneCallback callback) {
         Sets.SetView<Class<?>> knownAndImplementedCallbacksTypes = getKnownAndImplementedCallbacksTypes(callback);
 
@@ -61,12 +78,19 @@ class VodafoneManager {
             registrars.get(c).unregister(callback);
     }
 
+    /**
+     * Creates intersection of supported callback types and the ones implemented by passed object.
+     * @param callback might implement more than one callback type
+     */
     private Sets.SetView<Class<?>> getKnownAndImplementedCallbacksTypes(VodafoneCallback callback) {
         Set<Class<?>> knownCallbackTypes = registrars.keySet();
         HashSet<Class> implementedCallbackTypes = new HashSet<Class>(Arrays.asList(callback.getClass().getInterfaces()));
         return Sets.intersection(knownCallbackTypes, implementedCallbackTypes);
     }
 
+    /**
+     * Initializes registrars for every supported type of callback.
+     */
     private HashMap<Class<?>, Registrar> prepareRegistrars() {
         HashMap<Class<?>, Registrar> registrars = new HashMap<Class<?>, Registrar>();
 
@@ -97,10 +121,21 @@ class VodafoneManager {
         return registrars;
     }
 
+    /**
+     * Retrieves UserDetails from cache.
+     * Returns immediately and returns cached object.
+     *
+     * @return cached object
+     */
     public UserDetails getUserDetails() {
         return cachedUserDetails.orNull();
     }
 
+    /**
+     * Asynchronous call to backend to get user detail.
+     *
+     * @param parameters parameters specific to this call
+     */
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
         lastRequestParameters = parameters;
         String payload = prepareRetrievePayload(parameters);
@@ -115,6 +150,11 @@ class VodafoneManager {
         client.newCall(request).enqueue(new UserDetailsResponseCallback(userDetailsCallbacks));
     }
 
+    /**
+     * Prepares JSON payload for retrieving user details.
+     * @param parameters payload's parameters
+     * @return JSON string
+     */
     private String prepareRetrievePayload(UserDetailsRequestParameters parameters) {
         try {
             JSONObject json = new JSONObject();
@@ -130,6 +170,11 @@ class VodafoneManager {
         }
     }
 
+    /**
+     * Validates identity by providing code send by server via SMS.
+     *
+     * @param code code send to user via SMS
+     */
     public void validateSmsCode(String code) {
         String payload = prepareSmsValidationPayload(code);
         RequestBody body = RequestBody.create(JSON, payload);
@@ -143,6 +188,11 @@ class VodafoneManager {
         client.newCall(request).enqueue(new ValidateSmsResponseCallback(validateSmsCallbacks));
     }
 
+    /**
+     * Prepares JSON payload for sms validation.
+     * @param code code from sms
+     * @return JSON string
+     */
     private String prepareSmsValidationPayload(String code) {
         try {
             JSONObject json = new JSONObject();

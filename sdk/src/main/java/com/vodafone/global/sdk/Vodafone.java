@@ -61,7 +61,6 @@ public class Vodafone {
      * @param code code send to user via SMS
      */
     public static void validateSmsCode(String code) {
-        // TODO make a request to APIX
         manager.validateSmsCode(code);
     }
 
