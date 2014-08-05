@@ -9,4 +9,4 @@
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
     <uses-permission android:name="android.permission.INTERNET" />
-T </manifest>
+</manifest>
