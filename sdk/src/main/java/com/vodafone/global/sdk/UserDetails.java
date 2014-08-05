@@ -1,10 +1,10 @@
 package com.vodafone.global.sdk;
 
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.xml.bind.DatatypeConverter;
-import java.util.Calendar;
 import java.util.Date;
 
 public class UserDetails {
@@ -60,8 +60,8 @@ public class UserDetails {
         userDetails.tetheringConflict = json.getBoolean("tetheringConflict");
         userDetails.secure = json.getBoolean("secure");
         String date = json.getString("expires");
-        Calendar calendar = DatatypeConverter.parseDateTime(date);
-        userDetails.expires = calendar.getTime();
+        DateTimeFormatter parser2 = ISODateTimeFormat.dateTimeNoMillis();
+        userDetails.expires = parser2.parseDateTime(date).toDate();
         userDetails.validated = json.getBoolean("validated");
 
         return userDetails;
