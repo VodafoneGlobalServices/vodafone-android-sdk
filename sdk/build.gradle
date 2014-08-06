@@ -1,0 +1,28 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId "com.vodafone.global"
+        minSdkVersion 15
+        targetSdkVersion 20
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.jakewharton.timber:timber:2.4.+'
+    compile 'com.google.guava:guava:17.0'
+    compile 'joda-time:joda-time:2.4'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
