@@ -28,7 +28,7 @@ class VodafoneManager {
     Set<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArraySet<UserDetailsCallback>();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
     private SimSerialNumber iccid;
-    private Optional<UserDetails> cachedUserDetails;
+    private Optional<UserDetails> cachedUserDetails = Optional.absent();
     private UserDetailsRequestParameters lastRequestParameters;
 
     /**
