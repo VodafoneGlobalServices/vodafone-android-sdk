@@ -25,7 +25,6 @@ public class UserDetailsRequestParameters {
         private boolean smsValidation = false;
 
         private Builder() {
-            throw new UnsupportedOperationException();
         }
 
         public Builder enableSmsValidation() {
