@@ -1,17 +1,17 @@
 package com.vodafone.global.sdk
 import android.content.Context
-import android.content.res.Resources
+import android.content.res.AssetManager
 import pl.polidea.robospock.RoboSpecification
 
 class SettingsSpec extends RoboSpecification {
     Context context
 
     def setup() {
-        Resources res = Mock(Resources)
+        AssetManager manager = Mock(AssetManager)
         def stream = SettingsSpec.class.getResourceAsStream("/config.json")
-        res.openRawResource(R.raw.config) >> stream
+        manager.open("config.json") >> stream
         context = Mock(Context)
-        context.resources >> res
+        context.assets >> manager
     }
 
     def "settings get initialized properly from file"() {

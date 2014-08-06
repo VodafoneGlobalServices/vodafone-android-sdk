@@ -46,7 +46,11 @@ class Settings {
     }
 
     private InputStream openConfigFile(Context context) {
-        return context.getResources().openRawResource(R.raw.config);
+        try {
+            return context.getAssets().open("config.json");
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     class HapSettings {
