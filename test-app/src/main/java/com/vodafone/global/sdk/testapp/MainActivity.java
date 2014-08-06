@@ -9,12 +9,14 @@ import android.os.Bundle;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.OnClick;
+
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Vodafone;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import timber.log.Timber;
 
 public class MainActivity extends Activity {
@@ -79,13 +81,13 @@ public class MainActivity extends Activity {
         } else {
             new AlertDialog.Builder(this)
                     .setTitle("User details")
-                    .setMessage("resolved: " + userDetails.getResolved()
-                            + "\nstill running: " + userDetails.getStillRunning()
-                            + "\nsource: " + userDetails.getSource()
-                            + "\ntoken: " + userDetails.getToken()
-                            + "\nexpires: " + userDetails.getExpires()
-                            + "\ntethering conflict: " + userDetails.getTetheringConflict()
-                            + "\nvalidated: " + userDetails.getValidated())
+                    .setMessage("resolved: " + userDetails.resolved
+                            + "\nstill running: " + userDetails.stillRunning
+                            + "\nsource: " + userDetails.source
+                            + "\ntoken: " + userDetails.token
+                            + "\nexpires: " + userDetails.expires
+                            + "\ntethering conflict: " + userDetails.tetheringConflict
+                            + "\nvalidated: " + userDetails.validated)
                     .setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();

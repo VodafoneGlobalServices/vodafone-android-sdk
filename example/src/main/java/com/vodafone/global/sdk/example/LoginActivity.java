@@ -61,13 +61,13 @@ public class LoginActivity extends Activity implements UserDetailsCallback
 
     @Override
     public void onUserDetailsUpdate(UserDetails userDetails) {
-        resolved.setText(String.valueOf(userDetails.getResolved()));
-        stillRunning.setText(String.valueOf(userDetails.getStillRunning()));
-        source.setText(userDetails.getSource());
-        token.setText(userDetails.getToken());
-        tetheringConflict.setText(String.valueOf(userDetails.getTetheringConflict()));
-        secure.setText(String.valueOf(userDetails.getSecure()));
-        validated.setText(String.valueOf(userDetails.getToken()));
+        resolved.setText(String.valueOf(userDetails.resolved));
+        stillRunning.setText(String.valueOf(userDetails.stillRunning));
+        source.setText(userDetails.source);
+        token.setText(userDetails.token);
+        tetheringConflict.setText(String.valueOf(userDetails.tetheringConflict));
+        secure.setText(String.valueOf(userDetails.secure));
+        validated.setText(String.valueOf(userDetails.token));
     }
 
     @Override

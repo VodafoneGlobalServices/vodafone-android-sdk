@@ -160,7 +160,7 @@ class VodafoneManager {
             JSONObject json = new JSONObject();
             json.put("applicationId", appId);
             if (cachedUserDetails.isPresent()) {
-                json.put("sessionToken", cachedUserDetails.get().getToken());
+                json.put("sessionToken", cachedUserDetails.get().token);
             }
             json.put("iccid", iccid);
             json.put("smsValidation", parameters.smsValidation());
@@ -181,7 +181,7 @@ class VodafoneManager {
 
         Request request = new Request.Builder()
                 .url(settings.apix.protocol + "://" + settings.apix.host
-                        + settings.apix.smsValidation.path + "/" + cachedUserDetails.get().getToken())
+                        + settings.apix.smsValidation.path + "/" + cachedUserDetails.get().token)
                 .post(body)
                 .build();
 
@@ -226,7 +226,7 @@ class VodafoneManager {
 
         @Override
         public void onUserDetailsUpdate(UserDetails userDetails) {
-            if (userDetails.getStillRunning()) {
+            if (userDetails.stillRunning) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
