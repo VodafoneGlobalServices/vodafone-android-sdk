@@ -2,6 +2,8 @@ package com.vodafone.global.sdk;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.squareup.okhttp.MediaType;
@@ -22,6 +24,7 @@ class VodafoneManager {
     private final OkHttpClient client;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
+    private final Context context;
     private final String appId;
     private final Settings settings;
 
@@ -38,6 +41,7 @@ class VodafoneManager {
      * @param appId application's identification
      */
     public VodafoneManager(Context context, String appId) {
+        this.context = context;
         this.appId = appId;
         registrars = prepareRegistrars();
         client = new OkHttpClient();
@@ -227,12 +231,14 @@ class VodafoneManager {
         @Override
         public void onUserDetailsUpdate(UserDetails userDetails) {
             if (userDetails.stillRunning) {
+                Looper.prepare();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         retrieveUserDetails(lastRequestParameters);
                     }
                 }, DELAY_MILLIS);
+                Looper.loop();
             }
         }
 
