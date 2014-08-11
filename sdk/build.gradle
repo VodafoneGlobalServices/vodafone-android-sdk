@@ -21,7 +21,7 @@ android {
 
 dependencies {
     compile 'com.squareup.okhttp:okhttp:2.0.0'
-    compile 'com.jakewharton.timber:timber:2.4.+'
+    compile 'com.jakewharton.timber:timber:2.4.1'
     compile 'com.google.guava:guava:17.0'
     compile 'joda-time:joda-time:2.4'
     compile fileTree(dir: 'libs', include: ['*.jar'])
