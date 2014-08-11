@@ -1,0 +1,21 @@
+apply plugin: 'groovy'
+
+dependencies {
+    testCompile project(':sdk')
+    testCompile fileTree(dir: project(":sdk").file("build/libs"), include: "*.jar")
+    testCompile 'org.robospock:robospock:0.4.4'
+    testCompile 'cglib:cglib-nodep:2.2'
+}
+
+sourceSets.test.java.srcDirs += ['../sdk/build/generated/source/r/release']
+
+test {
+    testLogging {
+        lifecycle {
+            exceptionFormat "full"
+        }
+    }
+    workingDir = '../sdk/src/main'
+}
+
+tasks["compileJava"].dependsOn ":sdk:zip2jar"

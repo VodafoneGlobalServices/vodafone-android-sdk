@@ -40,7 +40,7 @@ public class SimSerialNumberSpec extends RoboSpecification {
     }
 
     @Unroll
-    def "SIM number is not read when SIM is not ready"() {
+    def "SIM number is not read when SIM state is #sim_state_name"() {
         telephonyManager.getSimState() >> sim_state
 
         when:
@@ -51,7 +51,12 @@ public class SimSerialNumberSpec extends RoboSpecification {
         1 * log.w("SIM card is not ready")
 
         where:
-        sim_state << [SIM_STATE_UNKNOWN, SIM_STATE_ABSENT, SIM_STATE_PIN_REQUIRED, SIM_STATE_PUK_REQUIRED, SIM_STATE_NETWORK_LOCKED]
+        sim_state                | sim_state_name
+        SIM_STATE_UNKNOWN        | "SIM_STATE_UNKNOWN"
+        SIM_STATE_ABSENT         | "SIM_STATE_ABSENT"
+        SIM_STATE_PIN_REQUIRED   | "SIM_STATE_PIN_REQUIRED"
+        SIM_STATE_PUK_REQUIRED   | "SIM_STATE_PUK_REQUIRED"
+        SIM_STATE_NETWORK_LOCKED | "SIM_STATE_NETWORK_LOCKED"
     }
 
     def "warning is logged when permission state can't be determined"() {
