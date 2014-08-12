@@ -9,4 +9,8 @@
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+        <service android:name=".http.VodafoneService" android:exported="false"/>
+    </application>
 </manifest>

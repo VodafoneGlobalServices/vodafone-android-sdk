@@ -24,6 +24,8 @@ dependencies {
     compile 'com.jakewharton.timber:timber:2.4.1'
     compile 'com.google.guava:guava:17.0'
     compile 'joda-time:joda-time:2.4'
+    compile 'com.octo.android.robospice:robospice:1.4.13'
+    compile 'com.octo.android.robospice:robospice-okhttp:1.4.13'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
