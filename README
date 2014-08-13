@@ -1,0 +1,10 @@
+To run tests and generate reports run following command:
+
+  ./gradlew :sdk:clean :sdk-test:clean :sdk:assemble :sdk-test:test :sdk-test:jacocoTestReport
+
+Tests report can be found at:
+  sdk-test/build/reports/tests/index.html
+
+Code coverage report can be found at:
+  sdk-test/build/reports/jacoco/test/html/index.html
+
