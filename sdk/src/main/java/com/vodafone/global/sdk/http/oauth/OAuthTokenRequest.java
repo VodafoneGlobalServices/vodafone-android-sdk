@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk.http;
+package com.vodafone.global.sdk.http.oauth;
 
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -22,7 +22,7 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
     private final String clientSecret;
 
     /**
-     * Provides builder for {@link com.vodafone.global.sdk.http.OAuthTokenRequest}.
+     * Provides builder for {@link OAuthTokenRequest}.
      */
     public static Builder builder() {
         return new Builder();

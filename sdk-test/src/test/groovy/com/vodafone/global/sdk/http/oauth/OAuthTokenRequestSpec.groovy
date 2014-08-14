@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk.http
+package com.vodafone.global.sdk.http.oauth
 
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.mockwebserver.MockResponse

@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk.http;
+package com.vodafone.global.sdk.http.oauth;
 
 /**
  * OAuth 2 response POJO.
