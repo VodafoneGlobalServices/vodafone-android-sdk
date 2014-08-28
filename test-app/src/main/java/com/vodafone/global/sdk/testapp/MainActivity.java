@@ -83,11 +83,8 @@ public class MainActivity extends Activity {
                     .setTitle("User details")
                     .setMessage("resolved: " + userDetails.resolved
                             + "\nstill running: " + userDetails.stillRunning
-                            + "\nsource: " + userDetails.source
                             + "\ntoken: " + userDetails.token
-                            + "\nexpires: " + userDetails.expires
-                            + "\ntethering conflict: " + userDetails.tetheringConflict
-                            + "\nvalidated: " + userDetails.validated)
+                            + "\nexpires: " + userDetails.expires)
                     .setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
