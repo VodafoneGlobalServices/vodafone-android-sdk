@@ -1,68 +1,64 @@
-package com.vodafone.global.sdk.http.oauth;
+package com.vodafone.global.sdk.http.resolve;
 
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
-import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.UserDetails;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.UUID;
 
-/**
- * OAuth 2 request processor. Builds HTTP request and handles response.
- */
-public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
+public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
+
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private final String url;
-    private final String clientId;
-    private final String clientSecret;
+    private final String accessToken;
     private final String androidId;
     private final String mobileCountryCode;
     private final String sdkId;
     private final String appId;
+    private final UserDetailsDTO userDetailsDTO;
 
     /**
-     * Provides builder for {@link OAuthTokenRequest}.
+     * Provides builder for {@link ResolveGetRequest}.
      */
     public static Builder builder() {
         return new Builder();
     }
 
-    protected OAuthTokenRequest(
-            String url, String clientId, String clientSecret, String androidId,
-            String mobileCountryCode, String sdkId, String appId
+    protected ResolveGetRequest(
+            String url, String accessToken, String androidId, String mobileCountryCode,
+            String sdkId, String appId, UserDetailsDTO userDetailsDTO
     ) {
-        super(OAuthToken.class);
+        super(UserDetailsDTO.class);
         this.url = url;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
+        this.accessToken = accessToken;
         this.androidId = androidId;
         this.mobileCountryCode = mobileCountryCode;
         this.sdkId = sdkId;
         this.appId = appId;
+        this.userDetailsDTO = userDetailsDTO;
     }
 
     @Override
-    public OAuthToken loadDataFromNetwork() throws Exception {
-        RequestBody body = new FormEncodingBuilder()
-                .add("grant_type", "client_credentials") // TODO might need to change, depends on 3rd party
-                .add("client_id", clientId)
-                .add("client_secret", clientSecret)
-                .add("scope", "SSO_OAUTH2_INPUT") // TODO might need to change, depends on 3rd party
-                .build();
+    public UserDetailsDTO loadDataFromNetwork() throws Exception {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Accept", "application/json")
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .addHeader("User-Agent", sdkId)
+                .addHeader("Application-ID", appId)
+                .addHeader("etag", userDetailsDTO.etag)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
                 .addHeader("x-vf-trace-source", sdkId + "" + appId)
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
-                .post(body)
+                .get()
                 .build();
         OkHttpClient client = getOkHttpClient();
         Response response = client.newCall(request).execute();
@@ -70,32 +66,33 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
         switch (code) {
             case 200:
                 return parseJson(response);
+            case 304:
+                return userDetailsDTO;
             default:
                 throw new IllegalStateException(); // TODO better exception
         }
     }
 
-    private OAuthToken parseJson(Response response) throws JSONException, IOException {
-        JSONObject json = new JSONObject(response.body().string());
-        String accessToken = json.getString("access_token");
-        String tokenType = json.getString("token_type");
-        String expiresIn = json.getString("expires_in");
-        return new OAuthToken(accessToken, tokenType, expiresIn);
+    private UserDetailsDTO parseJson(Response response) throws IOException, JSONException {
+        String jsonString = response.body().string();
+        UserDetails userDetails = UserDetails.fromJson(jsonString);
+        String etag = response.header("etag");
+        return new UserDetailsDTO(userDetails, etag);
     }
 
     /**
-     * Builder for {@link OAuthTokenRequest}.
-     * @see OAuthTokenRequest#builder()
+     * Builder for {@link ResolveGetRequest}.
+     * @see ResolveGetRequest#builder()
      */
     public static class Builder {
 
         private String url;
-        private String clientId;
-        private String clientSecret;
+        private String accessToken;
         private String androidId;
         private String mobileCountryCode;
         private String sdkId;
         private String appId;
+        private UserDetailsDTO userDetailsDTO;
 
         private Builder() {
         }
@@ -105,13 +102,8 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
             return this;
         }
 
-        public Builder clientId(String clientId) {
-            this.clientId = clientId;
-            return this;
-        }
-
-        public Builder clientSecret(String clientSecret) {
-            this.clientSecret = clientSecret;
+        public Builder accessToken(String accessToken) {
+            this.accessToken = accessToken;
             return this;
         }
 
@@ -135,8 +127,13 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
             return this;
         }
 
-        public OAuthTokenRequest build() {
-            return new OAuthTokenRequest(url, clientId, clientSecret, androidId, mobileCountryCode, sdkId, appId);
+        public Builder userDetaildDTO(UserDetailsDTO userDetailsDTO) {
+            this.userDetailsDTO = userDetailsDTO;
+            return this;
+        }
+
+        public ResolveGetRequest build() {
+            return new ResolveGetRequest(url, accessToken, androidId, mobileCountryCode, sdkId, appId, userDetailsDTO);
         }
     }
 }

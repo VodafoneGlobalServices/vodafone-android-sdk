@@ -79,6 +79,10 @@ class OAuthTokenRequestSpec extends Specification {
                 .url(url)
                 .clientId(anyClient)
                 .clientSecret(secret)
+                .androidId("")
+                .mobileCountryCode("")
+                .sdkId("")
+                .appId("")
                 .build()
         request.okHttpClient = new OkHttpClient()
         return request
