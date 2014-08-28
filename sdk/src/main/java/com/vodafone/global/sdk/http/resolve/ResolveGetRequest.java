@@ -6,8 +6,10 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.UserDetails;
+import com.vodafone.global.sdk.http.ExpiredAccessToken;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -68,6 +70,12 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
                 return parseJson(response);
             case 304:
                 return userDetailsDTO;
+            case 403:
+                JSONObject json = new JSONObject(response.body().string());
+                String id = json.getString("id");
+                if (id.equals("POL0002"))
+                    throw new ExpiredAccessToken();
+                throw new IllegalStateException(); // TODO better exception
             default:
                 throw new IllegalStateException(); // TODO better exception
         }

@@ -8,6 +8,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.SimSerialNumber;
 import com.vodafone.global.sdk.UserDetails;
+import com.vodafone.global.sdk.http.ExpiredAccessToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,6 +72,12 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         switch (code) {
             case 200:
                 return parseJson(response);
+            case 403:
+                JSONObject json = new JSONObject(response.body().string());
+                String id = json.getString("id");
+                if (id.equals("POL0002"))
+                    throw new ExpiredAccessToken();
+                throw new IllegalStateException(); // TODO better exception
             default:
                 throw new IllegalStateException(); // TODO better exception
         }
