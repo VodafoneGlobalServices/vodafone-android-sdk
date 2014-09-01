@@ -1,6 +1,10 @@
 package com.vodafone.global.sdk;
 
 import android.app.Application;
+import android.content.ContentResolver;
+import android.content.Context;
+
+import static android.provider.Settings.Secure;
 
 /**
  * Use this class to initialize Vodafone SDK and call backend.
@@ -25,6 +29,15 @@ public class Vodafone {
 
         Vodafone.application = app;
         manager = new VodafoneManager(app, appId);
+    }
+
+    /**
+     * Retrieves ANDROID_ID from system.
+     * @see android.provider.Settings.Secure#ANDROID_ID
+     */
+    private String getAndroidId(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        return Secure.getString(contentResolver, Secure.ANDROID_ID);
     }
 
     /**

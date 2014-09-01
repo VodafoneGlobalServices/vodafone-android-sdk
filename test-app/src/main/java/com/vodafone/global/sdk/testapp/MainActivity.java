@@ -84,7 +84,8 @@ public class MainActivity extends Activity {
                     .setMessage("resolved: " + userDetails.resolved
                             + "\nstill running: " + userDetails.stillRunning
                             + "\ntoken: " + userDetails.token
-                            + "\nexpires: " + userDetails.expires)
+                            + "\nexpires: " + userDetails.expires
+                            + "\nvalidationRequired: " + userDetails.validationRequired)
                     .setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
