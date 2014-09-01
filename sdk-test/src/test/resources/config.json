@@ -1,16 +1,27 @@
 {
-    "HAP": {
-        "protocol": "http",
-        "host": "example.vodafone.com",
-        "user_details": {
-            "path": "/users/resolve"
-        }
-    },
-    "APIX": {
+    "oauth": {
         "protocol": "https",
-        "host": "example.vodafone.com",
-        "sms_validation": {
-            "path": "users/tokens/validate"
-        }
+        "host": "OAUTH",
+        "path": "/2/oauth/access-token"
+    },
+    "resolve over wifi": {
+        "protocol": "https",
+        "host": "APIX",
+        "path": "/he/users/resolve"
+    },
+    "resolve over mobile": {
+        "protocol": "http",
+        "host": "HAP",
+        "path": "/he/users/resolve"
+    },
+    "check status": {
+        "protocol": "https",
+        "host": "APIX",
+        "path": "/he/users/token"
+    },
+    "validate pin": {
+        "protocol": "https",
+        "host": "APIX",
+        "path": "/he/users/token/validate"
     }
 }

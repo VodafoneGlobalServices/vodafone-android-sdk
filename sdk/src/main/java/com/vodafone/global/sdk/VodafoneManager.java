@@ -1,15 +1,18 @@
 package com.vodafone.global.sdk;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import com.octo.android.robospice.SpiceManager;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
+import com.vodafone.global.sdk.http.VodafoneService;
+import com.vodafone.global.sdk.http.resolve.ResolvePostRequest;
+import com.vodafone.global.sdk.http.resolve.ResolvePostRequestListener;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,12 +30,12 @@ class VodafoneManager {
     private final Context context;
     private final String appId;
     private final Settings settings;
+    private final SpiceManager spiceManager;
 
     Set<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArraySet<UserDetailsCallback>();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
     private SimSerialNumber iccid;
     private Optional<UserDetails> cachedUserDetails = Optional.absent();
-    private UserDetailsRequestParameters lastRequestParameters;
 
     /**
      * Initializes SDK Manager for a given application.
@@ -48,7 +51,8 @@ class VodafoneManager {
         iccid = new SimSerialNumber(context);
         settings = new Settings(context);
         register(new CacheUserDetailsCallback());
-        register(new RepeatUserDetailsCallback());
+        spiceManager = new SpiceManager(VodafoneService.class);
+        spiceManager.start(this.context);
     }
 
     /**
@@ -141,37 +145,24 @@ class VodafoneManager {
      * @param parameters parameters specific to this call
      */
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
-        lastRequestParameters = parameters;
-        String payload = prepareRetrievePayload(parameters);
-        RequestBody body = RequestBody.create(JSON, payload);
-
-        Request request = new Request.Builder()
-                .url(settings.hap.protocol + "://" + settings.hap.host
-                        + settings.hap.userDetails.path)
-                .post(body)
+        String accessToken = "";
+        String androidId = "";
+        String mobileCountryCode = "";
+        String sdkId = "";
+        ResolvePostRequest request = ResolvePostRequest.builder()
+                .url(settings.resolveOverWiFi.protocol + "://"
+                        + settings.resolveOverWiFi.host
+                        + settings.resolveOverWiFi.path)
+                .accessToken(accessToken)
+                .androidId(androidId)
+                .mobileCountryCode(mobileCountryCode)
+                .sdkId(sdkId)
+                .appId(appId)
+                .imsi(iccid)
+                .smsValidation(false)
                 .build();
-
-        client.newCall(request).enqueue(new UserDetailsResponseCallback(userDetailsCallbacks));
-    }
-
-    /**
-     * Prepares JSON payload for retrieving user details.
-     * @param parameters payload's parameters
-     * @return JSON string
-     */
-    private String prepareRetrievePayload(UserDetailsRequestParameters parameters) {
-        try {
-            JSONObject json = new JSONObject();
-            json.put("applicationId", appId);
-            if (cachedUserDetails.isPresent()) {
-                json.put("sessionToken", cachedUserDetails.get().token);
-            }
-            json.put("iccid", iccid);
-            json.put("smsValidation", parameters.smsValidation());
-            return json.toString();
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+        ResolvePostRequestListener requestListener = new ResolvePostRequestListener(spiceManager, userDetailsCallbacks);
+        spiceManager.execute(request, requestListener);
     }
 
     /**
@@ -180,12 +171,16 @@ class VodafoneManager {
      * @param code code send to user via SMS
      */
     public void validateSmsCode(String code) {
+        // TODO adjust network communication to new requirements
+
         String payload = prepareSmsValidationPayload(code);
         RequestBody body = RequestBody.create(JSON, payload);
 
         Request request = new Request.Builder()
-                .url(settings.apix.protocol + "://" + settings.apix.host
-                        + settings.apix.smsValidation.path + "/" + cachedUserDetails.get().token)
+                .url(settings.validatePin.protocol + "://"
+                        + settings.validatePin.host
+                        + settings.validatePin.path
+                        + "/" + cachedUserDetails.get().token)
                 .post(body)
                 .build();
 
@@ -219,31 +214,6 @@ class VodafoneManager {
         @Override
         public void onUserDetailsError(VodafoneException ex) {
             cachedUserDetails = Optional.absent();
-        }
-    }
-
-    /**
-     * Callback used internally to decide if request has to be repeated.
-     */
-    private class RepeatUserDetailsCallback implements UserDetailsCallback {
-        public static final int DELAY_MILLIS = 1000;
-
-        @Override
-        public void onUserDetailsUpdate(UserDetails userDetails) {
-            if (userDetails.stillRunning) {
-                Looper.prepare();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        retrieveUserDetails(lastRequestParameters);
-                    }
-                }, DELAY_MILLIS);
-                Looper.loop();
-            }
-        }
-
-        @Override
-        public void onUserDetailsError(VodafoneException ex) {
         }
     }
 }

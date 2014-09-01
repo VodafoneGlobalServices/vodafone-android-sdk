@@ -1,16 +1,27 @@
 {
-    "HAP": {
-        "protocol": "http",
-        "host": "hebemock-4953648878.eu-de1.plex.vodafone.com",
-        "user_details": {
-            "path": "/users/resolve"
-        }
+    "oauth": {
+        "protocol": "https",
+        "host": "OAUTH",
+        "path": "/2/oauth/access-token"
     },
-    "APIX": {
+    "resolve over wifi": {
+        "protocol": "https",
+        "host": "APIX",
+        "path": "/he/users/resolve"
+    },
+    "resolve over mobile": {
         "protocol": "http",
-        "host": "hebemock-4953648878.eu-de1.plex.vodafone.com",
-        "sms_validation": {
-            "path": "users/tokens/validate"
-        }
+        "host": "HAP",
+        "path": "/he/users/resolve"
+    },
+    "check status": {
+        "protocol": "https",
+        "host": "APIX",
+        "path": "/he/users/token"
+    },
+    "validate pin": {
+        "protocol": "https",
+        "host": "APIX",
+        "path": "/he/users/token/validate"
     }
 }
