@@ -32,7 +32,7 @@ public class LoginActivity extends Activity implements UserDetailsCallback
             public void onClick(View v) {
                 // prepare parameters for service
                 UserDetailsRequestParameters options = UserDetailsRequestParameters.builder()
-                        .enableSmsValidation()
+                        .setSmsValidation(false)
                         .build();
                 Vodafone.retrieveUserDetails(options);
             }
@@ -55,8 +55,8 @@ public class LoginActivity extends Activity implements UserDetailsCallback
 
     @Override
     public void onUserDetailsUpdate(UserDetails userDetails) {
-        resolved.setText(String.valueOf(userDetails.resolved));
-        stillRunning.setText(String.valueOf(userDetails.stillRunning));
+        //resolved.setText(String.valueOf(userDetails.resolved));
+        //stillRunning.setText(String.valueOf(userDetails.stillRunning));
         token.setText(userDetails.token);
         validated.setText(String.valueOf(userDetails.token));
     }

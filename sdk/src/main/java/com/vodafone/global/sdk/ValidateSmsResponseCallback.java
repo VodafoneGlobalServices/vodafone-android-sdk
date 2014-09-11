@@ -21,7 +21,7 @@ class ValidateSmsResponseCallback implements Callback {
     @Override
     public void onFailure(Request request, IOException e) {
         for (ValidateSmsCallback callback : validateSmsCallbacks) {
-            callback.onSmsValidationError(new VodafoneException(e.getMessage(), e));
+            //callback.onSmsValidationError(new VodafoneException(e.getMessage(), e));
         }
     }
 

@@ -1,10 +1,6 @@
 package com.vodafone.global.sdk;
 
 import android.app.Application;
-import android.content.ContentResolver;
-import android.content.Context;
-
-import static android.provider.Settings.Secure;
 
 /**
  * Use this class to initialize Vodafone SDK and call backend.
@@ -18,7 +14,7 @@ public class Vodafone {
      * Initializes SDK for a given Application. The call to this method should
      * be placed as soon as possible in the {@link Application#onCreate()}
      * method.
-     *
+     *yet
      * @param app   your application class instance
      * @param appId application's identification
      */
@@ -29,25 +25,6 @@ public class Vodafone {
 
         Vodafone.application = app;
         manager = new VodafoneManager(app, appId);
-    }
-
-    /**
-     * Retrieves ANDROID_ID from system.
-     * @see android.provider.Settings.Secure#ANDROID_ID
-     */
-    private String getAndroidId(Context context) {
-        ContentResolver contentResolver = context.getContentResolver();
-        return Secure.getString(contentResolver, Secure.ANDROID_ID);
-    }
-
-    /**
-     * Retrieves UserDetails from cache.
-     * Returns immediately and returns cached object.
-     *
-     * @return cached object
-     */
-    public static UserDetails getUserDetails() {
-        return manager.getUserDetails();
     }
 
     /**
@@ -66,6 +43,15 @@ public class Vodafone {
      */
     public static void register(VodafoneCallback callback) {
         manager.register(callback);
+    }
+
+    /**
+     * Used to generate validation PIN
+     *
+     * @param token session token
+     */
+    public static void generatePin(UserDetails userDetails) {
+        manager.generatePin(userDetails);
     }
 
     /**

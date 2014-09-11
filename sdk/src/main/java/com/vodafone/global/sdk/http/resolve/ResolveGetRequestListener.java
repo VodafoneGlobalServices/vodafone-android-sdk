@@ -33,8 +33,9 @@ public class ResolveGetRequestListener implements RequestListener<UserDetailsDTO
     public void onRequestFailure(SpiceException e) {
         Timber.e(e, e.getMessage());
 
-        for (UserDetailsCallback callback : userDetailsCallbacks)
-            callback.onUserDetailsError(new VodafoneException(e.getMessage(), e));
+        for (UserDetailsCallback callback : userDetailsCallbacks) {
+        //callback.onUserDetailsError(new VodafoneException(e.getMessage(), e));
+        }
     }
 
     private void loop(UserDetailsDTO userDetailsDTO) {

@@ -11,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * OAuth 2 request processor. Builds HTTP request and handles response.
@@ -21,10 +20,9 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
     private final String url;
     private final String clientId;
     private final String clientSecret;
-    private final String androidId;
-    private final String mobileCountryCode;
-    private final String sdkId;
-    private final String appId;
+    private final String scope;
+    private final String grantType;
+
 
     /**
      * Provides builder for {@link OAuthTokenRequest}.
@@ -33,37 +31,31 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
         return new Builder();
     }
 
-    protected OAuthTokenRequest(
-            String url, String clientId, String clientSecret, String androidId,
-            String mobileCountryCode, String sdkId, String appId
-    ) {
+    protected OAuthTokenRequest(String url, String clientId, String clientSecret, String scope, String grantType) {
         super(OAuthToken.class);
         this.url = url;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.androidId = androidId;
-        this.mobileCountryCode = mobileCountryCode;
-        this.sdkId = sdkId;
-        this.appId = appId;
+        this.scope = scope;
+        this.grantType = grantType;
     }
 
     @Override
     public OAuthToken loadDataFromNetwork() throws Exception {
         RequestBody body = new FormEncodingBuilder()
-                .add("grant_type", "client_credentials") // TODO might need to change, depends on 3rd party
+                .add("grant_type", grantType) // TODO might need to change, depends on 3rd party
                 .add("client_id", clientId)
                 .add("client_secret", clientSecret)
-                .add("scope", "SSO_OAUTH2_INPUT") // TODO might need to change, depends on 3rd party
+                .add("scope", scope)
                 .build();
+
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Accept", "application/json")
-                .addHeader("x-vf-trace-subject-id", androidId)
-                .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "" + appId)
-                .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
+                .addHeader("Content-type", "application/x-www-form-urlencoded")
                 .post(body)
                 .build();
+
         OkHttpClient client = getOkHttpClient();
         Response response = client.newCall(request).execute();
         int code = response.code();
@@ -80,7 +72,8 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
         String accessToken = json.getString("access_token");
         String tokenType = json.getString("token_type");
         String expiresIn = json.getString("expires_in");
-        return new OAuthToken(accessToken, tokenType, expiresIn);
+        long expirationTime = System.currentTimeMillis() + Integer.getInteger(expiresIn, 0);
+        return new OAuthToken(accessToken, tokenType, expiresIn, expirationTime);
     }
 
     /**
@@ -92,10 +85,8 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
         private String url;
         private String clientId;
         private String clientSecret;
-        private String androidId;
-        private String mobileCountryCode;
-        private String sdkId;
-        private String appId;
+        private String scope;
+        private String grantType;
 
         private Builder() {
         }
@@ -115,28 +106,18 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
             return this;
         }
 
-        public Builder androidId(String androidId) {
-            this.androidId = androidId;
+        public Builder scope(String scope) {
+            this.scope = scope;
             return this;
         }
 
-        public Builder mobileCountryCode(String mobileCountryCode) {
-            this.mobileCountryCode = mobileCountryCode;
-            return this;
-        }
-
-        public Builder sdkId(String sdkId) {
-            this.sdkId = sdkId;
-            return this;
-        }
-
-        public Builder appId(String appId) {
-            this.appId = appId;
+        public Builder grantType(String grantType) {
+            this.grantType = grantType;
             return this;
         }
 
         public OAuthTokenRequest build() {
-            return new OAuthTokenRequest(url, clientId, clientSecret, androidId, mobileCountryCode, sdkId, appId);
+            return new OAuthTokenRequest(url, clientId, clientSecret, scope, grantType);
         }
     }
 }
