@@ -139,9 +139,9 @@ public class ResolveUserProcessor extends RequestProcessor {
         Uri.Builder builder = new Uri.Builder();
         Uri uri;
         if (market.isEmpty()) {
-            uri = builder.scheme(settings.hap.protocol).authority(settings.hap.host).path(settings.hap.path).appendQueryParameter("backendId", "12345"/*appId*/).build();
+            uri = builder.scheme(settings.hap.protocol).authority(settings.hap.host).path(settings.hap.path).appendQueryParameter("backendId", appId).build();
         } else {
-            uri = builder.scheme(settings.apix.protocol).authority(settings.apix.host).path(settings.apix.path).appendQueryParameter("backendId", "12345"/*appId*/).build();
+            uri = builder.scheme(settings.apix.protocol).authority(settings.apix.host).path(settings.apix.path).appendQueryParameter("backendId", appId).build();
         }
         return uri.toString();
     }
