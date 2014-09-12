@@ -4,16 +4,16 @@ package com.vodafone.global.sdk;
  * UserDetailsRequestParameters used to configure call to backend.
  */
 public class ValidatePinParameters {
-    private final UserDetails userDetails;
+    private final String token;
     private final String pin;
 
-    private ValidatePinParameters(UserDetails userDetails, String pin) {
-        this.userDetails = userDetails;
+    private ValidatePinParameters(String token, String pin) {
+        this.token = token;
         this.pin = pin;
     }
 
-    public UserDetails getUserDetails() {
-        return userDetails;
+    public String getToken() {
+        return token;
     }
     public String getPin() {
         return pin;
@@ -27,14 +27,14 @@ public class ValidatePinParameters {
      * Builder class used to initialize UserDetailsRequestParameters.
      */
     public static class Builder {
-        private UserDetails userDetails;
+        private String token;
         private String pin;
 
         private Builder() {
         }
 
-        public Builder userDetails(UserDetails userDetails) {
-            this.userDetails = userDetails;
+        public Builder token(String token) {
+            this.token = token;
             return this;
         }
 
@@ -44,7 +44,7 @@ public class ValidatePinParameters {
         }
 
         public ValidatePinParameters build() {
-            return new ValidatePinParameters(userDetails, pin);
+            return new ValidatePinParameters(token, pin);
         }
     }
 }

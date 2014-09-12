@@ -4,33 +4,25 @@
         "host": "apisit.developer.vodafone.com",
         "path": "/2/oauth/access-token"
     },
-    "resolve over wifi": {
+    "hap": {
         "protocol": "http",
         "host": "SeamId-4090514559.eu-de1.plex.vodafone.com",
-        "path": "/users/tokens"
+        "path": "/seamless-id/users/tokens"
     },
-    "resolve over mobile": {
+    "apix": {
         "protocol": "http",
         "host": "SeamId-4090514559.eu-de1.plex.vodafone.com",
-        "path": "/users/tokens"
+        "path": "/seamless-id/users/tokens"
     },
-    "check status": {
-        "protocol": "http",
-        "host": "SeamId-4090514559.eu-de1.plex.vodafone.com",
-        "path": "/he/users/token"
-    },
-    "validate pin": {
-        "protocol": "http",
-        "host": "SeamId-4090514559.eu-de1.plex.vodafone.com",
-        "path": "/users/token/validate"
+    "country code": {
+        "DE": "0049",
+        "PL": "0048"
     },
     "configurationUpdateCheckTimeSpan":  60,
     "defaultHttpConnectionTimeout": 300,
     "requestsThrottlingLimit": 10,
-    "requestsThrottlingPeriod": 60,
-    "oAuthTokenClientId": "I1OpZaPfBcI378Bt7PBhQySW5Setb8eb",
-    "oAuthTokenClientSecret": "k4l1RXZGqMnw2cD8",
+    "requestsThrottlingPeriod": 60000,
     "oAuthTokenScope": "SSO_OAUTH2_INPUT",
     "oAuthTokenGrantType": "client_credentials",
-    "imsiValidationRegex": ".*"
+    "msisdnValidationRegex": ".*"
 }

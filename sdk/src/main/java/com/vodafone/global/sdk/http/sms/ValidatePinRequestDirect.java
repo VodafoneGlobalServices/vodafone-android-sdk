@@ -7,6 +7,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.SimSerialNumber;
 import com.vodafone.global.sdk.http.ExpiredAccessToken;
 
 import org.json.JSONException;
@@ -49,13 +50,12 @@ public class ValidatePinRequestDirect extends OkHttpSpiceRequest<Response> {
     }
 
     @Override
-    public Response loadDataFromNetwork() throws IOException {
-        RequestBody body = RequestBody.create(JSON, "pin");
+    public Response loadDataFromNetwork() throws IOException, JSONException {
+        RequestBody body = RequestBody.create(JSON, prepareBody(pin));
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("User-Agent", sdkId)
-                .addHeader("Application-ID", appId)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
                 .addHeader("x-vf-trace-source", sdkId + "" + appId)
@@ -64,6 +64,12 @@ public class ValidatePinRequestDirect extends OkHttpSpiceRequest<Response> {
                 .build();
         OkHttpClient client = getOkHttpClient();
         return client.newCall(request).execute();
+    }
+
+    protected String prepareBody(String pin) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("code", pin);
+        return json.toString();
     }
 
     public static class Builder {
@@ -106,6 +112,11 @@ public class ValidatePinRequestDirect extends OkHttpSpiceRequest<Response> {
 
         public Builder appId(String appId) {
             this.appId = appId;
+            return this;
+        }
+
+        public Builder pin(String pin) {
+            this.pin = pin;
             return this;
         }
 

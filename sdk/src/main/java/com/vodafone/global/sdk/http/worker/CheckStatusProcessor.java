@@ -27,13 +27,13 @@ import java.util.Set;
 /**
  * Created by bamik on 2014-09-10.
  */
-public class CheckStatusRequest extends ServerRequest {
-    private static final String TAG = ResolveUserRequest.class.getSimpleName();
+public class CheckStatusProcessor extends RequestProcessor {
+    private static final String TAG = ResolveUserProcessor.class.getSimpleName();
     private String appId;
     private SimSerialNumber iccid;
     private Optional<OAuthToken> authToken;
 
-    public CheckStatusRequest(Context context, Settings settings, String appId, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public CheckStatusProcessor(Context context, Settings settings, String appId, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
         super(context, settings, userDetailsCallbacks);
         this.appId = appId;
         this.iccid = iccid;
@@ -43,7 +43,7 @@ public class CheckStatusRequest extends ServerRequest {
         int code = response.code();
         try {
             switch (code) {
-                case 200: //TODO remove on working test environment
+                case 200:
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));
                 case 302: {
                     UserDetailsDTO redirectDetails  = Parsers.parseRedirectDetails(response);
@@ -90,26 +90,32 @@ public class CheckStatusRequest extends ServerRequest {
     }
 
     Response queryServer(UserDetailsDTO details) throws IOException, JSONException {
-            String androidId = Utils.getAndroidId(context);
-            Uri.Builder builder = new Uri.Builder();
-            Uri uri = builder.scheme(settings.resolveOverWiFi.protocol).authority(settings.resolveOverWiFi.host).path(settings.resolveOverWiFi.path).appendQueryParameter("backendId", appId).build();
-            ResolveGetRequestDirect request = ResolveGetRequestDirect.builder()
-                    .url(uri.toString())
-                    .accessToken(authToken.get().accessToken)
-                    .androidId(androidId)
-                    .mobileCountryCode(Utils.getMCC(context))
-                    .sdkId(settings.sdkId)
-                    .appId(appId)
-                    .etag(details.etag)
+        String androidId = Utils.getAndroidId(context);
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri = builder.scheme(settings.apix.protocol)
+                .authority(settings.apix.host)
+                .path(settings.apix.path)
+                .path(details.userDetails.token)
+                .appendQueryParameter("backendId", appId)
                     .build();
-            request.setRetryPolicy(null);
-            request.setOkHttpClient(new OkHttpClient());
 
-            return request.loadDataFromNetwork();
+        ResolveGetRequestDirect request = ResolveGetRequestDirect.builder()
+                .url(uri.toString())
+                .accessToken(authToken.get().accessToken)
+                .androidId(androidId)
+                .mobileCountryCode(Utils.getMCC(context))
+                .sdkId(settings.sdkId)
+                .appId(appId)
+                .etag(details.etag)
+                .build();
+        request.setRetryPolicy(null);
+        request.setOkHttpClient(new OkHttpClient());
+
+        return request.loadDataFromNetwork();
     }
 
     @Override
-    void process(Worker worker, Optional<OAuthToken> authToken, Message msg) {
+    public void process(Worker worker, Optional<OAuthToken> authToken, Message msg) {
         UserDetailsDTO redirectDetails = (UserDetailsDTO) msg.obj;
 
         try {

@@ -15,13 +15,13 @@ import java.util.Set;
 /**
  * Created by bamik on 2014-09-10.
  */
-public abstract class ServerRequest {
+public abstract class RequestProcessor {
     protected final Settings settings;
     protected final Context context;
     private final Set<UserDetailsCallback> userDetailsCallbacks;
 
 
-    public ServerRequest(Context context, Settings settings, Set<UserDetailsCallback> userDetailsCallback) {
+    public RequestProcessor(Context context, Settings settings, Set<UserDetailsCallback> userDetailsCallback) {
         this.context = context;
         this.settings = settings;
         this.userDetailsCallbacks = userDetailsCallback;

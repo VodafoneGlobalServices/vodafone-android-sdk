@@ -1,21 +1,18 @@
 package com.vodafone.global.sdk.http.worker;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Message;
-import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.SimSerialNumber;
-import com.vodafone.global.sdk.UserDetails;
-import com.vodafone.global.sdk.UserDetailsCallback;
+import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.ValidatePinParameters;
+import com.vodafone.global.sdk.ValidateSmsCallback;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.http.sms.PinRequestDirect;
 import com.vodafone.global.sdk.http.sms.ValidatePinRequestDirect;
 
 import org.json.JSONException;
@@ -26,35 +23,31 @@ import java.util.Set;
 /**
  * Created by bamik on 2014-09-10.
  */
-public class ValidatePinRequest extends ServerRequest {
-    private static final String TAG = ValidatePinRequest.class.getSimpleName();
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+public class ValidatePinProcessor extends PinProcessor {
+    private static final String TAG = ValidatePinProcessor.class.getSimpleName();
     private String appId;
-    private SimSerialNumber iccid;
     private Optional<OAuthToken> authToken;
 
-    public ValidatePinRequest(Context context, Settings settings, String appId, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
-        super(context, settings, userDetailsCallbacks);
+    public ValidatePinProcessor(Context context, Settings settings, String appId, Set<ValidateSmsCallback> validateSmsCallback) {
+        super(context, settings, validateSmsCallback);
         this.appId = appId;
-        this.iccid = iccid;
     }
 
-    void parseResponse(Worker worker, Response response, ValidatePinParameters validatePinParameters) {
+    void parseResponse(Response response) {
         int code = response.code();
         switch (code) {
-            case 200: //TODO remove on working test environment
-                break;
-            case 302:
-                break;
-            case 304:
+            case 200: //TODO update listeners properly
+                notifySuccess();
                 break;
             case 400:
+                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_VALIDATION_ERROR));
                 break;
             case 401:
-                break;
             case 403:
+                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
                 break;
             case 404:
+                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
                 break;
             default: //5xx and other critical errors
                 notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
@@ -62,12 +55,21 @@ public class ValidatePinRequest extends ServerRequest {
     }
 
     Response queryServer(ValidatePinParameters validatePinParameters) throws IOException, JSONException {
-        // TODO update request
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri = builder.scheme(settings.apix.protocol)
+                .authority(settings.apix.host)
+                .path(settings.apix.path)
+                .path(validatePinParameters.getToken())
+                .path("pins")
+                .appendQueryParameter("backendId", appId).build();
+
         ValidatePinRequestDirect request = ValidatePinRequestDirect.builder()
-                .url(settings.validatePin.protocol + "://"
-                        + settings.validatePin.host
-                        + settings.validatePin.path
-                        + "/" + validatePinParameters.getUserDetails().token)
+                .url(uri.toString())
+                .accessToken(authToken.get().accessToken)
+                .mobileCountryCode(Utils.getMCC(context))
+                .sdkId(settings.sdkId)
+                .appId(appId)
+                .pin(validatePinParameters.getPin())
                 .build();
 
         request.setRetryPolicy(null);
@@ -81,9 +83,9 @@ public class ValidatePinRequest extends ServerRequest {
 
         try {
             this.authToken = authToken;
-            parseResponse(worker, queryServer(validatePinParameters), validatePinParameters);
+            parseResponse(queryServer(validatePinParameters));
         } catch (Exception e) {
-
+            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
         }
     }
 }

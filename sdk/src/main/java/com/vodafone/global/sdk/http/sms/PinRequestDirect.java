@@ -1,5 +1,7 @@
 package com.vodafone.global.sdk.http.sms;
 
+import android.util.Log;
+
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
+    private static final String TAG = PinRequestDirect.class.getSimpleName();
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -50,7 +53,6 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("User-Agent", sdkId)
-                .addHeader("Application-ID", appId)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
                 .addHeader("x-vf-trace-source", sdkId + "" + appId)

@@ -4,50 +4,44 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.octo.android.robospice.SpiceManager;
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.vodafone.global.sdk.http.VodafoneService;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.oauth.OAuthTokenRequest;
 import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
-import com.vodafone.global.sdk.http.worker.CheckStatusRequest;
-import com.vodafone.global.sdk.http.worker.GeneratePinRequest;
-import com.vodafone.global.sdk.http.worker.ResolveUserRequest;
+import com.vodafone.global.sdk.http.worker.CheckStatusProcessor;
+import com.vodafone.global.sdk.http.worker.GeneratePinProcessor;
+import com.vodafone.global.sdk.http.worker.ResolveUserProcessor;
+import com.vodafone.global.sdk.http.worker.ValidatePinProcessor;
 import com.vodafone.global.sdk.http.worker.Worker;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class VodafoneManager {
     private static HashMap<Class<?>, Registrar> registrars;
     private final OkHttpClient client;
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final String TAG = VodafoneManager.class.getSimpleName();
-
-    private final static int RETRY_CALL_LIMIT = 5;
-    private final static int RETRY_INTERVAL_LIMIT_MS = 5*60*1000; //5 minutes
-
-    private final static Queue<Long> requestStack = new LinkedList<Long>();
 
     private final Context context;
-    private final String appId;
+    private final String appKey;
+    private final String appSecret;
+    private final String backendAppKey;
+
     private final Settings settings;
     private final SpiceManager spiceManager;
     private final Worker worker;
 
-    private final ResolveUserRequest userRequest;
-    private final CheckStatusRequest statusRequest;
-    private final GeneratePinRequest pinRequest;
+    private final ResolveUserProcessor resolveUserProc;
+    private final CheckStatusProcessor checkStatusProc;
+    private final GeneratePinProcessor generatePinProc;
+    private final ValidatePinProcessor ValidatePinProc;
 
     Set<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArraySet<UserDetailsCallback>();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
@@ -55,15 +49,22 @@ public class VodafoneManager {
     private Optional<OAuthToken> authToken = Optional.absent();
     private Optional<UserDetails> cachedUserDetails = Optional.absent();
 
+    private MaximumTresholdChecker tresholdChecker;
+
     /**
      * Initializes SDK Manager for a given application.
      *
      * @param context android's context
-     * @param appId application's identification
+     * @param appKey application's identification
      */
-    public VodafoneManager(Context context, String appId) {
+    public VodafoneManager(Context context, String appKey, String appSecret, String backendAppKey) {
         this.context = context;
-        this.appId = appId;
+
+        //Application keys
+        this.appKey = appKey;
+        this.appSecret = appSecret;
+        this.backendAppKey = backendAppKey;
+
         registrars = prepareRegistrars();
         client = new OkHttpClient();
         iccid = new SimSerialNumber(context);
@@ -71,9 +72,14 @@ public class VodafoneManager {
         register(new CacheUserDetailsCallback());
         spiceManager = new SpiceManager(VodafoneService.class);
         spiceManager.start(this.context);
-        userRequest = new ResolveUserRequest(context, settings, appId, iccid, userDetailsCallbacks);
-        statusRequest = new CheckStatusRequest(context, settings, appId, iccid, userDetailsCallbacks);
-        pinRequest = new GeneratePinRequest(context, settings, appId, iccid, userDetailsCallbacks);
+
+        resolveUserProc = new ResolveUserProcessor(context, settings, this.backendAppKey, iccid, userDetailsCallbacks);
+        checkStatusProc = new CheckStatusProcessor(context, settings, this.backendAppKey, iccid, userDetailsCallbacks);
+        generatePinProc = new GeneratePinProcessor(context, settings, this.backendAppKey, validateSmsCallbacks);
+        ValidatePinProc = new ValidatePinProcessor(context, settings, this.backendAppKey, validateSmsCallbacks);
+
+        tresholdChecker = new MaximumTresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
+
         worker = new Worker(callback);
         worker.start();
     }
@@ -153,16 +159,6 @@ public class VodafoneManager {
     }
 
     /**
-     * Retrieves UserDetails from cache.
-     * Returns immediately and returns cached object.
-     *
-     * @return cached object
-     */
-    public UserDetails getUserDetails() {
-        return cachedUserDetails.orNull();
-    }
-
-    /**
      * Asynchronous call to backend to get user detail.
      *
      * @param parameters parameters specific to this call
@@ -176,17 +172,20 @@ public class VodafoneManager {
      *
      * @param code code send to user via SMS
      */
-    public void validateSmsCode(String code) {
-
+    public void validateSmsCode(String token, String code) {
+        ValidatePinParameters parameters = ValidatePinParameters.builder()
+                .token(token)
+                .pin(code).build();
+        worker.sendMessage(worker.createMessage(MESSAGE_ID.VALIDATE_PIN.ordinal(), parameters));
     }
 
     /**
      * Validates identity by providing code send by server via SMS.
      *
-     * @param validatePinParameters code send to user via SMS
+     * @param token code send to user via SMS
      */
-    public void generatePin(UserDetails userDetails) {
-        worker.sendMessage(worker.createMessage(MESSAGE_ID.GENERATE_PIN.ordinal(), userDetails));
+    public void generatePin(String token) {
+        worker.sendMessage(worker.createMessage(MESSAGE_ID.GENERATE_PIN.ordinal(), token));
     }
 
     /**
@@ -204,28 +203,13 @@ public class VodafoneManager {
         }
     }
 
-    private boolean isMaximumThresholdReached() {
-        boolean maximumThresholdReach = true;
-        Long currentTime = System.currentTimeMillis();
-
-        while (requestStack.peek() < (currentTime - RETRY_INTERVAL_LIMIT_MS)) {
-            requestStack.remove();
-        }
-
-        if (RETRY_CALL_LIMIT < requestStack.size()) {
-            maximumThresholdReach = false;
-        }
-        requestStack.add(currentTime);
-        return maximumThresholdReach;
-    }
-
-
     public enum MESSAGE_ID {
         RETRIEVE_USER_DETAILS,
         AUTHENTICATE,
         CHECK_STATUS,
         REDIRECT,
-        GENERATE_PIN
+        GENERATE_PIN,
+        VALIDATE_PIN
     }
 
     private Handler.Callback callback  = new Handler.Callback() {
@@ -237,16 +221,19 @@ public class VodafoneManager {
                     authenticate();
                     break;
                 case RETRIEVE_USER_DETAILS:
-                    userRequest.process(worker, authToken, msg);
+                    resolveUserProc.process(worker, authToken, msg);
                     break;
                 case REDIRECT:
                     redirect(msg);
                    break;
                 case CHECK_STATUS:
-                    userRequest.process(worker, authToken, msg);
+                    checkStatusProc.process(worker, authToken, msg);
                     break;
                 case GENERATE_PIN:
-                    pinRequest.process(worker, authToken, msg);
+                    generatePinProc.process(worker, authToken, msg);
+                    break;
+                case VALIDATE_PIN:
+                    ValidatePinProc.process(worker, authToken, msg);
                     break;
                 default:
                     return false;
@@ -278,8 +265,8 @@ public class VodafoneManager {
         Uri uri = builder.scheme(settings.oauth.protocol).authority(settings.oauth.host).path(settings.oauth.path).build();
         OAuthTokenRequest request = OAuthTokenRequest.builder()
                 .url(uri.toString())
-                .clientId(settings.oAuthTokenClientId)
-                .clientSecret(settings.oAuthTokenClientSecret)
+                .clientId(appKey)
+                .clientSecret(appSecret)
                 .scope(settings.oAuthTokenScope)
                 .grantType(settings.oAuthTokenGrantType)
                 .build();

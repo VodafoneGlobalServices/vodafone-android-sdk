@@ -27,6 +27,8 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
     private final String sdkId;
     private final String appId;
     private final SimSerialNumber imsi;
+    private final String msisdn;
+    private final String market;
     private final boolean smsValidation;
 
     /**
@@ -38,7 +40,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
     protected ResolvePostRequestDirect(
             String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String appId, SimSerialNumber imsi, boolean smsValidation
+            String sdkId, String appId, String msisdn, String market, SimSerialNumber imsi, boolean smsValidation
     ) {
         super(Response.class);
         this.url = url;
@@ -49,17 +51,22 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         this.appId = appId;
         this.imsi = imsi;
         this.smsValidation = smsValidation;
+        this.msisdn = msisdn;
+        this.market = market;
     }
 
     @Override
     public Response loadDataFromNetwork() throws IOException, JSONException {
-        RequestBody body = RequestBody.create(JSON, prepareBody(imsi, smsValidation));
+        Log.e(TAG, url);
+        Log.e(TAG, prepareBody(msisdn, market, imsi, smsValidation));
+        RequestBody body = RequestBody.create(JSON, prepareBody(msisdn, market, imsi, smsValidation));
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Accept", "application/json")
                 .addHeader("User-Agent", sdkId)
                 .addHeader("scope", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
-                .addHeader("x-int-opco-id", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
+//                .addHeader("x-int-opco-id", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
+
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
@@ -67,15 +74,20 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(body)
                 .build();
+        Log.e(TAG, request.headers().toString());
         OkHttpClient client = getOkHttpClient();
         return client.newCall(request).execute();
     }
 
-    protected String prepareBody(SimSerialNumber imsi, boolean smsValidation) throws JSONException {
+    protected String prepareBody(String msisdn, String market, SimSerialNumber imsi, boolean smsValidation) throws JSONException {
         JSONObject json = new JSONObject();
         if (imsi.isPresent()) {
-            //json.put("imsi", imsi.get() /*"204049810027400"*/);
-            json.put("imsi", "204049810027400");
+            //json.put("imsi", imsi.get());
+            json.put("imsi", "204049810027400"); //TODO: REMOVE ONLY FOR TESTING!!!
+        }
+        if (!msisdn.isEmpty() && !market.isEmpty()) {
+            json.put("msisdn", msisdn);
+            json.put("market", market);
         }
         json.put("smsValidation", smsValidation);
         return json.toString();
@@ -93,6 +105,8 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         private String mobileCountryCode;
         private String sdkId;
         private String appId;
+        private String msisdn;
+        private String market;
         private SimSerialNumber imsi;
         private boolean smsValidation;
 
@@ -139,8 +153,18 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
+        public Builder msisdn(String  msisdn) {
+            this.msisdn = msisdn;
+            return this;
+        }
+
+        public Builder market(String market) {
+            this.market = market;
+            return this;
+        }
+
         public ResolvePostRequestDirect build() {
-            return new ResolvePostRequestDirect(url, accessToken, androidId, mobileCountryCode, sdkId, appId, imsi, smsValidation);
+            return new ResolvePostRequestDirect(url, accessToken, androidId, mobileCountryCode, sdkId, appId, msisdn, market, imsi, smsValidation);
         }
     }
 }

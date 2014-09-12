@@ -9,7 +9,8 @@ public class VodafoneException extends Exception {
         REQUEST_NOT_AUTHORIZED("Request not authorized"),
         WRONG_OTP_PROVIDED("Wrong OTP provided"),
         INVALID_OTP_FORMAT("Invalid OTP format"),
-        INVALID_TOKEN_STATE("Invalid token state");
+        INVALID_TOKEN_STATE("Invalid token state"),
+        INVALID_MSISDN("Invalid MSISDN");
 
         private final String message;
 

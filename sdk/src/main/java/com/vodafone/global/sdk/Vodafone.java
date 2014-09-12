@@ -16,15 +16,17 @@ public class Vodafone {
      * method.
      *yet
      * @param app   your application class instance
-     * @param appId application's identification
+     * @param appKey application's identification to obtain access token
+     * @param appSecret application's secret to obtain access token
+     * @param backendAppKey backend identification key to identify app
      */
-    public static void init(Application app, String appId) {
+    public static void init(Application app, String appKey, String appSecret, String backendAppKey) {
         if (application != null) {
             return; // can't initialize SDK twice
         }
 
         Vodafone.application = app;
-        manager = new VodafoneManager(app, appId);
+        manager = new VodafoneManager(app, appKey, appSecret, backendAppKey);
     }
 
     /**
@@ -50,8 +52,8 @@ public class Vodafone {
      *
      * @param token session token
      */
-    public static void generatePin(UserDetails userDetails) {
-        manager.generatePin(userDetails);
+    public static void generatePin(String token) {
+        manager.generatePin(token);
     }
 
     /**
@@ -59,8 +61,8 @@ public class Vodafone {
      *
      * @param code code send to user via SMS
      */
-    public static void validateSmsCode(String code) {
-        manager.validateSmsCode(code);
+    public static void validateSmsCode(String token, String code) {
+        manager.validateSmsCode(token, code);
     }
 
     /**

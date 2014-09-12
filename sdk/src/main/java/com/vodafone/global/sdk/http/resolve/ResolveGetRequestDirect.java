@@ -45,7 +45,6 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("Accept", "application/json")
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("User-Agent", sdkId)
-                .addHeader("Application-ID", appId)
                 .addHeader("etag", etag)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)

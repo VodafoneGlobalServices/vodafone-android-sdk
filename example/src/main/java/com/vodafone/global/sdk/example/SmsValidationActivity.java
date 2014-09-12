@@ -23,7 +23,8 @@ public class SmsValidationActivity extends Activity implements ValidateSmsCallba
             @Override
             public void onClick(View v) {
                 String smsCode = smsCodeField.getText().toString();
-                Vodafone.validateSmsCode(smsCode);
+                String token = "Token"; //TODO add token
+                Vodafone.validateSmsCode(token, smsCode);
             }
         });
     }

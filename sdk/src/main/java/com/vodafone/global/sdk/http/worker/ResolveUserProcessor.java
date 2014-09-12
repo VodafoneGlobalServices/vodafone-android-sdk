@@ -28,23 +28,24 @@ import java.util.Set;
 /**
  * Created by bamik on 2014-09-10.
  */
-public class ResolveUserRequest extends ServerRequest {
-    private static final String TAG = ResolveUserRequest.class.getSimpleName();
+public class ResolveUserProcessor extends RequestProcessor {
+    private static final String TAG = ResolveUserProcessor.class.getSimpleName();
     private String appId;
     private SimSerialNumber iccid;
     private Optional<OAuthToken> authToken;
 
-    public ResolveUserRequest(Context context, Settings settings, String appId, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public ResolveUserProcessor(Context context, Settings settings, String appId, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
         super(context, settings, userDetailsCallbacks);
         this.appId = appId;
         this.iccid = iccid;
     }
 
-    public void parseResponse(Worker worker, Response response, UserDetailsDTO userDetails) {
+    public void parseResponse(Worker worker, Response response) {
         int code = response.code();
         try {
+            Log.e(TAG, "Code :" + code);
+            Log.e(TAG, "Body :" + response.body().string());
             switch (code) {
-                case 200: //TODO remove on working test environment
                 case 201:
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));
                     break;
@@ -92,10 +93,12 @@ public class ResolveUserRequest extends ServerRequest {
 
     public Response queryServer(UserDetailsRequestParameters details) throws IOException, JSONException {
         String androidId = Utils.getAndroidId(context);
-        Uri.Builder builder = new Uri.Builder();
-        Uri uri = builder.scheme(settings.resolveOverWiFi.protocol).authority(settings.resolveOverWiFi.host).path(settings.resolveOverWiFi.path).appendQueryParameter("backendId", appId).build();
+        String msisdn = details.getMSISDN();
+        String market = getMarketCode(msisdn);
+        String url = getUrlBasedOnMarket(market);
+
         ResolvePostRequestDirect request = ResolvePostRequestDirect.builder()
-                .url(uri.toString())
+                .url(url)
                 .accessToken(authToken.get().accessToken)
                 .androidId(androidId)
                 .mobileCountryCode(Utils.getMCC(context))
@@ -103,6 +106,8 @@ public class ResolveUserRequest extends ServerRequest {
                 .appId(appId)
                 .imsi(iccid)
                 .smsValidation(details.smsValidation())
+                .msisdn(msisdn)
+                .market(market)
                 .build();
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
@@ -118,10 +123,40 @@ public class ResolveUserRequest extends ServerRequest {
         } else {
             try {
                 this.authToken = authToken;
-                parseResponse(worker, queryServer((UserDetailsRequestParameters) msg.obj), null);
+                UserDetailsRequestParameters userDetails =  (UserDetailsRequestParameters)msg.obj;
+                if (isMsisdnValid(userDetails.getMSISDN())) {
+                    parseResponse(worker, queryServer((UserDetailsRequestParameters) msg.obj));
+                } else {
+                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.INVALID_MSISDN));
+                }
             } catch (Exception e) { //TODO add detailed exception handling
-
+                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
             }
         }
+    }
+
+    private String getUrlBasedOnMarket(String market) {
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri;
+        if (market.isEmpty()) {
+            uri = builder.scheme(settings.hap.protocol).authority(settings.hap.host).path(settings.hap.path).appendQueryParameter("backendId", "12345"/*appId*/).build();
+        } else {
+            uri = builder.scheme(settings.apix.protocol).authority(settings.apix.host).path(settings.apix.path).appendQueryParameter("backendId", "12345"/*appId*/).build();
+        }
+        return uri.toString();
+    }
+
+    private String getMarketCode(String msisdn) {
+        if (msisdn.isEmpty()) {
+            return "";
+        } else {
+            //TODO get country code
+            return "DE";
+        }
+    }
+
+    private boolean isMsisdnValid(String msisdn) {
+        //TODO add country code check
+        return (msisdn.matches(settings.msisdnValidationRegex) || msisdn.isEmpty());
     }
 }

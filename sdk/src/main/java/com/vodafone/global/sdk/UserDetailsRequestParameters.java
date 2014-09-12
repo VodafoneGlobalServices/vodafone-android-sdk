@@ -28,7 +28,7 @@ public class UserDetailsRequestParameters {
      */
     public static class Builder {
         private boolean smsValidation = false;
-        private String MSISDN;
+        private String MSISDN = "";
 
         private Builder() {
         }
