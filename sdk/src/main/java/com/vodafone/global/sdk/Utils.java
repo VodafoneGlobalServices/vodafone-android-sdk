@@ -21,19 +21,13 @@ public class Utils {
     public static boolean isDataOverMobileNetwork(Context context) {
         ConnectivityManager mConnectivity = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = mConnectivity.getActiveNetworkInfo();
-        if (info != null && info.getType() == ConnectivityManager.TYPE_MOBILE) {
-            return info.isConnected();
-        }
-        return false;
+        return info != null && info.getType() == ConnectivityManager.TYPE_MOBILE && info.isConnected();
     }
 
     public static boolean isDataOverWiFi(Context context) {
         ConnectivityManager mConnectivity = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = mConnectivity.getActiveNetworkInfo();
-        if (info != null && info.getType() == ConnectivityManager.TYPE_WIFI) {
-            return info.isConnected();
-        }
-        return false;
+        return info != null && info.getType() == ConnectivityManager.TYPE_WIFI && info.isConnected();
     }
 
     public static String getMCC(Context context) {
@@ -48,6 +42,6 @@ public class Utils {
     }
 
     public static boolean isHasTimedOut(long timeMillis) {
-        return System.currentTimeMillis() > timeMillis ? true : false;
+        return System.currentTimeMillis() > timeMillis;
     }
 }
