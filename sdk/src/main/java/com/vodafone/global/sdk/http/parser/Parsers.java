@@ -32,7 +32,7 @@ public class Parsers {
 
         UserDetails userDetails = UserDetails.builder()
                                     .resolved(false)
-                                    .stillRunning(retryAfter >= 0 ? true : false)
+                                    .stillRunning(retryAfter >= 0)
                                     .token(token)
                                     .expires(new Date(0))
                                     .validationRequired(pins)
