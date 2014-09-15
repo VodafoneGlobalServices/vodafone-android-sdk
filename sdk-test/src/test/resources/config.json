@@ -1,27 +1,24 @@
 {
-    "oauth": {
+    "apix": {
         "protocol": "https",
         "host": "OAUTH",
         "path": "/2/oauth/access-token"
     },
-    "resolve over wifi": {
+    "hap": {
         "protocol": "https",
         "host": "APIX",
         "path": "/he/users/resolve"
     },
-    "resolve over mobile": {
+    "oauth": {
         "protocol": "http",
         "host": "HAP",
         "path": "/he/users/resolve"
     },
-    "check status": {
-        "protocol": "https",
-        "host": "APIX",
-        "path": "/he/users/token"
-    },
-    "validate pin": {
-        "protocol": "https",
-        "host": "APIX",
-        "path": "/he/users/token/validate"
-    }
+    "configurationUpdateCheckTimeSpan": 1,
+    "defaultHttpConnectionTimeout": 1,
+    "requestsThrottlingLimit": 1,
+    "requestsThrottlingPeriod": 1,
+    "oAuthTokenScope": "",
+    "oAuthTokenGrantType": "",
+    "msisdnValidationRegex": ""
 }
