@@ -3,7 +3,6 @@ package com.vodafone.global.sdk.http.worker;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Message;
-import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
@@ -26,8 +25,9 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Set;
 
+import timber.log.Timber;
+
 public class ResolveUserProcessor extends RequestProcessor {
-    private static final String TAG = ResolveUserProcessor.class.getSimpleName();
     private String appId;
     private SimSerialNumber iccid;
     private Optional<OAuthToken> authToken;
@@ -41,8 +41,8 @@ public class ResolveUserProcessor extends RequestProcessor {
     public void parseResponse(Worker worker, Response response) {
         int code = response.code();
         try {
-            Log.e(TAG, "Code :" + code);
-            Log.e(TAG, "Body :" + response.body().string());
+            Timber.e("Code :" + code);
+            Timber.e("Body :" + response.body().string());
             switch (code) {
                 case 201:
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));

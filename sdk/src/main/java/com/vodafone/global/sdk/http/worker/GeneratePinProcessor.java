@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Set;
 
 public class GeneratePinProcessor extends PinProcessor {
-    private static final String TAG = GeneratePinProcessor.class.getSimpleName();
     private String appId;
     private Optional<OAuthToken> authToken;
 

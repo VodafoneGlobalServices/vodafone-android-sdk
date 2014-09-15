@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Set;
 
 public class CheckStatusProcessor extends RequestProcessor {
-    private static final String TAG = ResolveUserProcessor.class.getSimpleName();
     private String appId;
     private SimSerialNumber iccid;
     private Optional<OAuthToken> authToken;

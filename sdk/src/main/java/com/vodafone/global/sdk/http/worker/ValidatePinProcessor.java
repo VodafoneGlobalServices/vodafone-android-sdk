@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.Set;
 
 public class ValidatePinProcessor extends PinProcessor {
-    private static final String TAG = ValidatePinProcessor.class.getSimpleName();
     private String appId;
     private Optional<OAuthToken> authToken;
 

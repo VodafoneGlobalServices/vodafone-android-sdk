@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
-    private static final String TAG = PinRequestDirect.class.getSimpleName();
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 

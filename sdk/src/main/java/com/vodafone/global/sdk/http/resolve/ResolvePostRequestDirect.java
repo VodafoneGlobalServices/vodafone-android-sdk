@@ -1,7 +1,5 @@
 package com.vodafone.global.sdk.http.resolve;
 
-import android.util.Log;
-
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -16,8 +14,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.UUID;
 
+import timber.log.Timber;
+
 public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
-    private static final String TAG = ResolvePostRequestDirect.class.getSimpleName();
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private final String url;
@@ -57,8 +56,8 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
     @Override
     public Response loadDataFromNetwork() throws IOException, JSONException {
-        Log.e(TAG, url);
-        Log.e(TAG, prepareBody(msisdn, market, imsi, smsValidation));
+        Timber.e(url);
+        Timber.e(prepareBody(msisdn, market, imsi, smsValidation));
         RequestBody body = RequestBody.create(JSON, prepareBody(msisdn, market, imsi, smsValidation));
         Request request = new Request.Builder()
                 .url(url)
@@ -74,7 +73,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(body)
                 .build();
-        Log.e(TAG, request.headers().toString());
+        Timber.e(request.headers().toString());
         OkHttpClient client = getOkHttpClient();
         return client.newCall(request).execute();
     }
