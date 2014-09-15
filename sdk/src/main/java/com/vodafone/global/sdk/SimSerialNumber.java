@@ -4,7 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
+
 import com.google.common.base.Optional;
+
 import timber.log.Timber;
 
 /**

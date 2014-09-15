@@ -7,8 +7,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.SimSerialNumber;
-import com.vodafone.global.sdk.http.ExpiredAccessToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;

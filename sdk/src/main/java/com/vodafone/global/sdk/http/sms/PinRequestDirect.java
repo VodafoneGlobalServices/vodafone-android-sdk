@@ -1,16 +1,10 @@
 package com.vodafone.global.sdk.http.sms;
 
-import android.util.Log;
-
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.http.ExpiredAccessToken;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.UUID;

@@ -12,7 +12,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Dictionary;
 
 public class Settings {
     public final PathSettings apix;

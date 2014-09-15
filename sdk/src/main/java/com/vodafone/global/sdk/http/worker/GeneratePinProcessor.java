@@ -3,7 +3,6 @@ package com.vodafone.global.sdk.http.worker;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Message;
-import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
@@ -13,7 +12,7 @@ import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.ValidateSmsCallback;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.http.sms.*;
+import com.vodafone.global.sdk.http.sms.PinRequestDirect;
 
 import org.json.JSONException;
 

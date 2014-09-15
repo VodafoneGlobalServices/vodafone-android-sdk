@@ -15,13 +15,14 @@ import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.VodafoneManager;
-import com.vodafone.global.sdk.VodafoneManager.*;
+import com.vodafone.global.sdk.VodafoneManager.MESSAGE_ID;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.parser.Parsers;
 import com.vodafone.global.sdk.http.resolve.ResolvePostRequestDirect;
 import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 
 import org.json.JSONException;
+
 import java.io.IOException;
 import java.util.Set;
 

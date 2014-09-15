@@ -5,11 +5,9 @@ import android.os.Message;
 
 import com.google.common.base.Optional;
 import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.ValidateSmsCallback;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 
 import java.util.Set;
 

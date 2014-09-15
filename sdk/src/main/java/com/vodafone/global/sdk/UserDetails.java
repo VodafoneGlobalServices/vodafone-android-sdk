@@ -1,11 +1,5 @@
 package com.vodafone.global.sdk;
 
-import android.util.Log;
-
-import com.squareup.okhttp.Request;
-
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -4,7 +4,6 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.vodafone.global.sdk.UserDetailsCallback;
-import com.vodafone.global.sdk.VodafoneException;
 
 import java.util.Set;
 

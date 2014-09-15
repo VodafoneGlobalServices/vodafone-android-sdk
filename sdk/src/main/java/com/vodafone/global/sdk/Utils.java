@@ -1,6 +1,5 @@
 package com.vodafone.global.sdk;
 
-import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.ConnectivityManager;
