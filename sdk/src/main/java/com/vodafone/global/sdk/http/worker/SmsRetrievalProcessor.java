@@ -16,6 +16,5 @@ public class SmsRetrievalProcessor extends RequestProcessor {
     }
 
     void process(Worker worker, Optional<OAuthToken> authToken, Message msg) {
-
-    };
+    }
 }
