@@ -52,24 +52,11 @@
             android:text="SMS validation" />
     </LinearLayout>
 
-    <LinearLayout
+    <Button
+        android:id="@+id/btn_retrieve"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/btn_retrieve"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="retrieve" />
-
-        <Button
-            android:id="@+id/btn_getUserDetails"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="get" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:text="retrieve" />
 
     <EditText
         android:id="@+id/et_smsCode"

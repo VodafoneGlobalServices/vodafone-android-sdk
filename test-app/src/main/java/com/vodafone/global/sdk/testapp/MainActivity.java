@@ -1,16 +1,13 @@
 package com.vodafone.global.sdk.testapp;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Vodafone;
 
@@ -71,35 +68,10 @@ public class MainActivity extends Activity {
         Vodafone.retrieveUserDetails(parameters);
     }
 
-    @OnClick(R.id.btn_getUserDetails)
-    public void getUserDetails() {
-        Timber.v("get user data button clicked");
-
-        UserDetails userDetails = Vodafone.getUserDetails();
-        if (userDetails == null) {
-            Toast.makeText(this, "user details aren't cached", Toast.LENGTH_LONG).show();
-        } else {
-            new AlertDialog.Builder(this)
-                    .setTitle("User details")
-                    .setMessage("resolved: " + userDetails.resolved
-                            + "\nstill running: " + userDetails.stillRunning
-                            + "\ntoken: " + userDetails.token
-                            + "\nexpires: " + userDetails.expires
-                            + "\nvalidationRequired: " + userDetails.validationRequired)
-                    .setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .show();
-        }
-    }
-
     @OnClick(R.id.btn_sendSmsCode)
     public void sendSmsCode() {
         String code = smsCode.getText().toString();
         Timber.v("send sms code button clicked, sms code: " + code);
-        Vodafone.validateSmsCode(code);
+        Vodafone.validateSmsCode("token", code); // FIXME remove token
     }
 }

@@ -17,7 +17,7 @@ public class Application extends android.app.Application {
         super.onCreate();
         SharedPreferences preferences = getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);
         String appId = preferences.getString(Preferences.APP_ID, "");
-        Vodafone.init(this, appId);
+        Vodafone.init(this, "appKey", "appSecret", "backendAppKey"); // FIXME proper parameters
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
