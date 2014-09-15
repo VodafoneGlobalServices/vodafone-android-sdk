@@ -172,9 +172,9 @@ public class VodafoneManager {
      *
      * @param code code send to user via SMS
      */
-    public void validateSmsCode(String token, String code) {
+    public void validateSmsCode(String code) {
         ValidatePinParameters parameters = ValidatePinParameters.builder()
-                .token(token)
+                .token(cachedUserDetails.get().token)
                 .pin(code).build();
         worker.sendMessage(worker.createMessage(MESSAGE_ID.VALIDATE_PIN.ordinal(), parameters));
     }
@@ -184,8 +184,8 @@ public class VodafoneManager {
      *
      * @param token code send to user via SMS
      */
-    public void generatePin(String token) {
-        worker.sendMessage(worker.createMessage(MESSAGE_ID.GENERATE_PIN.ordinal(), token));
+    public void generatePin() {
+        worker.sendMessage(worker.createMessage(MESSAGE_ID.GENERATE_PIN.ordinal(), cachedUserDetails.get().token));
     }
 
     /**

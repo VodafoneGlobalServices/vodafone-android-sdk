@@ -72,6 +72,6 @@ public class MainActivity extends Activity {
     public void sendSmsCode() {
         String code = smsCode.getText().toString();
         Timber.v("send sms code button clicked, sms code: " + code);
-        Vodafone.validateSmsCode("token", code); // FIXME remove token
+        Vodafone.validateSmsCode(code);
     }
 }

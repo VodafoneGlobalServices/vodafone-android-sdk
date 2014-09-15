@@ -52,8 +52,8 @@ public class Vodafone {
      *
      * @param token session token
      */
-    public static void generatePin(String token) {
-        manager.generatePin(token);
+    public static void generatePin() {
+        manager.generatePin();
     }
 
     /**
@@ -61,8 +61,8 @@ public class Vodafone {
      *
      * @param code code send to user via SMS
      */
-    public static void validateSmsCode(String token, String code) {
-        manager.validateSmsCode(token, code);
+    public static void validateSmsCode(String code) {
+        manager.validateSmsCode(code);
     }
 
     /**
