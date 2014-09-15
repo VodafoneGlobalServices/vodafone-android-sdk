@@ -1,9 +1,5 @@
 package com.vodafone.global.sdk.http.worker;
 
-/**
- * Created by bamik on 2014-09-10.
- */
-
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;

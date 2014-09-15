@@ -10,9 +10,6 @@ import com.vodafone.global.sdk.http.oauth.OAuthToken;
 
 import java.util.Set;
 
-/**
- * Created by bamik on 2014-09-10.
- */
 public class SmsRetrievalProcessor extends RequestProcessor {
     public SmsRetrievalProcessor(Context context, Settings settings, Set<UserDetailsCallback> userDetailsCallback) {
         super(context, settings, userDetailsCallback);

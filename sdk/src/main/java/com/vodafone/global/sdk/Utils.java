@@ -8,9 +8,6 @@ import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 
-/**
- * Created by bamik on 2014-09-03.
- */
 public class Utils {
 
     /**

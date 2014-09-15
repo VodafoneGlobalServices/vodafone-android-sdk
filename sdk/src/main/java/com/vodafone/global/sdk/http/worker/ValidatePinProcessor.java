@@ -20,9 +20,6 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Set;
 
-/**
- * Created by bamik on 2014-09-10.
- */
 public class ValidatePinProcessor extends PinProcessor {
     private static final String TAG = ValidatePinProcessor.class.getSimpleName();
     private String appId;

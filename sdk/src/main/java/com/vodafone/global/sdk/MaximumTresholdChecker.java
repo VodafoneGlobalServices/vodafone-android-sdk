@@ -3,9 +3,6 @@ package com.vodafone.global.sdk;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/**
- * Created by bamik on 2014-09-11.
- */
 public class MaximumTresholdChecker {
     private long retryCallLimit;
     private long retryIntervalLimitMs;

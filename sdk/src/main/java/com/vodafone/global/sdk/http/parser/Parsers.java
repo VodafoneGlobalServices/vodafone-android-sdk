@@ -11,9 +11,6 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by bamik on 2014-09-10.
- */
 public class Parsers {
     public static UserDetailsDTO parseUserDetails(Response response) throws IOException, JSONException {
         String jsonString = response.body().string();

@@ -13,9 +13,6 @@ import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 
 import java.util.Set;
 
-/**
- * Created by bamik on 2014-09-10.
- */
 public abstract class PinProcessor {
     protected final Settings settings;
     protected final Context context;
