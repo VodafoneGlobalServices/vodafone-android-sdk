@@ -84,7 +84,8 @@ public class UserDetails {
                 ", token='" + token + '\'' +
                 ", expires=" + expires +
                 ", validationRequired=" + validationRequired +
-                ", acr=" + acr;
+                ", acr='" + acr + '\'' +
+                '}';
     }
 
     public static class Builder {
