@@ -90,7 +90,7 @@ public class CheckStatusProcessor extends RequestProcessor {
         Uri uri = builder.scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
-                .path(details.userDetails.token)
+                .appendPath(details.userDetails.token)
                 .appendQueryParameter("backendId", appId)
                     .build();
 

@@ -53,9 +53,9 @@ public class GeneratePinProcessor extends PinProcessor {
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
-                .path(settings.apix.path)
-                .path(token)
-                .path("pins")
+                .path(settings.apix.path + token + "pins")
+                .appendPath(token)
+                .appendPath("pins")
                 .appendQueryParameter("backendId", appId).build();
 
         PinRequestDirect request = PinRequestDirect.builder()

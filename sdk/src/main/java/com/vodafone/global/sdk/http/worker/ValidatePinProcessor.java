@@ -55,8 +55,8 @@ public class ValidatePinProcessor extends PinProcessor {
         Uri uri = builder.scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
-                .path(validatePinParameters.getToken())
-                .path("pins")
+                .appendPath(validatePinParameters.getToken())
+                .appendPath("pins")
                 .appendQueryParameter("backendId", appId).build();
 
         ValidatePinRequestDirect request = ValidatePinRequestDirect.builder()
