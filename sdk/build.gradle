@@ -32,6 +32,7 @@ dependencies {
     compile ('com.octo.android.robospice:robospice-okhttp:1.4.14') {
         exclude group: 'com.squareup.okhttp'
     }
+    compile 'com.squareup.okio:okio:1.0.1'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
