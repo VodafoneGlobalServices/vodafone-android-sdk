@@ -12,6 +12,8 @@ import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 
 import java.util.Set;
 
+import timber.log.Timber;
+
 public abstract class RequestProcessor {
     protected final Settings settings;
     protected final Context context;
@@ -27,12 +29,14 @@ public abstract class RequestProcessor {
     abstract void process(Worker worker, Optional<OAuthToken> authToken, Message msg);
 
     protected void notifyUserDetailUpdate(UserDetailsDTO userDetailsDTO) {
+        Timber.d(userDetailsDTO.userDetails.toString());
         for (UserDetailsCallback callback : userDetailsCallbacks)
             callback.onUserDetailsUpdate(userDetailsDTO.userDetails);
     }
 
-    protected void notifyError(VodafoneException vodafoneException) {
+    protected void notifyError(VodafoneException exception) {
+        Timber.e(exception, exception.getMessage());
         for (UserDetailsCallback callback : userDetailsCallbacks)
-            callback.onUserDetailsError(vodafoneException);
+            callback.onUserDetailsError(exception);
     }
 }
