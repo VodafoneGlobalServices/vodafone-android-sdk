@@ -69,7 +69,7 @@ public class UserDetails {
     public int hashCode() {
         int result = (resolved ? 1 : 0);
         result = 31 * result + (stillRunning ? 1 : 0);
-        result = 31 * (token != null ? token.hashCode() : 0);
+        result = 31 * result + (token != null ? token.hashCode() : 0);
         result = 31 * result + (expires != null ? expires.hashCode() : 0);
         result = 31 * result + (validationRequired ? 1 : 0);
         result = 31 * result + (acr != null ? acr.hashCode() : 0);
