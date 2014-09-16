@@ -62,7 +62,8 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("Accept", "application/json")
                 .addHeader("User-Agent", sdkId)
                 .addHeader("scope", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
-//                .addHeader("x-int-opco-id", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
+                .addHeader("backendScopes", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
+                .addHeader("x-int-opco", market) //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
@@ -74,6 +75,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         LogUtil.log(request);
 
         OkHttpClient client = getOkHttpClient();
+        client.setFollowRedirects(false);
         return client.newCall(request).execute();
     }
 
