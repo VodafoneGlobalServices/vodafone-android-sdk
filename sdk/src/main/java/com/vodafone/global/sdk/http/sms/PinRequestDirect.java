@@ -47,6 +47,9 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("User-Agent", sdkId)
+                .addHeader("scope", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
+                .addHeader("backendScopes", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
+                .addHeader("x-int-opco", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
                 .addHeader("x-vf-trace-source", sdkId + "" + appId)
