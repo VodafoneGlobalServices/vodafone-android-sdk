@@ -25,8 +25,6 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Set;
 
-import timber.log.Timber;
-
 public class ResolveUserProcessor extends RequestProcessor {
     private String appId;
     private SimSerialNumber iccid;
@@ -41,8 +39,6 @@ public class ResolveUserProcessor extends RequestProcessor {
     public void parseResponse(Worker worker, Response response) {
         int code = response.code();
         try {
-            Timber.e("Code :" + code);
-            Timber.e("Body :" + response.body().string());
             switch (code) {
                 case 201:
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));
