@@ -65,7 +65,10 @@ public class ValidatePinRequestDirect extends OkHttpSpiceRequest<Response> {
         LogUtil.log(request);
 
         OkHttpClient client = getOkHttpClient();
-        return client.newCall(request).execute();
+        Response response = client.newCall(request).execute();
+
+        LogUtil.log(response);
+        return response;
     }
 
     protected String prepareBody(String pin) throws JSONException {

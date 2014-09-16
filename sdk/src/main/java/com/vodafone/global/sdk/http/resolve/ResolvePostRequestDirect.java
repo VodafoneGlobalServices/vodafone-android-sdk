@@ -76,7 +76,10 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
         OkHttpClient client = getOkHttpClient();
         client.setFollowRedirects(false);
-        return client.newCall(request).execute();
+        Response response = client.newCall(request).execute();
+
+        LogUtil.log(response);
+        return response;
     }
 
     protected String prepareBody(String msisdn, String market, SimSerialNumber imsi, boolean smsValidation) throws JSONException {
