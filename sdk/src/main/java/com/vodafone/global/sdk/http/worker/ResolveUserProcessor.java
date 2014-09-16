@@ -121,7 +121,8 @@ public class ResolveUserProcessor extends RequestProcessor {
             worker.sendMessage(worker.createMessage(msg));
         } else {
             try {
-                parseResponse(worker, queryServer((UserDetailsRequestParameters) msg.obj));
+                Response response = queryServer((UserDetailsRequestParameters) msg.obj);
+                parseResponse(worker, response);
             } catch (VodafoneException e) {
                 notifyError(e);
             } catch (IOException e) {
