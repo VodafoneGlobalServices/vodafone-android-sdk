@@ -51,6 +51,8 @@ public class ValidatePinProcessor extends PinProcessor {
     }
 
     Response queryServer(ValidatePinParameters validatePinParameters) throws IOException, JSONException {
+        String androidId = Utils.getAndroidId(context);
+
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
@@ -62,6 +64,7 @@ public class ValidatePinProcessor extends PinProcessor {
         ValidatePinRequestDirect request = ValidatePinRequestDirect.builder()
                 .url(uri.toString())
                 .accessToken(authToken.get().accessToken)
+                .androidId(androidId)
                 .mobileCountryCode(Utils.getMCC(context))
                 .sdkId(settings.sdkId)
                 .appId(appId)

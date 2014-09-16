@@ -50,10 +50,12 @@ public class GeneratePinProcessor extends PinProcessor {
     }
 
     Response queryServer(String token) throws IOException, JSONException {
+        String androidId = Utils.getAndroidId(context);
+
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
-                .path(settings.apix.path + token + "pins")
+                .path(settings.apix.path)
                 .appendPath(token)
                 .appendPath("pins")
                 .appendQueryParameter("backendId", appId).build();
@@ -61,6 +63,7 @@ public class GeneratePinProcessor extends PinProcessor {
         PinRequestDirect request = PinRequestDirect.builder()
                 .url(uri.toString())
                 .accessToken(authToken.get().accessToken)
+                .androidId(androidId)
                 .mobileCountryCode(Utils.getMCC(context))
                 .sdkId(settings.sdkId)
                 .appId(appId)
