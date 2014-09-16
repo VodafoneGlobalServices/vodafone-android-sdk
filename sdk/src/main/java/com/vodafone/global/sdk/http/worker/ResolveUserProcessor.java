@@ -54,9 +54,9 @@ public class ResolveUserProcessor extends RequestProcessor {
                 case 302: {
                     UserDetailsDTO redirectDetails = Parsers.parseRedirectDetails(response);
                     if (redirectDetails.userDetails.validationRequired) {
-                        notifyUserDetailUpdate(Parsers.parseUserDetails(response));
+                        notifyUserDetailUpdate(redirectDetails);
                     } else {
-                        notifyUserDetailUpdate(Parsers.parseUserDetails(response));
+                        notifyUserDetailUpdate(redirectDetails);
                         worker.sendMessage(worker.createMessage(VodafoneManager.MESSAGE_ID.REDIRECT.ordinal(), redirectDetails));
                     }
                 }
