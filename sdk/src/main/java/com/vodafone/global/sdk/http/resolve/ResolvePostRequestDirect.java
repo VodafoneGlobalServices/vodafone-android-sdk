@@ -6,6 +6,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.LogUtil;
 import com.vodafone.global.sdk.SimSerialNumber;
 
 import org.json.JSONException;
@@ -13,8 +14,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.UUID;
-
-import timber.log.Timber;
 
 public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -56,16 +55,14 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
     @Override
     public Response loadDataFromNetwork() throws IOException, JSONException {
-        Timber.e(url);
-        Timber.e(prepareBody(msisdn, market, imsi, smsValidation));
-        RequestBody body = RequestBody.create(JSON, prepareBody(msisdn, market, imsi, smsValidation));
+        String content = prepareBody(msisdn, market, imsi, smsValidation);
+        RequestBody body = RequestBody.create(JSON, content);
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Accept", "application/json")
                 .addHeader("User-Agent", sdkId)
                 .addHeader("scope", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
 //                .addHeader("x-int-opco-id", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
-
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
@@ -73,7 +70,9 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(body)
                 .build();
-        Timber.e(request.headers().toString());
+
+        LogUtil.log(request);
+
         OkHttpClient client = getOkHttpClient();
         return client.newCall(request).execute();
     }

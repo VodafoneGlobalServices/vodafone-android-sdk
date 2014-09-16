@@ -4,6 +4,7 @@ import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.LogUtil;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -52,6 +53,9 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .get()
                 .build();
+
+        LogUtil.log(request);
+
         OkHttpClient client = getOkHttpClient();
         return client.newCall(request).execute();
     }

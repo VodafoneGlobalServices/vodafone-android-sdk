@@ -7,6 +7,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +61,9 @@ public class ValidatePinRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(body)
                 .build();
+
+        LogUtil.log(request);
+
         OkHttpClient client = getOkHttpClient();
         return client.newCall(request).execute();
     }
