@@ -20,7 +20,11 @@ android {
 }
 
 dependencies {
-    compile 'com.squareup.okhttp:okhttp:2.0.0'
+    // SDK is using SNAPSHOT (rev. c3a31993cea76b68d6a9a5fef4036576eb27b98b)
+    // of OkHttp from `libs` because we need custom handling of http
+    // redirection that isn't available in current release.
+    // It should change to release version as soon as possible.
+    // compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.jakewharton.timber:timber:2.4.1'
     compile 'com.google.guava:guava:17.0'
     compile 'joda-time:joda-time:2.4'
