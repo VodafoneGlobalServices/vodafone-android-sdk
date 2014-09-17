@@ -29,6 +29,7 @@ import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.FOUND_302;
 import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
+import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class CheckStatusProcessor extends RequestProcessor {
     private String appId;
@@ -65,7 +66,7 @@ public class CheckStatusProcessor extends RequestProcessor {
                     //ERROR bad request - internal SDK error
                     notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.INTERNAL_SDK_ERROR));
                     break;
-                case 401:
+                case UNAUTHORIZED_401:
                     //ERROR Unauthorized access
                     notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_NOT_AUTHORIZED));
                     break;

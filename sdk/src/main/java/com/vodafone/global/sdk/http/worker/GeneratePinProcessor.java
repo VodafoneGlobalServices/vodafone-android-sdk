@@ -23,6 +23,7 @@ import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
 import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
+import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class GeneratePinProcessor extends PinProcessor {
     private String appId;
@@ -42,7 +43,7 @@ public class GeneratePinProcessor extends PinProcessor {
             case BAD_REQUEST_400:
                 notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_VALIDATION_ERROR));
                 break;
-            case 401:
+            case UNAUTHORIZED_401:
             case FORBIDDEN_403:
                 notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
                 break;
