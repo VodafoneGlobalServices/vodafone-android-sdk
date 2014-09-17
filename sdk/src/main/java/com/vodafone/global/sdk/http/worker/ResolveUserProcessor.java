@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
+import static com.vodafone.global.sdk.http.HttpCode.CREATED_201;
 import static com.vodafone.global.sdk.http.HttpCode.FOUND_302;
 
 public class ResolveUserProcessor extends RequestProcessor {
@@ -43,7 +44,7 @@ public class ResolveUserProcessor extends RequestProcessor {
         int code = response.code();
         try {
             switch (code) {
-                case 201:
+                case CREATED_201:
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));
                     break;
                 case 404:

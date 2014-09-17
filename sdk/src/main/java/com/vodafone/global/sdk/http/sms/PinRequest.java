@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 import java.util.UUID;
 
+import static com.vodafone.global.sdk.http.HttpCode.CREATED_201;
+
 public class PinRequest extends OkHttpSpiceRequest<Void> {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -62,7 +64,7 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
         Response response = client.newCall(request).execute();
         int code = response.code();
         switch (code) {
-            case 201:
+            case CREATED_201:
                 // we are only interested in HTTP code, body is empty anyway so we return null
                 return null;
             case 403:
