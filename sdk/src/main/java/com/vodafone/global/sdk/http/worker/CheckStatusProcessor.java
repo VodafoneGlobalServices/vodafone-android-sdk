@@ -23,6 +23,8 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Set;
 
+import static com.vodafone.global.sdk.http.HttpCode.OK_200;
+
 public class CheckStatusProcessor extends RequestProcessor {
     private String appId;
     private SimSerialNumber iccid;
@@ -38,7 +40,7 @@ public class CheckStatusProcessor extends RequestProcessor {
         int code = response.code();
         try {
             switch (code) {
-                case 200:
+                case OK_200:
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));
                 case 302: {
                     UserDetailsDTO redirectDetails  = Parsers.parseRedirectDetails(response);

@@ -19,6 +19,8 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Set;
 
+import static com.vodafone.global.sdk.http.HttpCode.OK_200;
+
 public class GeneratePinProcessor extends PinProcessor {
     private String appId;
     private Optional<OAuthToken> authToken;
@@ -31,7 +33,7 @@ public class GeneratePinProcessor extends PinProcessor {
     void parseResponse(Response response) {
         int code = response.code();
         switch (code) {
-            case 200: //TODO update listeners properly
+            case OK_200: //TODO update listeners properly
                 notifySuccess();
                 break;
             case 400:

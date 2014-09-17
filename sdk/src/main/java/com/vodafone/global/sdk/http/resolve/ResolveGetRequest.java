@@ -14,6 +14,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.vodafone.global.sdk.http.HttpCode.OK_200;
+
 public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -66,7 +68,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         Response response = client.newCall(request).execute();
         int code = response.code();
         switch (code) {
-            case 200:
+            case OK_200:
                 return parseJson(response);
             case 304:
                 return userDetailsDTO;

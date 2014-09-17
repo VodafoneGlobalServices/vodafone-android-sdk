@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import static com.vodafone.global.sdk.http.HttpCode.OK_200;
+
 /**
  * OAuth 2 request processor. Builds HTTP request and handles response.
  */
@@ -60,7 +62,7 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
         Response response = client.newCall(request).execute();
         int code = response.code();
         switch (code) {
-            case 200:
+            case OK_200:
                 return parseJson(response);
             default:
                 throw new IllegalStateException(); // TODO better exception

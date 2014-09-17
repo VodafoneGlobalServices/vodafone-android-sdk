@@ -12,6 +12,7 @@ import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.ValidatePinParameters;
 import com.vodafone.global.sdk.ValidateSmsCallback;
 import com.vodafone.global.sdk.VodafoneException;
+import com.vodafone.global.sdk.http.HttpCode;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.sms.ValidatePinRequestDirect;
 
@@ -32,7 +33,7 @@ public class ValidatePinProcessor extends PinProcessor {
     void parseResponse(Response response) {
         int code = response.code();
         switch (code) {
-            case 200: //TODO update listeners properly
+            case HttpCode.OK_200: //TODO update listeners properly
                 notifySuccess();
                 break;
             case 400:
