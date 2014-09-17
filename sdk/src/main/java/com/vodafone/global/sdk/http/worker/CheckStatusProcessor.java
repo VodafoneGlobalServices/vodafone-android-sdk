@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
+import static com.vodafone.global.sdk.http.HttpCode.FOUND_302;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
 public class CheckStatusProcessor extends RequestProcessor {
@@ -43,7 +44,7 @@ public class CheckStatusProcessor extends RequestProcessor {
             switch (code) {
                 case OK_200:
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));
-                case 302: {
+                case FOUND_302: {
                     UserDetailsDTO redirectDetails  = Parsers.parseRedirectDetails(response);
                     if (oldRedirectDetails.userDetails.validationRequired) {
                         notifyUserDetailUpdate(redirectDetails);

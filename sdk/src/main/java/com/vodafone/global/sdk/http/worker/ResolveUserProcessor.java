@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
+import static com.vodafone.global.sdk.http.HttpCode.FOUND_302;
 
 public class ResolveUserProcessor extends RequestProcessor {
     private String appId;
@@ -49,7 +50,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                     //ERROR possibly to proceed with MSISDN OR OTP
                     //TODO add notifyUserDetailUpdate();
                     break;
-                case 302: {
+                case FOUND_302: {
                     UserDetailsDTO redirectDetails = Parsers.parseRedirectDetails(response);
                     if (redirectDetails.userDetails.validationRequired) {
                         notifyUserDetailUpdate(redirectDetails);
