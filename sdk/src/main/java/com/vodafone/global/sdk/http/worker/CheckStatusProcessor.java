@@ -26,6 +26,7 @@ import java.util.Set;
 import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
 import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.FOUND_302;
+import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
 public class CheckStatusProcessor extends RequestProcessor {
@@ -75,7 +76,7 @@ public class CheckStatusProcessor extends RequestProcessor {
                         notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
                     }
                     break;
-                case 404:
+                case NOT_FOUND_404:
                     //ERROR repeat from get user status
                     worker.sendMessage(worker.createMessage(MESSAGE_ID.RETRIEVE_USER_DETAILS.ordinal()));
                     break;

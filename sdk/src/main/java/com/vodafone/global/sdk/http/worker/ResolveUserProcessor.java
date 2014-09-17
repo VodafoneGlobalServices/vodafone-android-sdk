@@ -29,6 +29,7 @@ import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
 import static com.vodafone.global.sdk.http.HttpCode.CREATED_201;
 import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.FOUND_302;
+import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
 
 public class ResolveUserProcessor extends RequestProcessor {
     private String appId;
@@ -48,7 +49,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                 case CREATED_201:
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));
                     break;
-                case 404:
+                case NOT_FOUND_404:
                     //ERROR possibly to proceed with MSISDN OR OTP
                     //TODO add notifyUserDetailUpdate();
                     break;

@@ -21,6 +21,7 @@ import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
 import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
+import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
 public class GeneratePinProcessor extends PinProcessor {
@@ -45,7 +46,7 @@ public class GeneratePinProcessor extends PinProcessor {
             case FORBIDDEN_403:
                 notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
                 break;
-            case 404:
+            case NOT_FOUND_404:
                 notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
                 break;
             default: //5xx and other critical errors
