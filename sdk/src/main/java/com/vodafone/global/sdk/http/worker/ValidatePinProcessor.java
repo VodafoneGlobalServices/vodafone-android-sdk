@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
+import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 
 public class ValidatePinProcessor extends PinProcessor {
     private String appId;
@@ -42,7 +43,7 @@ public class ValidatePinProcessor extends PinProcessor {
                 notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_VALIDATION_ERROR));
                 break;
             case 401:
-            case 403:
+            case FORBIDDEN_403:
                 notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
                 break;
             case 404:

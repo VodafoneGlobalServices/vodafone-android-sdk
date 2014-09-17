@@ -27,6 +27,7 @@ import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
 import static com.vodafone.global.sdk.http.HttpCode.CREATED_201;
+import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.FOUND_302;
 
 public class ResolveUserProcessor extends RequestProcessor {
@@ -69,7 +70,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                     //ERROR generic server error
                     notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
                     break;
-                case 403:
+                case FORBIDDEN_403:
                     if (!response.body().string().isEmpty() && Utils.isHasTimedOut(authToken.get().expirationTime)) {
                         worker.sendMessage(worker.createMessage(MESSAGE_ID.AUTHENTICATE.ordinal()));
                         worker.sendMessage(worker.createMessage(MESSAGE_ID.RETRIEVE_USER_DETAILS.ordinal()));

@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import java.util.UUID;
 
+import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
 public class ValidatePinRequest extends OkHttpSpiceRequest<Void> {
@@ -71,7 +72,7 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<Void> {
             case OK_200:
                 // we are only interested in HTTP code, body is empty anyway so we return null
                 return null;
-            case 403:
+            case FORBIDDEN_403:
                 JSONObject json = new JSONObject(response.body().string());
                 String id = json.getString("id");
                 if (id.equals("POL0002"))

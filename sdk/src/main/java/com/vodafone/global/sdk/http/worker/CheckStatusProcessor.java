@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
+import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.FOUND_302;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
@@ -66,7 +67,7 @@ public class CheckStatusProcessor extends RequestProcessor {
                     //ERROR Unauthorized access
                     notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_NOT_AUTHORIZED));
                     break;
-                case 403:
+                case FORBIDDEN_403:
                     if (!response.body().string().isEmpty() && Utils.isHasTimedOut(authToken.get().expirationTime)) {
                         worker.sendMessage(worker.createMessage(MESSAGE_ID.AUTHENTICATE.ordinal()));
                         worker.sendMessage(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), oldRedirectDetails));

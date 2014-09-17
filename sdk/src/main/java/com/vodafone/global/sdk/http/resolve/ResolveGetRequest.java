@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
 public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
@@ -72,7 +73,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
                 return parseJson(response);
             case 304:
                 return userDetailsDTO;
-            case 403:
+            case FORBIDDEN_403:
                 JSONObject json = new JSONObject(response.body().string());
                 String id = json.getString("id");
                 if (id.equals("POL0002"))

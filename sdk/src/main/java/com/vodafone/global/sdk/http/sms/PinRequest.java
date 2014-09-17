@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.util.UUID;
 
 import static com.vodafone.global.sdk.http.HttpCode.CREATED_201;
+import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 
 public class PinRequest extends OkHttpSpiceRequest<Void> {
 
@@ -67,7 +68,7 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
             case CREATED_201:
                 // we are only interested in HTTP code, body is empty anyway so we return null
                 return null;
-            case 403:
+            case FORBIDDEN_403:
                 JSONObject json = new JSONObject(response.body().string());
                 String id = json.getString("id");
                 if (id.equals("POL0002"))
