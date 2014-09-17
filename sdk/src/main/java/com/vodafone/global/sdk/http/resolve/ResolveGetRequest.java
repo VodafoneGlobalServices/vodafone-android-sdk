@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
+import static com.vodafone.global.sdk.http.HttpCode.NOT_MODIFIED_304;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
 public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
@@ -71,7 +72,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         switch (code) {
             case OK_200:
                 return parseJson(response);
-            case 304:
+            case NOT_MODIFIED_304:
                 return userDetailsDTO;
             case FORBIDDEN_403:
                 JSONObject json = new JSONObject(response.body().string());

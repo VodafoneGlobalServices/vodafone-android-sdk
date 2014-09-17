@@ -13,6 +13,7 @@ import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.VodafoneManager.MESSAGE_ID;
+import com.vodafone.global.sdk.http.HttpCode;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.parser.Parsers;
 import com.vodafone.global.sdk.http.resolve.ResolveGetRequestDirect;
@@ -55,7 +56,7 @@ public class CheckStatusProcessor extends RequestProcessor {
                     }
                 }
                 break;
-                case 304: {
+                case HttpCode.NOT_MODIFIED_304: {
                     UserDetailsDTO redirectDetails = Parsers.updateRetryAfter(oldRedirectDetails, response);
                     worker.sendMessage(worker.createMessage(MESSAGE_ID.REDIRECT.ordinal(), redirectDetails));
                 }
