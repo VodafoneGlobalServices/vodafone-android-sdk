@@ -23,6 +23,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Set;
 
+import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
 public class CheckStatusProcessor extends RequestProcessor {
@@ -56,7 +57,7 @@ public class CheckStatusProcessor extends RequestProcessor {
                     worker.sendMessage(worker.createMessage(MESSAGE_ID.REDIRECT.ordinal(), redirectDetails));
                 }
                 break;
-                case 400:
+                case BAD_REQUEST_400:
                     //ERROR bad request - internal SDK error
                     notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.INTERNAL_SDK_ERROR));
                     break;

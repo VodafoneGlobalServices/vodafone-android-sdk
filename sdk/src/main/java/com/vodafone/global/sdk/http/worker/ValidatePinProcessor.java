@@ -21,6 +21,8 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Set;
 
+import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
+
 public class ValidatePinProcessor extends PinProcessor {
     private String appId;
     private Optional<OAuthToken> authToken;
@@ -36,7 +38,7 @@ public class ValidatePinProcessor extends PinProcessor {
             case HttpCode.OK_200: //TODO update listeners properly
                 notifySuccess();
                 break;
-            case 400:
+            case BAD_REQUEST_400:
                 notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_VALIDATION_ERROR));
                 break;
             case 401:
