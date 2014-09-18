@@ -8,12 +8,13 @@ import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.Settings;
+import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.ValidatePinParameters;
-import com.vodafone.global.sdk.ValidateSmsCallback;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.HttpCode;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
+import com.vodafone.global.sdk.http.parser.Parsers;
 import com.vodafone.global.sdk.http.sms.ValidatePinRequestDirect;
 
 import org.json.JSONException;
@@ -26,33 +27,39 @@ import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
 import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
-public class ValidatePinProcessor extends PinProcessor {
+public class ValidatePinProcessor extends RequestProcessor {
     private String appId;
     private Optional<OAuthToken> authToken;
 
-    public ValidatePinProcessor(Context context, Settings settings, String appId, Set<ValidateSmsCallback> validateSmsCallback) {
-        super(context, settings, validateSmsCallback);
+    public ValidatePinProcessor(Context context, Settings settings, String appId, Set<UserDetailsCallback> userDetailsCallbacks) {
+        super(context, settings, userDetailsCallbacks);
         this.appId = appId;
     }
 
     void parseResponse(Response response) {
         int code = response.code();
-        switch (code) {
-            case HttpCode.OK_200: //TODO update listeners properly
-                notifySuccess();
-                break;
-            case BAD_REQUEST_400:
-                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_VALIDATION_ERROR));
-                break;
-            case UNAUTHORIZED_401:
-            case FORBIDDEN_403:
-                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
-                break;
-            case NOT_FOUND_404:
-                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
-                break;
-            default: //5xx and other critical errors
-                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+        try {
+            switch (code) {
+                case HttpCode.OK_200:
+                    notifyUserDetailUpdate(Parsers.parseUserDetails(response));
+                    break;
+                case BAD_REQUEST_400:
+                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_VALIDATION_ERROR));
+                    break;
+                case UNAUTHORIZED_401:
+                case FORBIDDEN_403:
+                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
+                    break;
+                case NOT_FOUND_404:
+                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
+                    break;
+                default: //5xx and other critical errors
+                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            }
+        } catch (JSONException e) {
+            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+        } catch (IOException e) {
+            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
         }
     }
 

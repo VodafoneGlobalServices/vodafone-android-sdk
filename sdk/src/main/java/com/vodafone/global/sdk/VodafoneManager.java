@@ -76,7 +76,7 @@ public class VodafoneManager {
         resolveUserProc = new ResolveUserProcessor(context, settings, this.backendAppKey, iccid, userDetailsCallbacks);
         checkStatusProc = new CheckStatusProcessor(context, settings, this.backendAppKey, iccid, userDetailsCallbacks);
         generatePinProc = new GeneratePinProcessor(context, settings, this.backendAppKey, validateSmsCallbacks);
-        ValidatePinProc = new ValidatePinProcessor(context, settings, this.backendAppKey, validateSmsCallbacks);
+        ValidatePinProc = new ValidatePinProcessor(context, settings, this.backendAppKey, userDetailsCallbacks);
 
         tresholdChecker = new MaximumTresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
