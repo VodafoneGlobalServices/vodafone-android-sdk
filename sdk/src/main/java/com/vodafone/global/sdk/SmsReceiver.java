@@ -17,9 +17,9 @@ import java.util.regex.Pattern;
 /**
  * SmsReceiver is responsible for intercepting sms messages and automatic pin validation.
  *
- * To enable SmsReceiver, 3rd party app needs to register receiver in AndroidManifest.xml with 
+ * To enable SmsReceiver, 3rd party app needs to register receiver in AndroidManifest.xml with
  * <pre>{@code
- * <receiver android:name=".listener.SmsListener">
+ * <receiver android:name="com.vodafone.global.sdk.SmsReceiver">
  *   <intent-filter>
  *     <action android:name="android.provider.Telephony.SMS_RECEIVED" />
  *   </intent-filter>
