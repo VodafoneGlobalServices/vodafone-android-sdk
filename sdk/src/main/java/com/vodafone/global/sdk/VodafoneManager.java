@@ -207,7 +207,6 @@ public class VodafoneManager {
         RETRIEVE_USER_DETAILS,
         AUTHENTICATE,
         CHECK_STATUS,
-        REDIRECT,
         GENERATE_PIN,
         VALIDATE_PIN
     }
@@ -223,9 +222,6 @@ public class VodafoneManager {
                 case RETRIEVE_USER_DETAILS:
                     resolveUserProc.process(worker, authToken, msg);
                     break;
-                case REDIRECT:
-                    redirect(msg);
-                   break;
                 case CHECK_STATUS:
                     checkStatusProc.process(worker, authToken, msg);
                     break;
@@ -241,16 +237,6 @@ public class VodafoneManager {
             return true;
         }
     };
-
-    private void redirect(Message msg) {
-        UserDetailsDTO redirectDetails = (UserDetailsDTO) msg.obj;
-        if (redirectDetails.userDetails.validationRequired) {
-            //TODO notify listeners
-        } else {
-            //START CHECK STATUS WITH DELAY
-            worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);
-        }
-    }
 
     private void authenticate() {
         try {

@@ -53,13 +53,13 @@ public class CheckStatusProcessor extends RequestProcessor {
                     if (oldRedirectDetails.userDetails.validationRequired) {
                         notifyUserDetailUpdate(redirectDetails);
                     } else {
-                        worker.sendMessage(worker.createMessage(MESSAGE_ID.REDIRECT.ordinal(), redirectDetails));
+                        worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);
                     }
                 }
                 break;
                 case HttpCode.NOT_MODIFIED_304: {
                     UserDetailsDTO redirectDetails = Parsers.updateRetryAfter(oldRedirectDetails, response);
-                    worker.sendMessage(worker.createMessage(MESSAGE_ID.REDIRECT.ordinal(), redirectDetails));
+                    worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);
                 }
                 break;
                 case BAD_REQUEST_400:

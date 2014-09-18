@@ -60,7 +60,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                         notifyUserDetailUpdate(redirectDetails);
                     } else {
                         notifyUserDetailUpdate(redirectDetails);
-                        worker.sendMessage(worker.createMessage(VodafoneManager.MESSAGE_ID.REDIRECT.ordinal(), redirectDetails));
+                        worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);
                     }
                 }
                 break;
