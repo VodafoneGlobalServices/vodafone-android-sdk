@@ -1,30 +1,77 @@
 package com.vodafone.global.sdk;
 
 import java.util.LinkedList;
-import java.util.Queue;
 
 public class MaximumThresholdChecker {
-    private final long retryCallLimit;
-    private final long retryIntervalLimitMs;
-    private Queue<Long> requestStack = new LinkedList<Long>();
+    private final long maxNumberOfCalls;
+    private final long timeInterval;
+    private final Clock clock;
+    private final LinkedList<Long> callTimestamps = new LinkedList<Long>();
 
-    public MaximumThresholdChecker(long retryCallLimit, long retryIntervalLimitMs) {
-        this.retryCallLimit = retryCallLimit;
-        this.retryIntervalLimitMs = retryIntervalLimitMs;
+    /**
+     * @param maxNumberOfCalls maximum number of calls
+     * @param timeInterval time interval in ms during which the number of maximum call can be made
+     */
+    public MaximumThresholdChecker(
+            long maxNumberOfCalls,
+            long timeInterval
+    ) {
+        this.maxNumberOfCalls = maxNumberOfCalls;
+        this.timeInterval = timeInterval;
+        clock = new Clock() {
+            @Override
+            public Long currentTimeMillis() {
+                return System.currentTimeMillis();
+            }
+        };
     }
 
-    public boolean isMaximumThresholdReached() {
-        boolean maximumThresholdReach = true;
-        Long currentTime = System.currentTimeMillis();
+    /**
+     * Special constructor that should be used only for testing.
+     * @param maxNumberOfCalls maximum number of calls
+     * @param timeInterval time interval during which the number of maximum call can be made
+     * @param clock special implementation of Clock for testing purposes
+     */
+    MaximumThresholdChecker(
+            long maxNumberOfCalls,
+            long timeInterval,
+            Clock clock
+    ) {
+        this.maxNumberOfCalls = maxNumberOfCalls;
+        this.timeInterval = timeInterval;
+        this.clock = clock;
+    }
 
-        requestStack.add(currentTime);
-        while (requestStack.peek() < (currentTime - retryIntervalLimitMs)) {
-            requestStack.remove();
-        }
+    /**
+     * Checks if maximum number of requests within a specified period of time was exceeded.
+     */
+    public boolean thresholdReached() {
+        Long currentTime = clock.currentTimeMillis();
+        callTimestamps.add(currentTime);
+        filterOutTimestampsBelowTimeThreshold(currentTime);
+        return numberOfCallsMadeInInterval() > maxNumberOfCalls;
+    }
 
-        if (retryCallLimit < requestStack.size()) {
-            maximumThresholdReach = false;
+    private void filterOutTimestampsBelowTimeThreshold(Long currentTime) {
+        long timeThreshold = currentTime - timeInterval;
+        while (anyTimestampsLeft() && oldestTimestamp() <= timeThreshold) {
+            removeOldestTimestamp();
         }
-        return maximumThresholdReach;
+    }
+
+    private boolean anyTimestampsLeft() {
+        return !callTimestamps.isEmpty();
+    }
+
+    private Long oldestTimestamp() {
+        return callTimestamps.peek();
+    }
+
+    private Long removeOldestTimestamp() {
+        return callTimestamps.remove();
+    }
+
+    private int numberOfCallsMadeInInterval() {
+        return callTimestamps.size();
     }
 }

@@ -163,7 +163,14 @@ public class VodafoneManager {
      * @param parameters parameters specific to this call
      */
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
+        checkCallThreshold();
         worker.sendMessage(worker.createMessage(MESSAGE_ID.RETRIEVE_USER_DETAILS.ordinal(), parameters));
+    }
+
+    private void checkCallThreshold() {
+        if (tresholdChecker.thresholdReached()) {
+            throw new CallThresholdReached();
+        }
     }
 
     /**

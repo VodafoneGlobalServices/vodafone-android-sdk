@@ -1,6 +1,6 @@
 package com.vodafone.global.sdk;
 
-public class VodafoneException extends Exception {
+public class VodafoneException extends RuntimeException {
     public enum EXCEPTION_TYPE {
         TOKEN_NOT_FOUND(""),
         GENERIC_SERVER_ERROR("Generic server failure"),
@@ -10,7 +10,8 @@ public class VodafoneException extends Exception {
         WRONG_OTP_PROVIDED("Wrong OTP provided"),
         INVALID_OTP_FORMAT("Invalid OTP format"),
         INVALID_TOKEN_STATE("Invalid token state"),
-        INVALID_MSISDN("Invalid MSISDN");
+        INVALID_MSISDN("Invalid MSISDN"),
+        CALL_THRESHOLD_REACHED("Call threshold reached");
 
         private final String message;
 
