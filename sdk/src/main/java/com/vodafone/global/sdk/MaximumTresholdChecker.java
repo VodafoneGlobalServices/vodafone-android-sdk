@@ -4,20 +4,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class MaximumTresholdChecker {
-    private long retryCallLimit;
-    private long retryIntervalLimitMs;
+    private final long retryCallLimit;
+    private final long retryIntervalLimitMs;
     private Queue<Long> requestStack = new LinkedList<Long>();
 
     public MaximumTresholdChecker(long retryCallLimit, long retryIntervalLimitMs) {
         this.retryCallLimit = retryCallLimit;
-        this.retryIntervalLimitMs = retryIntervalLimitMs;
-    }
-
-    public void setRetryCallLimit(long retryCallLimit) {
-        this.retryCallLimit = retryCallLimit;
-    }
-
-    public void retryIntervalLimitMs(long retryIntervalLimitMs) {
         this.retryIntervalLimitMs = retryIntervalLimitMs;
     }
 
