@@ -2,41 +2,29 @@ package com.vodafone.global.sdk.example;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.vodafone.global.sdk.*;
+
+import com.vodafone.global.sdk.UserDetails;
+import com.vodafone.global.sdk.UserDetailsCallback;
+import com.vodafone.global.sdk.UserDetailsRequestParameters;
+import com.vodafone.global.sdk.Vodafone;
+import com.vodafone.global.sdk.VodafoneException;
+
+import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class LoginActivity extends Activity implements UserDetailsCallback
 {
-    private TextView resolved;
-    private TextView stillRunning;
-    private TextView token;
-    private TextView validated;
-    private Button logInButton;
+    @InjectView(R.id.resolved) TextView resolved;
+    @InjectView(R.id.stillRunning) TextView stillRunning;
+    @InjectView(R.id.token) TextView token;
+    @InjectView(R.id.validated) TextView validated;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.vodafone.global.sdk.example.R.layout.main);
-
-        resolved = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.resolved);
-        stillRunning = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.stillRunning);
-        token = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.token);
-        validated = (TextView) findViewById(com.vodafone.global.sdk.example.R.id.validated);
-
-        logInButton = (Button) findViewById(com.vodafone.global.sdk.example.R.id.log_in);
-        logInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // prepare parameters for service
-                UserDetailsRequestParameters options = UserDetailsRequestParameters.builder()
-                        .setSmsValidation(false)
-                        .build();
-                Vodafone.retrieveUserDetails(options);
-            }
-        });
+        setContentView(R.layout.main);
     }
 
     @Override
@@ -55,8 +43,8 @@ public class LoginActivity extends Activity implements UserDetailsCallback
 
     @Override
     public void onUserDetailsUpdate(UserDetails userDetails) {
-        //resolved.setText(String.valueOf(userDetails.resolved));
-        //stillRunning.setText(String.valueOf(userDetails.stillRunning));
+        resolved.setText(String.valueOf(userDetails.resolved));
+        stillRunning.setText(String.valueOf(userDetails.stillRunning));
         token.setText(userDetails.token);
         validated.setText(String.valueOf(userDetails.token));
     }
@@ -64,5 +52,14 @@ public class LoginActivity extends Activity implements UserDetailsCallback
     @Override
     public void onUserDetailsError(VodafoneException ex) {
         Toast.makeText(LoginActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @OnClick(R.id.log_in)
+    public void logIn() {
+        // prepare parameters for service
+        Vodafone.retrieveUserDetails(
+                UserDetailsRequestParameters.builder()
+                        .setSmsValidation(false)
+                        .build());
     }
 }
