@@ -3,12 +3,12 @@ package com.vodafone.global.sdk;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class MaximumTresholdChecker {
+public class MaximumThresholdChecker {
     private final long retryCallLimit;
     private final long retryIntervalLimitMs;
     private Queue<Long> requestStack = new LinkedList<Long>();
 
-    public MaximumTresholdChecker(long retryCallLimit, long retryIntervalLimitMs) {
+    public MaximumThresholdChecker(long retryCallLimit, long retryIntervalLimitMs) {
         this.retryCallLimit = retryCallLimit;
         this.retryIntervalLimitMs = retryIntervalLimitMs;
     }

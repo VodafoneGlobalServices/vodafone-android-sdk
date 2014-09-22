@@ -12,7 +12,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.vodafone.global.sdk.http.VodafoneService;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.oauth.OAuthTokenRequest;
-import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import com.vodafone.global.sdk.http.worker.CheckStatusProcessor;
 import com.vodafone.global.sdk.http.worker.GeneratePinProcessor;
 import com.vodafone.global.sdk.http.worker.ResolveUserProcessor;
@@ -49,7 +48,7 @@ public class VodafoneManager {
     private Optional<OAuthToken> authToken = Optional.absent();
     private Optional<UserDetails> cachedUserDetails = Optional.absent();
 
-    private MaximumTresholdChecker tresholdChecker;
+    private MaximumThresholdChecker tresholdChecker;
 
     /**
      * Initializes SDK Manager for a given application.
@@ -78,7 +77,7 @@ public class VodafoneManager {
         generatePinProc = new GeneratePinProcessor(context, settings, this.backendAppKey, validateSmsCallbacks);
         ValidatePinProc = new ValidatePinProcessor(context, settings, this.backendAppKey, userDetailsCallbacks);
 
-        tresholdChecker = new MaximumTresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
+        tresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
         worker = new Worker(callback);
         worker.start();
