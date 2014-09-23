@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import timber.log.Timber;
+
 public class VodafoneManager {
     private static HashMap<Class<?>, Registrar> registrars;
     private final OkHttpClient client;
@@ -191,6 +193,7 @@ public class VodafoneManager {
      * @param token code send to user via SMS
      */
     public void generatePin() {
+        Timber.d("generate pin");
         worker.sendMessage(worker.createMessage(MESSAGE_ID.GENERATE_PIN.ordinal(), cachedUserDetails.get().token));
     }
 
