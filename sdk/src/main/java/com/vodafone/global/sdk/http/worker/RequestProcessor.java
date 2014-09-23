@@ -1,6 +1,8 @@
 package com.vodafone.global.sdk.http.worker;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
 import com.google.common.base.Optional;
@@ -28,15 +30,29 @@ public abstract class RequestProcessor {
 
     abstract void process(Worker worker, Optional<OAuthToken> authToken, Message msg);
 
-    protected void notifyUserDetailUpdate(UserDetailsDTO userDetailsDTO) {
+    protected void notifyUserDetailUpdate(final UserDetailsDTO userDetailsDTO) {
         Timber.d(userDetailsDTO.userDetails.toString());
-        for (UserDetailsCallback callback : userDetailsCallbacks)
-            callback.onUserDetailsUpdate(userDetailsDTO.userDetails);
+        Handler handler = new Handler(Looper.getMainLooper());
+        for (final UserDetailsCallback callback : userDetailsCallbacks) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onUserDetailsUpdate(userDetailsDTO.userDetails);
+                }
+            });
+        }
     }
 
-    protected void notifyError(VodafoneException exception) {
+    protected void notifyError(final VodafoneException exception) {
         Timber.e(exception, exception.getMessage());
-        for (UserDetailsCallback callback : userDetailsCallbacks)
-            callback.onUserDetailsError(exception);
+        Handler handler = new Handler(Looper.getMainLooper());
+        for (final UserDetailsCallback callback : userDetailsCallbacks) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onUserDetailsError(exception);
+                }
+            });
+        }
     }
 }
