@@ -1,10 +1,8 @@
 package com.vodafone.global.sdk.http.oauth
-
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.mockwebserver.MockResponse
 import com.squareup.okhttp.mockwebserver.MockWebServer
 import com.squareup.okhttp.mockwebserver.RecordedRequest
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class OAuthTokenRequestSpec extends Specification {
@@ -16,6 +14,8 @@ class OAuthTokenRequestSpec extends Specification {
     def accessToken = "A3lkjdsf65sfFJJH734jhuvEdTE7"
     def tokenType = "Bearer"
     def expiresIn = "3599"
+    def scope = "scope"
+    def grantType = "grantType"
 
     MockWebServer server
 
@@ -27,7 +27,6 @@ class OAuthTokenRequestSpec extends Specification {
         server.shutdown()
     }
 
-    @Ignore
     def "request for oauth2 token returns correct token dto"() {
         def body =
         """
@@ -58,7 +57,6 @@ class OAuthTokenRequestSpec extends Specification {
         request1.method == POST
     }
 
-    @Ignore
     def "exception is thrown when HTTP code != 200"() {
         server.enqueue(new MockResponse().setResponseCode(400))
         server.play()
@@ -82,10 +80,8 @@ class OAuthTokenRequestSpec extends Specification {
                 .url(url)
                 .clientId(anyClient)
                 .clientSecret(secret)
-                .androidId("")
-                .mobileCountryCode("")
-                .sdkId("")
-                .appId("")
+                .scope(scope)
+                .grantType(grantType)
                 .build()
         request.okHttpClient = new OkHttpClient()
         return request
