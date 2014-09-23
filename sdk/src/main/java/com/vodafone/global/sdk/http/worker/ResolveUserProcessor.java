@@ -13,7 +13,6 @@ import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.VodafoneException;
-import com.vodafone.global.sdk.VodafoneManager;
 import com.vodafone.global.sdk.VodafoneManager.MESSAGE_ID;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.parser.Parsers;
@@ -56,10 +55,8 @@ public class ResolveUserProcessor extends RequestProcessor {
                     break;
                 case FOUND_302: {
                     UserDetailsDTO redirectDetails = Parsers.parseRedirectDetails(response);
-                    if (redirectDetails.userDetails.validationRequired) {
-                        notifyUserDetailUpdate(redirectDetails);
-                    } else {
-                        notifyUserDetailUpdate(redirectDetails);
+                    notifyUserDetailUpdate(redirectDetails);
+                    if (!redirectDetails.userDetails.validationRequired) {
                         worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);
                     }
                 }
