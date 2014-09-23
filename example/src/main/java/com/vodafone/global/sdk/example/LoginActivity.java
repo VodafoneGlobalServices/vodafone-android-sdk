@@ -11,6 +11,7 @@ import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Vodafone;
 import com.vodafone.global.sdk.VodafoneException;
 
+import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
@@ -25,6 +26,7 @@ public class LoginActivity extends Activity implements UserDetailsCallback
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        ButterKnife.inject(this);
     }
 
     @Override
