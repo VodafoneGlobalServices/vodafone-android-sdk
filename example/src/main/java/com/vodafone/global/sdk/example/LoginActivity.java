@@ -1,6 +1,8 @@
 package com.vodafone.global.sdk.example;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +51,27 @@ public class LoginActivity extends Activity implements UserDetailsCallback
         stillRunning.setText(String.valueOf(userDetails.stillRunning));
         token.setText(userDetails.token);
         validated.setText(String.valueOf(userDetails.token));
+        if (userDetails.validationRequired)
+            requestSendPinConfirmation();
+    }
+
+    private void requestSendPinConfirmation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(android.R.drawable.ic_dialog_info)
+                .setMessage("SMS verification is required")
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Vodafone.generatePin();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .show();
     }
 
     @Override
