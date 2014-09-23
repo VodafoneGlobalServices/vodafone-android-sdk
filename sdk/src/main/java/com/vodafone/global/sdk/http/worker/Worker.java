@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import timber.log.Timber;
+
 public class Worker extends Thread {
     private final Handler.Callback callback;
     private Handler handler;
@@ -19,7 +21,7 @@ public class Worker extends Thread {
             handler = new Handler(callback);
             Looper.loop();
         } catch (Throwable t) {
-            //TODO: Add some logging
+            Timber.e(t, "");
         }
     }
 
