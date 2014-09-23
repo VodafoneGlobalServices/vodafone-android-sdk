@@ -59,6 +59,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                     if (!redirectDetails.userDetails.validationRequired) {
                         worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);
                     }
+                    // TODO call generatePin when we can intercept sms
                 }
                 break;
                 case BAD_REQUEST_400:
