@@ -82,9 +82,6 @@ public class LoginActivity extends Activity implements UserDetailsCallback
     @OnClick(R.id.log_in)
     public void logIn() {
         // prepare parameters for service
-        Vodafone.retrieveUserDetails(
-                UserDetailsRequestParameters.builder()
-                        .setSmsValidation(false)
-                        .build());
+        Vodafone.retrieveUserDetails(UserDetailsRequestParameters.builder().build());
     }
 }

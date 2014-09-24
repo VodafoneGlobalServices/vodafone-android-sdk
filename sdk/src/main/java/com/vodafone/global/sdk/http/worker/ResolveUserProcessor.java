@@ -7,6 +7,7 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.MSISDN;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.SimSerialNumber;
 import com.vodafone.global.sdk.UserDetailsCallback;
@@ -65,8 +66,8 @@ public class ResolveUserProcessor extends RequestProcessor {
 
     private Response queryServer(UserDetailsRequestParameters details) throws IOException, JSONException, VodafoneException {
         String androidId = Utils.getAndroidId(context);
-        String msisdn = details.getMSISDN();
-        String market = getMarketCode(msisdn);
+        MSISDN msisdn = details.getMSISDN();
+        String market = msisdn.marketCode();
         String url = getUrl(context, msisdn);
 
         ResolvePostRequestDirect request = ResolvePostRequestDirect.builder()
@@ -78,7 +79,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                 .appId(appId)
                 .imsi(iccid)
                 .smsValidation(details.smsValidation())
-                .msisdn(msisdn)
+                .msisdn(msisdn.get())
                 .market(market)
                 .build();
         request.setRetryPolicy(null);
@@ -134,12 +135,12 @@ public class ResolveUserProcessor extends RequestProcessor {
         }
     }
 
-    private String getUrl(Context context, String msisdn) throws VodafoneException {
+    private String getUrl(Context context, MSISDN msisdn) throws VodafoneException {
         Uri.Builder builder = new Uri.Builder();
         Uri uri;
-        String marketCode = getMarketCode(msisdn);
+        String marketCode = msisdn.marketCode();
 
-        if (isMsisdnValid(msisdn) && !marketCode.isEmpty()) {
+        if (msisdn.isValid() && !marketCode.isEmpty()) {
             uri = builder.scheme(settings.apix.protocol)
                     .authority(settings.apix.host)
                     .path(settings.apix.path)
@@ -159,19 +160,5 @@ public class ResolveUserProcessor extends RequestProcessor {
             throw new VodafoneException(VodafoneException.EXCEPTION_TYPE.INVALID_MSISDN);
         }
         return uri.toString();
-    }
-
-    private String getMarketCode(String msisdn) {
-        if (msisdn.isEmpty()) {
-            return "";
-        } else {
-            // TODO get country code
-            return "DE";
-        }
-    }
-
-    private boolean isMsisdnValid(String msisdn) {
-        // TODO add country code check
-        return (msisdn.matches(settings.msisdnValidationRegex) || msisdn.isEmpty());
     }
 }

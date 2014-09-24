@@ -5,17 +5,18 @@ package com.vodafone.global.sdk;
  */
 public class UserDetailsRequestParameters {
     private final boolean smsValidation;
-    private final String MSISDN;
+    private final MSISDN MSISDN;
 
-    private UserDetailsRequestParameters(boolean smsValidation, String MSISDN) {
+    private UserDetailsRequestParameters(boolean smsValidation, String msisdn) {
         this.smsValidation = smsValidation;
-        this.MSISDN = MSISDN;
+        this.MSISDN = new MSISDN(msisdn);
     }
 
     public boolean smsValidation() {
         return smsValidation;
     }
-    public String getMSISDN() {
+
+    public MSISDN getMSISDN() {
         return MSISDN;
     }
 
@@ -28,7 +29,7 @@ public class UserDetailsRequestParameters {
      */
     public static class Builder {
         private boolean smsValidation = false;
-        private String MSISDN = "";
+        private String msisdn = "";
 
         private Builder() {
         }
@@ -38,8 +39,8 @@ public class UserDetailsRequestParameters {
             return this;
         }
 
-        public Builder setMSISDN(String value) {
-            MSISDN = value;
+        public Builder msisdn(String value) {
+            msisdn = value;
             return this;
         }
 
@@ -49,7 +50,7 @@ public class UserDetailsRequestParameters {
         }
 
         public UserDetailsRequestParameters build() {
-            return new UserDetailsRequestParameters(smsValidation, MSISDN);
+            return new UserDetailsRequestParameters(smsValidation, msisdn);
         }
     }
 }
