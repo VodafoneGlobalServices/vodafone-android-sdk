@@ -42,7 +42,51 @@ public class ResolveUserProcessor extends RequestProcessor {
         this.iccid = iccid;
     }
 
-    public void parseResponse(Worker worker, Response response) {
+    @Override
+    public void process(Worker worker, Optional<OAuthToken> authToken, Message msg) {
+        this.authToken = authToken;
+        if (!authToken.isPresent()) {
+            //Authenticate, then start again user retrieval
+            worker.sendMessage(worker.createMessage(MESSAGE_ID.AUTHENTICATE.ordinal()));
+            worker.sendMessage(worker.createMessage(msg));
+        } else {
+            try {
+                Response response = queryServer((UserDetailsRequestParameters) msg.obj);
+                parseResponse(worker, response);
+            } catch (VodafoneException e) {
+                notifyError(e);
+            } catch (IOException e) {
+                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            } catch (JSONException e) {
+                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            }
+        }
+    }
+
+    private Response queryServer(UserDetailsRequestParameters details) throws IOException, JSONException, VodafoneException {
+        String androidId = Utils.getAndroidId(context);
+        String msisdn = details.getMSISDN();
+        String market = getMarketCode(msisdn);
+        String url = getUrl(context, msisdn);
+
+        ResolvePostRequestDirect request = ResolvePostRequestDirect.builder()
+                .url(url)
+                .accessToken(authToken.get().accessToken)
+                .androidId(androidId)
+                .mobileCountryCode(Utils.getMCC(context))
+                .sdkId(settings.sdkId)
+                .appId(appId)
+                .imsi(iccid)
+                .smsValidation(details.smsValidation())
+                .msisdn(msisdn)
+                .market(market)
+                .build();
+        request.setRetryPolicy(null);
+        request.setOkHttpClient(new OkHttpClient());
+        return request.loadDataFromNetwork();
+    }
+
+    private void parseResponse(Worker worker, Response response) {
         int code = response.code();
         try {
             switch (code) {
@@ -51,7 +95,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                     break;
                 case NOT_FOUND_404:
                     //ERROR possibly to proceed with MSISDN OR OTP
-                    //TODO add notifyUserDetailUpdate();
+                    // TODO add notifyUserDetailUpdate();
                     break;
                 case FOUND_302: {
                     UserDetailsDTO redirectDetails = Parsers.parseRedirectDetails(response);
@@ -90,78 +134,44 @@ public class ResolveUserProcessor extends RequestProcessor {
         }
     }
 
-    public Response queryServer(UserDetailsRequestParameters details) throws IOException, JSONException, VodafoneException {
-        String androidId = Utils.getAndroidId(context);
-        String msisdn = details.getMSISDN();
-        String market = getMarketCode(msisdn);
-        String url = getUrl(context, msisdn);
-
-        ResolvePostRequestDirect request = ResolvePostRequestDirect.builder()
-                .url(url)
-                .accessToken(authToken.get().accessToken)
-                .androidId(androidId)
-                .mobileCountryCode(Utils.getMCC(context))
-                .sdkId(settings.sdkId)
-                .appId(appId)
-                .imsi(iccid)
-                .smsValidation(details.smsValidation())
-                .msisdn(msisdn)
-                .market(market)
-                .build();
-        request.setRetryPolicy(null);
-        request.setOkHttpClient(new OkHttpClient());
-        return request.loadDataFromNetwork();
-    }
-
-    @Override
-    public void process(Worker worker, Optional<OAuthToken> authToken, Message msg) {
-        this.authToken = authToken;
-        if (!authToken.isPresent()) {
-            //Authenticate, then start again user retrieval
-            worker.sendMessage(worker.createMessage(MESSAGE_ID.AUTHENTICATE.ordinal()));
-            worker.sendMessage(worker.createMessage(msg));
-        } else {
-            try {
-                Response response = queryServer((UserDetailsRequestParameters) msg.obj);
-                parseResponse(worker, response);
-            } catch (VodafoneException e) {
-                notifyError(e);
-            } catch (IOException e) {
-                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
-            } catch (JSONException e) {
-                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
-            }
-        }
-    }
-
-    private String getMarketCode(String msisdn) {
-        if (msisdn.isEmpty()) {
-            return "";
-        } else {
-            //TODO get country code
-            return "DE";
-        }
-    }
-
-    private boolean isMsisdnValid(String msisdn) {
-        //TODO add country code check
-        return (msisdn.matches(settings.msisdnValidationRegex) || msisdn.isEmpty());
-    }
-
     private String getUrl(Context context, String msisdn) throws VodafoneException {
         Uri.Builder builder = new Uri.Builder();
         Uri uri;
         String marketCode = getMarketCode(msisdn);
 
         if (isMsisdnValid(msisdn) && !marketCode.isEmpty()) {
-            uri = builder.scheme(settings.apix.protocol).authority(settings.apix.host).path(settings.apix.path).appendQueryParameter("backendId", appId).build();
+            uri = builder.scheme(settings.apix.protocol)
+                    .authority(settings.apix.host)
+                    .path(settings.apix.path)
+                    .appendQueryParameter("backendId", appId).build();
         } else if (Utils.isDataOverWiFi(context) && iccid.isPresent()) {
-            uri = builder.scheme(settings.apix.protocol).authority(settings.apix.host).path(settings.apix.path).appendQueryParameter("backendId", appId).build();
+            uri = builder.scheme(settings.apix.protocol)
+                    .authority(settings.apix.host)
+                    .path(settings.apix.path)
+                    .appendQueryParameter("backendId", appId).build();
         } else if (Utils.isDataOverMobileNetwork(context)) {
-            uri = builder.scheme(settings.hap.protocol).authority(settings.hap.host).path(settings.hap.path).appendQueryParameter("backendId", appId).build();
+            uri = builder.scheme(settings.hap.protocol)
+                    .authority(settings.hap.host)
+                    .path(settings.hap.path)
+                    .appendQueryParameter("backendId", appId).build();
         } else {
-            throw new VodafoneException(VodafoneException.EXCEPTION_TYPE.INVALID_MSISDN); //TODO some reasonable error handling/code
+            // TODO some reasonable error handling/code
+            throw new VodafoneException(VodafoneException.EXCEPTION_TYPE.INVALID_MSISDN);
         }
         return uri.toString();
+    }
+
+    private String getMarketCode(String msisdn) {
+        if (msisdn.isEmpty()) {
+            return "";
+        } else {
+            // TODO get country code
+            return "DE";
+        }
+    }
+
+    private boolean isMsisdnValid(String msisdn) {
+        // TODO add country code check
+        return (msisdn.matches(settings.msisdnValidationRegex) || msisdn.isEmpty());
     }
 }
