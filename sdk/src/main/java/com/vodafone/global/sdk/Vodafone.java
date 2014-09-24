@@ -49,8 +49,6 @@ public class Vodafone {
 
     /**
      * Used to generate validation PIN
-     *
-     * @param token session token
      */
     public static void generatePin() {
         manager.generatePin();

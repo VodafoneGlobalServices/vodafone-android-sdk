@@ -189,8 +189,6 @@ public class VodafoneManager {
 
     /**
      * Validates identity by providing code send by server via SMS.
-     *
-     * @param token code send to user via SMS
      */
     public void generatePin() {
         Timber.d("generate pin");
