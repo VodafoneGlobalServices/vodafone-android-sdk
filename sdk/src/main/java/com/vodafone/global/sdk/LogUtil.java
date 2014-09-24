@@ -1,5 +1,6 @@
 package com.vodafone.global.sdk;
 
+import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
@@ -14,45 +15,67 @@ public class LogUtil {
     }
 
     public static void log(Request request) {
-        StringBuilder b = new StringBuilder("Request:\n");
-        b.append(request.method()).append(" ").append(request.urlString()).append('\n');
-
-        String[] headers = request.headers().toString().split("\\n");
-        Arrays.sort(headers);
-        for (String header : headers) {
-            b.append(":: ").append(header).append("\n");
-        }
-
-        Buffer buffer = new Buffer();
-        try {
-            request.body().writeTo(buffer);
-            b.append("\n").append(buffer.readUtf8());
-        } catch (IOException e) {
-            b.append("\nException while reading body: ").append(e.getMessage());
-        }
-
-        Timber.d(b.toString());
+        StringBuilder builder = new StringBuilder();
+        addTitle(request, builder);
+        addHeaders(request.headers(), builder);
+        addRequestBody(request, builder);
+        Timber.d(builder.toString());
     }
 
     public static void log(Response response) {
-        StringBuilder b = new StringBuilder("Response:\n");
-
-        b.append(response.protocol().toString()).append(" ")
-                .append(response.code()).append(" ")
-                .append(response.message()).append("\n");
-
-        String[] headers = response.headers().toString().split("\\n");
-        Arrays.sort(headers);
-        for (String header : headers) {
-            b.append(":: ").append(header).append("\n");
-        }
-
-        try {
-            b.append(response.body().string());
-        } catch (IOException e) {
-            b.append("\nException while reading body: ").append(e.getMessage());
-        }
-
+        StringBuilder b = new StringBuilder();
+        addTitle(response, b);
+        addHeaders(response.headers(), b);
+        addResponseBody(response, b);
         Timber.d(b.toString());
+    }
+
+    private static void addTitle(Request request, StringBuilder builder) {
+        String method = request.method();
+        String url = request.urlString();
+        String title = String.format("Request:\n%s %s\n", method, url);
+        builder.append(title);
+    }
+
+    private static void addTitle(Response response, StringBuilder builder) {
+        String protocol = response.protocol().toString();
+        int code = response.code();
+        String message = response.message();
+        String title = String.format("Response:\n%s %d %s\n", protocol, code, message);
+        builder.append(title);
+    }
+
+    private static void addHeaders(Headers headers, StringBuilder builder) {
+        String[] values = headers.toString().split("\\n");
+        Arrays.sort(values);
+        for (String header : values) {
+            String line = String.format(":: %s\n", header);
+            builder.append(line);
+        }
+    }
+
+    private static void addRequestBody(Request request, StringBuilder builder) {
+        try {
+            Buffer buffer = new Buffer();
+            request.body().writeTo(buffer);
+            String body = String.format("\n%s", buffer.readUtf8());
+            builder.append(body);
+        } catch (IOException e) {
+            addExceptionMsg(e, builder);
+        }
+    }
+
+    private static void addResponseBody(Response response, StringBuilder builder) {
+        try {
+            String body = String.format("\n%s", response.body().string());
+            builder.append(body);
+        } catch (IOException e) {
+            addExceptionMsg(e, builder);
+        }
+    }
+
+    private static void addExceptionMsg(IOException exception, StringBuilder builder) {
+        String line = String.format("\nException while reading body: %s", exception.getMessage());
+        builder.append(line);
     }
 }
