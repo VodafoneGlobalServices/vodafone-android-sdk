@@ -45,7 +45,7 @@ public class ResolvePostRequestListener implements RequestListener<UserDetailsDT
                 .androidId("")
                 .mobileCountryCode("")
                 .sdkId("")
-                .appId("")
+                .backendAppKey("")
                 .userDetaildDTO(userDetailsDTO)
                 .build();
         ResolveGetRequestListener requestListener = new ResolveGetRequestListener(spiceManager, userDetailsCallbacks);

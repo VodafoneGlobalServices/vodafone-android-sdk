@@ -127,7 +127,7 @@ class ResolveGetRequestSpec extends Specification {
                 .androidId(androidId)
                 .mobileCountryCode(mobileCountryCode)
                 .sdkId(sdkId)
-                .appId(appId)
+                .backendAppKey(appId)
                 .userDetaildDTO(userDetailsDTO)
                 .build()
         request.okHttpClient = new OkHttpClient()

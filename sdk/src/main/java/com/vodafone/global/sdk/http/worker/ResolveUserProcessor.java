@@ -33,13 +33,13 @@ import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
 import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class ResolveUserProcessor extends RequestProcessor {
-    private String appId;
+    private String backendAppKey;
     private SimSerialNumber iccid;
     private Optional<OAuthToken> authToken;
 
-    public ResolveUserProcessor(Context context, Settings settings, String appId, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public ResolveUserProcessor(Context context, Settings settings, String backendAppKey, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
         super(context, settings, userDetailsCallbacks);
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
         this.iccid = iccid;
     }
 
@@ -76,7 +76,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                 .androidId(androidId)
                 .mobileCountryCode(Utils.getMCC(context))
                 .sdkId(settings.sdkId)
-                .appId(appId)
+                .backendAppKey(backendAppKey)
                 .imsi(iccid)
                 .smsValidation(details.smsValidation())
                 .msisdn(msisdn.get())
@@ -144,17 +144,17 @@ public class ResolveUserProcessor extends RequestProcessor {
             uri = builder.scheme(settings.apix.protocol)
                     .authority(settings.apix.host)
                     .path(settings.apix.path)
-                    .appendQueryParameter("backendId", appId).build();
+                    .appendQueryParameter("backendId", backendAppKey).build();
         } else if (Utils.isDataOverWiFi(context) && iccid.isPresent()) {
             uri = builder.scheme(settings.apix.protocol)
                     .authority(settings.apix.host)
                     .path(settings.apix.path)
-                    .appendQueryParameter("backendId", appId).build();
+                    .appendQueryParameter("backendId", backendAppKey).build();
         } else if (Utils.isDataOverMobileNetwork(context)) {
             uri = builder.scheme(settings.hap.protocol)
                     .authority(settings.hap.host)
                     .path(settings.hap.path)
-                    .appendQueryParameter("backendId", appId).build();
+                    .appendQueryParameter("backendId", backendAppKey).build();
         } else {
             // TODO some reasonable error handling/code
             throw new VodafoneException(VodafoneException.EXCEPTION_TYPE.INVALID_MSISDN);

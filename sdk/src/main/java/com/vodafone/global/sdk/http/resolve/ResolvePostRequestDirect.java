@@ -141,7 +141,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public Builder appId(String appId) {
+        public Builder backendAppKey(String appId) {
             this.appId = appId;
             return this;
         }

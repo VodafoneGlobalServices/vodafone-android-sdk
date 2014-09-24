@@ -134,7 +134,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
             return this;
         }
 
-        public Builder appId(String appId) {
+        public Builder backendAppKey(String appId) {
             this.appId = appId;
             return this;
         }

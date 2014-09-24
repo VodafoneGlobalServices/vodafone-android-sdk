@@ -74,10 +74,10 @@ public class VodafoneManager {
         spiceManager = new SpiceManager(VodafoneService.class);
         spiceManager.start(this.context);
 
-        resolveUserProc = new ResolveUserProcessor(context, settings, this.backendAppKey, iccid, userDetailsCallbacks);
-        checkStatusProc = new CheckStatusProcessor(context, settings, this.backendAppKey, iccid, userDetailsCallbacks);
-        generatePinProc = new GeneratePinProcessor(context, settings, this.backendAppKey, validateSmsCallbacks);
-        ValidatePinProc = new ValidatePinProcessor(context, settings, this.backendAppKey, userDetailsCallbacks);
+        resolveUserProc = new ResolveUserProcessor(context, settings, backendAppKey, iccid, userDetailsCallbacks);
+        checkStatusProc = new CheckStatusProcessor(context, settings, backendAppKey, iccid, userDetailsCallbacks);
+        generatePinProc = new GeneratePinProcessor(context, settings, backendAppKey, validateSmsCallbacks);
+        ValidatePinProc = new ValidatePinProcessor(context, settings, backendAppKey, userDetailsCallbacks);
 
         tresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 

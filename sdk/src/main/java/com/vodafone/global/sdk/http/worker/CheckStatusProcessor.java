@@ -32,13 +32,13 @@ import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class CheckStatusProcessor extends RequestProcessor {
-    private String appId;
+    private String backendAppKey;
     private SimSerialNumber iccid;
     private Optional<OAuthToken> authToken;
 
-    public CheckStatusProcessor(Context context, Settings settings, String appId, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public CheckStatusProcessor(Context context, Settings settings, String backendAppKey, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
         super(context, settings, userDetailsCallbacks);
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
         this.iccid = iccid;
     }
 
@@ -99,7 +99,7 @@ public class CheckStatusProcessor extends RequestProcessor {
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
                 .appendPath(details.userDetails.token)
-                .appendQueryParameter("backendId", appId)
+                .appendQueryParameter("backendId", backendAppKey)
                     .build();
 
         ResolveGetRequestDirect request = ResolveGetRequestDirect.builder()
@@ -108,7 +108,7 @@ public class CheckStatusProcessor extends RequestProcessor {
                 .androidId(androidId)
                 .mobileCountryCode(Utils.getMCC(context))
                 .sdkId(settings.sdkId)
-                .appId(appId)
+                .backendAppKey(backendAppKey)
                 .etag(details.etag)
                 .build();
         request.setRetryPolicy(null);

@@ -26,12 +26,12 @@ import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class GeneratePinProcessor extends PinProcessor {
-    private String appId;
+    private String backendAppKey;
     private Optional<OAuthToken> authToken;
 
-    public GeneratePinProcessor(Context context, Settings settings, String appId, Set<ValidateSmsCallback> validateSmsCallbacks) {
+    public GeneratePinProcessor(Context context, Settings settings, String backendAppKey, Set<ValidateSmsCallback> validateSmsCallbacks) {
         super(context, settings, validateSmsCallbacks);
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
     }
 
     void parseResponse(Response response) {
@@ -64,7 +64,7 @@ public class GeneratePinProcessor extends PinProcessor {
                 .path(settings.apix.path)
                 .appendPath(token)
                 .appendPath("pins")
-                .appendQueryParameter("backendId", appId).build();
+                .appendQueryParameter("backendId", backendAppKey).build();
 
         PinRequestDirect request = PinRequestDirect.builder()
                 .url(uri.toString())
@@ -72,7 +72,7 @@ public class GeneratePinProcessor extends PinProcessor {
                 .androidId(androidId)
                 .mobileCountryCode(Utils.getMCC(context))
                 .sdkId(settings.sdkId)
-                .appId(appId)
+                .backendAppKey(backendAppKey)
                 .build();
 
         request.setRetryPolicy(null);

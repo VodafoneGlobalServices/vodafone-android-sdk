@@ -28,12 +28,12 @@ import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
 import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class ValidatePinProcessor extends RequestProcessor {
-    private String appId;
+    private String backendAppKey;
     private Optional<OAuthToken> authToken;
 
-    public ValidatePinProcessor(Context context, Settings settings, String appId, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public ValidatePinProcessor(Context context, Settings settings, String backendAppKey, Set<UserDetailsCallback> userDetailsCallbacks) {
         super(context, settings, userDetailsCallbacks);
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
     }
 
     void parseResponse(Response response) {
@@ -72,7 +72,7 @@ public class ValidatePinProcessor extends RequestProcessor {
                 .path(settings.apix.path)
                 .appendPath(validatePinParameters.getToken())
                 .appendPath("pins")
-                .appendQueryParameter("backendId", appId).build();
+                .appendQueryParameter("backendId", backendAppKey).build();
 
         ValidatePinRequestDirect request = ValidatePinRequestDirect.builder()
                 .url(uri.toString())
@@ -80,7 +80,7 @@ public class ValidatePinProcessor extends RequestProcessor {
                 .androidId(androidId)
                 .mobileCountryCode(Utils.getMCC(context))
                 .sdkId(settings.sdkId)
-                .appId(appId)
+                .backendAppKey(backendAppKey)
                 .pin(validatePinParameters.getPin())
                 .build();
 
