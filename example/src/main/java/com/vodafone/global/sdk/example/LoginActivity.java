@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.UserDetailsRequestParameters;
@@ -47,11 +48,9 @@ public class LoginActivity extends Activity implements UserDetailsCallback
 
     @Override
     public void onUserDetailsUpdate(UserDetails userDetails) {
-        resolved.setText(String.valueOf(userDetails.resolved));
-        stillRunning.setText(String.valueOf(userDetails.stillRunning));
         token.setText(userDetails.token);
         validated.setText(String.valueOf(userDetails.token));
-        if (userDetails.validationRequired)
+        if (userDetails.status == ResolutionStatus.VALIDATION_REQUIRED)
             requestSendPinConfirmation();
     }
 

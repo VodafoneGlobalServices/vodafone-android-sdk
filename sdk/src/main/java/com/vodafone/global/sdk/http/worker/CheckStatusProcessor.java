@@ -7,6 +7,7 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.SimSerialNumber;
 import com.vodafone.global.sdk.UserDetailsCallback;
@@ -50,7 +51,7 @@ public class CheckStatusProcessor extends RequestProcessor {
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));
                 case FOUND_302: {
                     UserDetailsDTO redirectDetails  = Parsers.parseRedirectDetails(response);
-                    if (oldRedirectDetails.userDetails.validationRequired) {
+                    if (oldRedirectDetails.userDetails.status == ResolutionStatus.VALIDATION_REQUIRED) {
                         notifyUserDetailUpdate(redirectDetails);
                     } else {
                         worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);

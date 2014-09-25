@@ -31,11 +31,8 @@ public class Parsers {
         String token = matcher.find() ? matcher.group(1) : "";
 
         UserDetails userDetails = UserDetails.builder()
-                                    .resolved(false)
-                                    .stillRunning(retryAfter >= 0)
                                     .token(token)
                                     .expires(new Date(0))
-                                    .validationRequired(pins)
                                     .acr("").build();
         return new UserDetailsDTO(userDetails, etag, retryAfter);
     }

@@ -3,6 +3,7 @@ package com.vodafone.global.sdk.http.resolve;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.UserDetailsCallback;
 
 import java.util.Set;
@@ -29,7 +30,7 @@ public class ResolvePostRequestListener implements RequestListener<UserDetailsDT
 
     @Override
     public void onRequestSuccess(UserDetailsDTO userDetailsDTO) {
-        boolean stillRunning = userDetailsDTO.userDetails.stillRunning;
+        boolean stillRunning = userDetailsDTO.userDetails.status == ResolutionStatus.STILL_RUNNING;
         if (stillRunning)
             loop(userDetailsDTO);
 

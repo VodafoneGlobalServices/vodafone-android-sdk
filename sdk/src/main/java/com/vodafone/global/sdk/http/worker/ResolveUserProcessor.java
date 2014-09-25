@@ -8,6 +8,7 @@ import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.MSISDN;
+import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.SimSerialNumber;
 import com.vodafone.global.sdk.UserDetailsCallback;
@@ -101,7 +102,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                 case FOUND_302: {
                     UserDetailsDTO redirectDetails = Parsers.parseRedirectDetails(response);
                     notifyUserDetailUpdate(redirectDetails);
-                    if (!redirectDetails.userDetails.validationRequired) {
+                    if (redirectDetails.userDetails.status != ResolutionStatus.VALIDATION_REQUIRED) {
                         worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);
                     }
                     // TODO call generatePin when we can intercept sms

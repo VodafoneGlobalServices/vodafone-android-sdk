@@ -77,11 +77,8 @@ class ResolvePostRequestSpec extends Specification {
 
         then:
         def userDetails = userDetailsDTO.userDetails
-        userDetails.resolved == resolved
-        userDetails.stillRunning == stillRunning
         userDetails.token == token
 //        userDetails.expires == expires
-        userDetails.validationRequired == validationRequired
         userDetailsDTO.etag == newEtag
 
         RecordedRequest request1 = server.takeRequest()
@@ -123,11 +120,8 @@ class ResolvePostRequestSpec extends Specification {
 
     private UserDetails userDetails() {
         UserDetails.builder()
-                .resolved(resolved)
-                .stillRunning(stillRunning)
                 .token(token)
                 .expires(expires)
-                .validationRequired(validationRequired)
                 .build()
     }
 }
