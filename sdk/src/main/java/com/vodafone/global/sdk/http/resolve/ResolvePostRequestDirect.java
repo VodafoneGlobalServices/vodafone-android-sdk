@@ -6,8 +6,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.IMSI;
 import com.vodafone.global.sdk.LogUtil;
-import com.vodafone.global.sdk.SimSerialNumber;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +24,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
     private final String mobileCountryCode;
     private final String sdkId;
     private final String appId;
-    private final SimSerialNumber imsi;
+    private final IMSI imsi;
     private final String msisdn;
     private final String market;
     private final boolean smsValidation;
@@ -38,7 +38,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
     protected ResolvePostRequestDirect(
             String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String appId, String msisdn, String market, SimSerialNumber imsi, boolean smsValidation
+            String sdkId, String appId, String msisdn, String market, IMSI imsi, boolean smsValidation
     ) {
         super(Response.class);
         this.url = url;
@@ -82,7 +82,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         return response;
     }
 
-    protected String prepareBody(String msisdn, String market, SimSerialNumber imsi, boolean smsValidation) throws JSONException {
+    protected String prepareBody(String msisdn, String market, IMSI imsi, boolean smsValidation) throws JSONException {
         JSONObject json = new JSONObject();
         if (imsi.isPresent()) {
             //json.put("imsi", imsi.get());
@@ -110,7 +110,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         private String appId;
         private String msisdn;
         private String market;
-        private SimSerialNumber imsi;
+        private IMSI imsi;
         private boolean smsValidation;
 
         private Builder() {
@@ -146,7 +146,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public Builder imsi(SimSerialNumber imsi) {
+        public Builder imsi(IMSI imsi) {
             this.imsi = imsi;
             return this;
         }

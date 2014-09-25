@@ -7,10 +7,10 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.IMSI;
 import com.vodafone.global.sdk.MSISDN;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.SimSerialNumber;
 import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Utils;
@@ -35,13 +35,13 @@ import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class ResolveUserProcessor extends RequestProcessor {
     private String backendAppKey;
-    private SimSerialNumber iccid;
+    private IMSI imsi;
     private Optional<OAuthToken> authToken;
 
-    public ResolveUserProcessor(Context context, Settings settings, String backendAppKey, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public ResolveUserProcessor(Context context, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks) {
         super(context, settings, userDetailsCallbacks);
         this.backendAppKey = backendAppKey;
-        this.iccid = iccid;
+        this.imsi = imsi;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                 .mobileCountryCode(Utils.getMCC(context))
                 .sdkId(settings.sdkId)
                 .backendAppKey(backendAppKey)
-                .imsi(iccid)
+                .imsi(imsi)
                 .smsValidation(details.smsValidation())
                 .msisdn(msisdn.get())
                 .market(market)
@@ -146,7 +146,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                     .authority(settings.apix.host)
                     .path(settings.apix.path)
                     .appendQueryParameter("backendId", backendAppKey).build();
-        } else if (Utils.isDataOverWiFi(context) && iccid.isPresent()) {
+        } else if (Utils.isDataOverWiFi(context) && imsi.isPresent()) {
             uri = builder.scheme(settings.apix.protocol)
                     .authority(settings.apix.host)
                     .path(settings.apix.path)

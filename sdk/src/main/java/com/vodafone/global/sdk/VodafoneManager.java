@@ -46,7 +46,7 @@ public class VodafoneManager {
 
     Set<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArraySet<UserDetailsCallback>();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
-    private SimSerialNumber iccid;
+    private IMSI imsi;
     private Optional<OAuthToken> authToken = Optional.absent();
     private Optional<UserDetails> cachedUserDetails = Optional.absent();
 
@@ -68,14 +68,14 @@ public class VodafoneManager {
 
         registrars = prepareRegistrars();
         client = new OkHttpClient();
-        iccid = new SimSerialNumber(context);
+        imsi = new IMSI(context);
         settings = new Settings(context);
         register(new CacheUserDetailsCallback());
         spiceManager = new SpiceManager(VodafoneService.class);
         spiceManager.start(this.context);
 
-        resolveUserProc = new ResolveUserProcessor(context, settings, backendAppKey, iccid, userDetailsCallbacks);
-        checkStatusProc = new CheckStatusProcessor(context, settings, backendAppKey, iccid, userDetailsCallbacks);
+        resolveUserProc = new ResolveUserProcessor(context, settings, backendAppKey, imsi, userDetailsCallbacks);
+        checkStatusProc = new CheckStatusProcessor(context, settings, backendAppKey, imsi, userDetailsCallbacks);
         generatePinProc = new GeneratePinProcessor(context, settings, backendAppKey, validateSmsCallbacks);
         ValidatePinProc = new ValidatePinProcessor(context, settings, backendAppKey, userDetailsCallbacks);
 

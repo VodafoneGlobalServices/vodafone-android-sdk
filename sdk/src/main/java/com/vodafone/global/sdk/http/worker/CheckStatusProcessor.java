@@ -7,9 +7,9 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.IMSI;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.SimSerialNumber;
 import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.VodafoneException;
@@ -34,13 +34,13 @@ import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class CheckStatusProcessor extends RequestProcessor {
     private String backendAppKey;
-    private SimSerialNumber iccid;
+    private IMSI imsi;
     private Optional<OAuthToken> authToken;
 
-    public CheckStatusProcessor(Context context, Settings settings, String backendAppKey, SimSerialNumber iccid, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public CheckStatusProcessor(Context context, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks) {
         super(context, settings, userDetailsCallbacks);
         this.backendAppKey = backendAppKey;
-        this.iccid = iccid;
+        this.imsi = imsi;
     }
 
     void parseResponse(Worker worker, Response response, UserDetailsDTO oldRedirectDetails) {

@@ -18,7 +18,7 @@ import timber.log.Timber;
 
 public class MainActivity extends Activity {
     @InjectView(R.id.et_appId) EditText appId;
-    @InjectView(R.id.et_iccid) EditText iccid;
+    @InjectView(R.id.et_imsi) EditText imsi;
     @InjectView(R.id.et_token) EditText token;
     @InjectView(R.id.cb_smsValidation) CheckBox smsValidation;
     @InjectView(R.id.et_smsCode) EditText smsCode;
