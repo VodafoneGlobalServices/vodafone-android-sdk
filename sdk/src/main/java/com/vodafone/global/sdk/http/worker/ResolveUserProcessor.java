@@ -96,7 +96,7 @@ public class ResolveUserProcessor extends RequestProcessor {
         try {
             switch (code) {
                 case CREATED_201:
-                    notifyUserDetailUpdate(Parsers.parseUserDetails(response));
+                    notifyUserDetailUpdate(Parsers.parseUserDetails(response).userDetails);
                     break;
                 case NOT_FOUND_404:
                     //ERROR possibly to proceed with MSISDN OR OTP
@@ -104,7 +104,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                     break;
                 case FOUND_302: {
                     UserDetailsDTO redirectDetails = Parsers.parseRedirectDetails(response);
-                    notifyUserDetailUpdate(redirectDetails);
+                    notifyUserDetailUpdate(redirectDetails.userDetails);
                     if (redirectDetails.userDetails.status != ResolutionStatus.VALIDATION_REQUIRED) {
                         worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);
                     }

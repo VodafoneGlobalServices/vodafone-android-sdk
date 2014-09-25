@@ -7,10 +7,10 @@ import android.os.Message;
 
 import com.google.common.base.Optional;
 import com.vodafone.global.sdk.Settings;
+import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 
 import java.util.Set;
 
@@ -30,14 +30,14 @@ public abstract class RequestProcessor {
 
     abstract void process(Worker worker, Optional<OAuthToken> authToken, Message msg);
 
-    protected void notifyUserDetailUpdate(final UserDetailsDTO userDetailsDTO) {
-        Timber.d(userDetailsDTO.userDetails.toString());
+    protected void notifyUserDetailUpdate(final UserDetails userDetails) {
+        Timber.d(userDetails.toString());
         Handler handler = new Handler(Looper.getMainLooper());
         for (final UserDetailsCallback callback : userDetailsCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onUserDetailsUpdate(userDetailsDTO.userDetails);
+                    callback.onUserDetailsUpdate(userDetails);
                 }
             });
         }

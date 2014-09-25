@@ -43,7 +43,7 @@ public class ValidatePinProcessor extends RequestProcessor {
         try {
             switch (code) {
                 case HttpCode.OK_200:
-                    notifyUserDetailUpdate(Parsers.parseUserDetails(response));
+                    notifyUserDetailUpdate(Parsers.parseUserDetails(response).userDetails);
                     break;
                 case BAD_REQUEST_400:
                     notifyError(new RequestValidationError());
