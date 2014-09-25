@@ -31,8 +31,8 @@ public class VodafoneManager {
     private final OkHttpClient client;
 
     private final Context context;
-    private final String appKey;
-    private final String appSecret;
+    private final String clientAppKey;
+    private final String clientAppSecret;
     private final String backendAppKey;
 
     private final Settings settings;
@@ -56,14 +56,14 @@ public class VodafoneManager {
      * Initializes SDK Manager for a given application.
      *
      * @param context android's context
-     * @param appKey application's identification
+     * @param clientAppKey application's identification
      */
-    public VodafoneManager(Context context, String appKey, String appSecret, String backendAppKey) {
+    public VodafoneManager(Context context, String clientAppKey, String clientAppSecret, String backendAppKey) {
         this.context = context;
 
         //Application keys
-        this.appKey = appKey;
-        this.appSecret = appSecret;
+        this.clientAppKey = clientAppKey;
+        this.clientAppSecret = clientAppSecret;
         this.backendAppKey = backendAppKey;
 
         registrars = prepareRegistrars();
@@ -258,8 +258,8 @@ public class VodafoneManager {
         Uri uri = builder.scheme(settings.oauth.protocol).authority(settings.oauth.host).path(settings.oauth.path).build();
         OAuthTokenRequest request = OAuthTokenRequest.builder()
                 .url(uri.toString())
-                .clientId(appKey)
-                .clientSecret(appSecret)
+                .clientId(clientAppKey)
+                .clientSecret(clientAppSecret)
                 .scope(settings.oAuthTokenScope)
                 .grantType(settings.oAuthTokenGrantType)
                 .build();

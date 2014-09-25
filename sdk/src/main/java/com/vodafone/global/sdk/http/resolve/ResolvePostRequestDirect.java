@@ -23,7 +23,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
     private final String androidId;
     private final String mobileCountryCode;
     private final String sdkId;
-    private final String appId;
+    private final String backendAppKey;
     private final IMSI imsi;
     private final String msisdn;
     private final String market;
@@ -38,7 +38,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
     protected ResolvePostRequestDirect(
             String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String appId, String msisdn, String market, IMSI imsi, boolean smsValidation
+            String sdkId, String backendAppKey, String msisdn, String market, IMSI imsi, boolean smsValidation
     ) {
         super(Response.class);
         this.url = url;
@@ -46,7 +46,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         this.androidId = androidId;
         this.mobileCountryCode = mobileCountryCode;
         this.sdkId = sdkId;
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
         this.imsi = imsi;
         this.smsValidation = smsValidation;
         this.msisdn = msisdn;
@@ -67,7 +67,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "-" + appId)
+                .addHeader("x-vf-trace-source", sdkId + "-" + backendAppKey)
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(body)
                 .build();
@@ -107,7 +107,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         private String androidId;
         private String mobileCountryCode;
         private String sdkId;
-        private String appId;
+        private String backendAppKey;
         private String msisdn;
         private String market;
         private IMSI imsi;
@@ -141,8 +141,8 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public Builder backendAppKey(String appId) {
-            this.appId = appId;
+        public Builder backendAppKey(String backendAppKey) {
+            this.backendAppKey = backendAppKey;
             return this;
         }
 
@@ -167,7 +167,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         }
 
         public ResolvePostRequestDirect build() {
-            return new ResolvePostRequestDirect(url, accessToken, androidId, mobileCountryCode, sdkId, appId, msisdn, market, imsi, smsValidation);
+            return new ResolvePostRequestDirect(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey, msisdn, market, imsi, smsValidation);
         }
     }
 }

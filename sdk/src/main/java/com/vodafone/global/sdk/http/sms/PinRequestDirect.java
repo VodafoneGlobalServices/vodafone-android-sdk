@@ -19,7 +19,7 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
     private final String androidId;
     private final String mobileCountryCode;
     private final String sdkId;
-    private final String appId;
+    private final String backendAppKey;
 
     /**
      * Provides builder for {@link com.vodafone.global.sdk.http.sms.PinRequestDirect}.
@@ -30,7 +30,7 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
 
     protected PinRequestDirect(
             String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String appId
+            String sdkId, String backendAppKey
     ) {
         super(Response.class);
         this.url = url;
@@ -38,7 +38,7 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
         this.androidId = androidId;
         this.mobileCountryCode = mobileCountryCode;
         this.sdkId = sdkId;
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("x-int-opco", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "" + appId)
+                .addHeader("x-vf-trace-source", sdkId + "" + backendAppKey)
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .get()
                 .build();
@@ -77,7 +77,7 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
         private String androidId;
         private String mobileCountryCode;
         private String sdkId;
-        private String appId;
+        private String backendAppKey;
 
         private Builder() {
         }
@@ -107,13 +107,13 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public Builder backendAppKey(String appId) {
-            this.appId = appId;
+        public Builder backendAppKey(String backendAppKey) {
+            this.backendAppKey = backendAppKey;
             return this;
         }
 
         public PinRequestDirect build() {
-            return new PinRequestDirect(url, accessToken, androidId, mobileCountryCode, sdkId, appId);
+            return new PinRequestDirect(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey);
         }
     }
 }

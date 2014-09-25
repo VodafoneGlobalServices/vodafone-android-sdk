@@ -28,7 +28,7 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
     private final String androidId;
     private final String mobileCountryCode;
     private final String sdkId;
-    private final String appId;
+    private final String backendAppKey;
     private final SimSerialNumber imsi;
     private final boolean smsValidation;
 
@@ -41,7 +41,7 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
 
     protected ResolvePostRequest(
             String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String appId, SimSerialNumber imsi, boolean smsValidation
+            String sdkId, String backendAppKey, SimSerialNumber imsi, boolean smsValidation
     ) {
         super(UserDetailsDTO.class);
         this.url = url;
@@ -49,7 +49,7 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         this.androidId = androidId;
         this.mobileCountryCode = mobileCountryCode;
         this.sdkId = sdkId;
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
         this.imsi = imsi;
         this.smsValidation = smsValidation;
     }
@@ -62,10 +62,10 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
                 .addHeader("Accept", "application/json")
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("User-Agent", sdkId)
-                .addHeader("Application-ID", appId)
+                .addHeader("Application-ID", backendAppKey)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "" + appId)
+                .addHeader("x-vf-trace-source", sdkId + "" + backendAppKey)
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(body)
                 .build();
@@ -113,7 +113,7 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         private String androidId;
         private String mobileCountryCode;
         private String sdkId;
-        private String appId;
+        private String backendAppKey;
         private SimSerialNumber imsi;
         private boolean smsValidation;
 
@@ -145,8 +145,8 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
             return this;
         }
 
-        public Builder appId(String appId) {
-            this.appId = appId;
+        public Builder backendAppKey(String backendAppKey) {
+            this.backendAppKey = backendAppKey;
             return this;
         }
 
@@ -161,7 +161,7 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         }
 
         public ResolvePostRequest build() {
-            return new ResolvePostRequest(url, accessToken, androidId, mobileCountryCode, sdkId, appId, imsi, smsValidation);
+            return new ResolvePostRequest(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey, imsi, smsValidation);
         }
     }
 }

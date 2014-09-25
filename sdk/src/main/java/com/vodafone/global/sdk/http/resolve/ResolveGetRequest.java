@@ -27,7 +27,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
     private final String androidId;
     private final String mobileCountryCode;
     private final String sdkId;
-    private final String appId;
+    private final String backendAppKey;
     private final UserDetailsDTO userDetailsDTO;
 
     /**
@@ -39,7 +39,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
 
     protected ResolveGetRequest(
             String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String appId, UserDetailsDTO userDetailsDTO
+            String sdkId, String backendAppKey, UserDetailsDTO userDetailsDTO
     ) {
         super(UserDetailsDTO.class);
         this.url = url;
@@ -47,7 +47,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         this.androidId = androidId;
         this.mobileCountryCode = mobileCountryCode;
         this.sdkId = sdkId;
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
         this.userDetailsDTO = userDetailsDTO;
     }
 
@@ -58,11 +58,11 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
                 .addHeader("Accept", "application/json")
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("User-Agent", sdkId)
-                .addHeader("Application-ID", appId)
+                .addHeader("Application-ID", backendAppKey)
                 .addHeader("etag", userDetailsDTO.etag)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "" + appId)
+                .addHeader("x-vf-trace-source", sdkId + "" + backendAppKey)
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .get()
                 .build();
@@ -103,7 +103,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         private String androidId;
         private String mobileCountryCode;
         private String sdkId;
-        private String appId;
+        private String backendAppKey;
         private UserDetailsDTO userDetailsDTO;
 
         private Builder() {
@@ -134,8 +134,8 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
             return this;
         }
 
-        public Builder backendAppKey(String appId) {
-            this.appId = appId;
+        public Builder backendAppKey(String backendAppKey) {
+            this.backendAppKey = backendAppKey;
             return this;
         }
 
@@ -145,7 +145,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         }
 
         public ResolveGetRequest build() {
-            return new ResolveGetRequest(url, accessToken, androidId, mobileCountryCode, sdkId, appId, userDetailsDTO);
+            return new ResolveGetRequest(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey, userDetailsDTO);
         }
     }
 }

@@ -111,7 +111,7 @@ class ResolvePostRequestSpec extends Specification {
                 .androidId(androidId)
                 .mobileCountryCode(mobileCountryCode)
                 .sdkId(sdkId)
-                .appId(appId)
+                .backendAppKey(appId)
                 .imsi(imsi)
                 .build()
         request.okHttpClient = new OkHttpClient()

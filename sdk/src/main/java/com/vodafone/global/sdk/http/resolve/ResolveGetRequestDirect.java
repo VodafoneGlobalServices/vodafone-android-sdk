@@ -15,7 +15,7 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
     private final String androidId;
     private final String mobileCountryCode;
     private final String sdkId;
-    private final String appId;
+    private final String backendAppKey;
     private final String etag;
 
     /**
@@ -27,7 +27,7 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
 
     protected ResolveGetRequestDirect(
             String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String appId, String etag
+            String sdkId, String backendAppKey, String etag
     ) {
         super(Response.class);
         this.url = url;
@@ -35,7 +35,7 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
         this.androidId = androidId;
         this.mobileCountryCode = mobileCountryCode;
         this.sdkId = sdkId;
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
         this.etag = etag;
     }
 
@@ -52,7 +52,7 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
                 .addHeader("x-int-opco", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "" + appId)
+                .addHeader("x-vf-trace-source", sdkId + "" + backendAppKey)
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .get()
                 .build();
@@ -77,7 +77,7 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
         private String androidId;
         private String mobileCountryCode;
         private String sdkId;
-        private String appId;
+        private String backendAppKey;
         private String etag;
 
         private Builder() {
@@ -108,8 +108,8 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public Builder backendAppKey(String appId) {
-            this.appId = appId;
+        public Builder backendAppKey(String backendAppKey) {
+            this.backendAppKey = backendAppKey;
             return this;
         }
 
@@ -119,7 +119,7 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
         }
 
         public ResolveGetRequestDirect build() {
-            return new ResolveGetRequestDirect(url, accessToken, androidId, mobileCountryCode, sdkId, appId, etag);
+            return new ResolveGetRequestDirect(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey, etag);
         }
     }
 }

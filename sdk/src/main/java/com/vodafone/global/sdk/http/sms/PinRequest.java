@@ -24,7 +24,7 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
     private final String androidId;
     private final String mobileCountryCode;
     private final String sdkId;
-    private final String appId;
+    private final String backendAppKey;
 
     /**
      * Provides builder for {@link PinRequest}.
@@ -35,7 +35,7 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
 
     protected PinRequest(
             String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String appId
+            String sdkId, String backendAppKey
     ) {
         super(Void.class);
         this.url = url;
@@ -43,7 +43,7 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
         this.androidId = androidId;
         this.mobileCountryCode = mobileCountryCode;
         this.sdkId = sdkId;
-        this.appId = appId;
+        this.backendAppKey = backendAppKey;
     }
 
     @Override
@@ -54,10 +54,10 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("User-Agent", sdkId)
-                .addHeader("Application-ID", appId)
+                .addHeader("Application-ID", backendAppKey)
                 .addHeader("x-vf-trace-subject-id", androidId)
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "" + appId)
+                .addHeader("x-vf-trace-source", sdkId + "" + backendAppKey)
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(emptyBody)
                 .build();
@@ -90,7 +90,7 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
         private String androidId;
         private String mobileCountryCode;
         private String sdkId;
-        private String appId;
+        private String backendAppKey;
 
         private Builder() {
         }
@@ -120,13 +120,13 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
             return this;
         }
 
-        public Builder appId(String appId) {
-            this.appId = appId;
+        public Builder backendAppKey(String backendAppKey) {
+            this.backendAppKey = backendAppKey;
             return this;
         }
 
         public PinRequest build() {
-            return new PinRequest(url, accessToken, androidId, mobileCountryCode, sdkId, appId);
+            return new PinRequest(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey);
         }
     }
 }
