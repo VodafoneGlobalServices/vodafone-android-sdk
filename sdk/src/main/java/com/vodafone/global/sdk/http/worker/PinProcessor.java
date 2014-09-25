@@ -12,18 +12,20 @@ import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import java.util.Set;
 
 public abstract class PinProcessor {
+    protected final Worker worker;
     protected final Settings settings;
     protected final Context context;
     private final Set<ValidateSmsCallback> validateSmsCallbacks;
 
 
-    public PinProcessor(Context context, Settings settings, Set<ValidateSmsCallback> validateSmsCallbacks) {
+    public PinProcessor(Context context, Worker worker, Settings settings, Set<ValidateSmsCallback> validateSmsCallbacks) {
         this.context = context;
+        this.worker = worker;
         this.settings = settings;
         this.validateSmsCallbacks = validateSmsCallbacks;
     }
 
-    abstract void process(Worker worker, Optional<OAuthToken> authToken, Message msg);
+    abstract void process(Optional<OAuthToken> authToken, Message msg);
 
     protected void notifySuccess() {
         //validateSmsCallbacks;

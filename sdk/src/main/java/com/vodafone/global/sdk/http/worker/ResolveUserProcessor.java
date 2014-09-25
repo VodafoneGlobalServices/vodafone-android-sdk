@@ -41,14 +41,14 @@ public class ResolveUserProcessor extends RequestProcessor {
     private IMSI imsi;
     private Optional<OAuthToken> authToken;
 
-    public ResolveUserProcessor(Context context, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks) {
-        super(context, settings, userDetailsCallbacks);
+    public ResolveUserProcessor(Context context, Worker worker, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks) {
+        super(context, worker, settings, userDetailsCallbacks);
         this.backendAppKey = backendAppKey;
         this.imsi = imsi;
     }
 
     @Override
-    public void process(Worker worker, Optional<OAuthToken> authToken, Message msg) {
+    public void process(Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
         if (!authToken.isPresent()) {
             //Authenticate, then start again user retrieval

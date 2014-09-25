@@ -74,14 +74,14 @@ public class VodafoneManager {
         spiceManager = new SpiceManager(VodafoneService.class);
         spiceManager.start(this.context);
 
-        resolveUserProc = new ResolveUserProcessor(context, settings, backendAppKey, imsi, userDetailsCallbacks);
-        checkStatusProc = new CheckStatusProcessor(context, settings, backendAppKey, imsi, userDetailsCallbacks);
-        generatePinProc = new GeneratePinProcessor(context, settings, backendAppKey, validateSmsCallbacks);
-        ValidatePinProc = new ValidatePinProcessor(context, settings, backendAppKey, userDetailsCallbacks);
+        worker = new Worker(callback);
+        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, userDetailsCallbacks);
+        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, imsi, userDetailsCallbacks);
+        generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks);
+        ValidatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, userDetailsCallbacks);
 
         tresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
-        worker = new Worker(callback);
         worker.start();
     }
 
@@ -227,16 +227,16 @@ public class VodafoneManager {
                     authenticate();
                     break;
                 case RETRIEVE_USER_DETAILS:
-                    resolveUserProc.process(worker, authToken, msg);
+                    resolveUserProc.process(authToken, msg);
                     break;
                 case CHECK_STATUS:
-                    checkStatusProc.process(worker, authToken, msg);
+                    checkStatusProc.process(authToken, msg);
                     break;
                 case GENERATE_PIN:
-                    generatePinProc.process(worker, authToken, msg);
+                    generatePinProc.process(authToken, msg);
                     break;
                 case VALIDATE_PIN:
-                    ValidatePinProc.process(worker, authToken, msg);
+                    ValidatePinProc.process(authToken, msg);
                     break;
                 default:
                     return false;

@@ -31,8 +31,8 @@ public class GeneratePinProcessor extends PinProcessor {
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
 
-    public GeneratePinProcessor(Context context, Settings settings, String backendAppKey, Set<ValidateSmsCallback> validateSmsCallbacks) {
-        super(context, settings, validateSmsCallbacks);
+    public GeneratePinProcessor(Context context, Worker worker, Settings settings, String backendAppKey, Set<ValidateSmsCallback> validateSmsCallbacks) {
+        super(context, worker, settings, validateSmsCallbacks);
         this.backendAppKey = backendAppKey;
     }
 
@@ -83,7 +83,7 @@ public class GeneratePinProcessor extends PinProcessor {
     }
 
     @Override
-    public void process(Worker worker, Optional<OAuthToken> authToken, Message msg) {
+    public void process(Optional<OAuthToken> authToken, Message msg) {
         String token = (String) msg.obj;
 
         try {

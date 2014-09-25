@@ -39,8 +39,8 @@ public class CheckStatusProcessor extends RequestProcessor {
     private IMSI imsi;
     private Optional<OAuthToken> authToken;
 
-    public CheckStatusProcessor(Context context, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks) {
-        super(context, settings, userDetailsCallbacks);
+    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks) {
+        super(context, worker, settings, userDetailsCallbacks);
         this.backendAppKey = backendAppKey;
         this.imsi = imsi;
     }
@@ -121,7 +121,7 @@ public class CheckStatusProcessor extends RequestProcessor {
     }
 
     @Override
-    public void process(Worker worker, Optional<OAuthToken> authToken, Message msg) {
+    public void process(Optional<OAuthToken> authToken, Message msg) {
         UserDetailsDTO redirectDetails = (UserDetailsDTO) msg.obj;
 
         try {

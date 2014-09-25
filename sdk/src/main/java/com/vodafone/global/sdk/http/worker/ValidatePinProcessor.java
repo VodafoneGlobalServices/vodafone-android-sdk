@@ -33,8 +33,8 @@ public class ValidatePinProcessor extends RequestProcessor {
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
 
-    public ValidatePinProcessor(Context context, Settings settings, String backendAppKey, Set<UserDetailsCallback> userDetailsCallbacks) {
-        super(context, settings, userDetailsCallbacks);
+    public ValidatePinProcessor(Context context, Worker worker, Settings settings, String backendAppKey, Set<UserDetailsCallback> userDetailsCallbacks) {
+        super(context, worker, settings, userDetailsCallbacks);
         this.backendAppKey = backendAppKey;
     }
 
@@ -92,7 +92,7 @@ public class ValidatePinProcessor extends RequestProcessor {
     }
 
     @Override
-    public void process(Worker worker, Optional<OAuthToken> authToken, Message msg) {
+    public void process(Optional<OAuthToken> authToken, Message msg) {
         ValidatePinParameters validatePinParameters = (ValidatePinParameters) msg.obj;
 
         try {

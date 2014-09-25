@@ -17,18 +17,19 @@ import java.util.Set;
 import timber.log.Timber;
 
 public abstract class RequestProcessor {
+    protected final Worker worker;
     protected final Settings settings;
     protected final Context context;
     private final Set<UserDetailsCallback> userDetailsCallbacks;
 
-
-    public RequestProcessor(Context context, Settings settings, Set<UserDetailsCallback> userDetailsCallback) {
+    public RequestProcessor(Context context, Worker worker, Settings settings, Set<UserDetailsCallback> userDetailsCallback) {
         this.context = context;
+        this.worker = worker;
         this.settings = settings;
         this.userDetailsCallbacks = userDetailsCallback;
     }
 
-    abstract void process(Worker worker, Optional<OAuthToken> authToken, Message msg);
+    abstract void process(Optional<OAuthToken> authToken, Message msg);
 
     protected void notifyUserDetailUpdate(final UserDetails userDetails) {
         Timber.d(userDetails.toString());
