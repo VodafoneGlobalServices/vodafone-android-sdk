@@ -6,11 +6,10 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.http.ExpiredAccessToken;
 
 import org.json.JSONObject;
-
-import java.util.UUID;
 
 import static com.vodafone.global.sdk.http.HttpCode.CREATED_201;
 import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
@@ -21,10 +20,7 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
 
     private final String url;
     private final String accessToken;
-    private final String androidId;
-    private final String mobileCountryCode;
-    private final String sdkId;
-    private final String backendAppKey;
+    private RequestBuilderProvider requestBuilderProvider;
 
     /**
      * Provides builder for {@link PinRequest}.
@@ -34,31 +30,21 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
     }
 
     protected PinRequest(
-            String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String backendAppKey
+            String url, String accessToken, RequestBuilderProvider requestBuilderProvider
     ) {
         super(Void.class);
         this.url = url;
         this.accessToken = accessToken;
-        this.androidId = androidId;
-        this.mobileCountryCode = mobileCountryCode;
-        this.sdkId = sdkId;
-        this.backendAppKey = backendAppKey;
+        this.requestBuilderProvider = requestBuilderProvider;
     }
 
     @Override
     public Void loadDataFromNetwork() throws Exception {
         // e.g. POST https://APIX/he/users/tokens/sendPIN/{token}
         RequestBody emptyBody = RequestBody.create(JSON, "");
-        Request request = new Request.Builder()
+        Request request = requestBuilderProvider.builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken)
-                .addHeader("User-Agent", sdkId)
-                .addHeader("Application-ID", backendAppKey)
-                .addHeader("x-vf-trace-subject-id", androidId)
-                .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "" + backendAppKey)
-                .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(emptyBody)
                 .build();
         OkHttpClient client = getOkHttpClient();
@@ -87,10 +73,7 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
 
         private String url;
         private String accessToken;
-        private String androidId;
-        private String mobileCountryCode;
-        private String sdkId;
-        private String backendAppKey;
+        private RequestBuilderProvider requestBuilderProvider;
 
         private Builder() {
         }
@@ -105,28 +88,13 @@ public class PinRequest extends OkHttpSpiceRequest<Void> {
             return this;
         }
 
-        public Builder androidId(String androidId) {
-            this.androidId = androidId;
-            return this;
-        }
-
-        public Builder mobileCountryCode(String mobileCountryCode) {
-            this.mobileCountryCode = mobileCountryCode;
-            return this;
-        }
-
-        public Builder sdkId(String sdkId) {
-            this.sdkId = sdkId;
-            return this;
-        }
-
-        public Builder backendAppKey(String backendAppKey) {
-            this.backendAppKey = backendAppKey;
+        public Builder requestBuilderProvider(RequestBuilderProvider requestBuilderProvider) {
+            this.requestBuilderProvider = requestBuilderProvider;
             return this;
         }
 
         public PinRequest build() {
-            return new PinRequest(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey);
+            return new PinRequest(url, accessToken, requestBuilderProvider);
         }
     }
 }

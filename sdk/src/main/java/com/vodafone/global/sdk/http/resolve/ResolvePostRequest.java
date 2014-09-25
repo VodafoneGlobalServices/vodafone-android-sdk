@@ -6,6 +6,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.SimSerialNumber;
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.http.ExpiredAccessToken;
@@ -14,7 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
@@ -25,12 +25,9 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
 
     private final String url;
     private final String accessToken;
-    private final String androidId;
-    private final String mobileCountryCode;
-    private final String sdkId;
-    private final String backendAppKey;
     private final SimSerialNumber imsi;
     private final boolean smsValidation;
+    private RequestBuilderProvider requestBuilderProvider;
 
     /**
      * Provides builder for {@link ResolvePostRequest}.
@@ -40,33 +37,25 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
     }
 
     protected ResolvePostRequest(
-            String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String backendAppKey, SimSerialNumber imsi, boolean smsValidation
+            String url, String accessToken,
+            SimSerialNumber imsi,
+            boolean smsValidation,
+            RequestBuilderProvider requestBuilderProvider
     ) {
         super(UserDetailsDTO.class);
         this.url = url;
         this.accessToken = accessToken;
-        this.androidId = androidId;
-        this.mobileCountryCode = mobileCountryCode;
-        this.sdkId = sdkId;
-        this.backendAppKey = backendAppKey;
         this.imsi = imsi;
         this.smsValidation = smsValidation;
+        this.requestBuilderProvider = requestBuilderProvider;
     }
 
     @Override
     public UserDetailsDTO loadDataFromNetwork() throws Exception {
         RequestBody body = RequestBody.create(JSON, prepareBody(imsi, smsValidation));
-        Request request = new Request.Builder()
+        Request request = requestBuilderProvider.builder()
                 .url(url)
-                .addHeader("Accept", "application/json")
                 .addHeader("Authorization", "Bearer " + accessToken)
-                .addHeader("User-Agent", sdkId)
-                .addHeader("Application-ID", backendAppKey)
-                .addHeader("x-vf-trace-subject-id", androidId)
-                .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "" + backendAppKey)
-                .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(body)
                 .build();
         OkHttpClient client = getOkHttpClient();
@@ -110,12 +99,9 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
 
         private String url;
         private String accessToken;
-        private String androidId;
-        private String mobileCountryCode;
-        private String sdkId;
-        private String backendAppKey;
         private SimSerialNumber imsi;
         private boolean smsValidation;
+        private RequestBuilderProvider requestBuilderProvider;
 
         private Builder() {
         }
@@ -130,26 +116,6 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
             return this;
         }
 
-        public Builder androidId(String androidId) {
-            this.androidId = androidId;
-            return this;
-        }
-
-        public Builder mobileCountryCode(String mobileCountryCode) {
-            this.mobileCountryCode = mobileCountryCode;
-            return this;
-        }
-
-        public Builder sdkId(String sdkId) {
-            this.sdkId = sdkId;
-            return this;
-        }
-
-        public Builder backendAppKey(String backendAppKey) {
-            this.backendAppKey = backendAppKey;
-            return this;
-        }
-
         public Builder imsi(SimSerialNumber imsi) {
             this.imsi = imsi;
             return this;
@@ -160,8 +126,13 @@ public class ResolvePostRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
             return this;
         }
 
+        public Builder requestBuilderProvider(RequestBuilderProvider requestBuilderProvider) {
+            this.requestBuilderProvider = requestBuilderProvider;
+            return this;
+        }
+
         public ResolvePostRequest build() {
-            return new ResolvePostRequest(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey, imsi, smsValidation);
+            return new ResolvePostRequest(url, accessToken, imsi, smsValidation, requestBuilderProvider);
         }
     }
 }

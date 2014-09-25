@@ -75,10 +75,11 @@ public class VodafoneManager {
         spiceManager.start(this.context);
 
         worker = new Worker(callback);
-        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, userDetailsCallbacks);
-        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, imsi, userDetailsCallbacks);
-        generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks);
-        ValidatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, userDetailsCallbacks);
+        RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey);
+        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, userDetailsCallbacks, requestBuilderProvider);
+        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, imsi, userDetailsCallbacks, requestBuilderProvider);
+        generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks, requestBuilderProvider);
+        ValidatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, userDetailsCallbacks, requestBuilderProvider);
 
         tresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 

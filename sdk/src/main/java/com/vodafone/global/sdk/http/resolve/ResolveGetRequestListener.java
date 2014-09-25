@@ -3,6 +3,7 @@ package com.vodafone.global.sdk.http.resolve;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.UserDetailsCallback;
 
@@ -13,10 +14,16 @@ import timber.log.Timber;
 public class ResolveGetRequestListener implements RequestListener<UserDetailsDTO> {
     private final SpiceManager spiceManager;
     private final Set<UserDetailsCallback> userDetailsCallbacks;
+    private RequestBuilderProvider requestBuilderProvider;
 
-    public ResolveGetRequestListener(SpiceManager spiceManager, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public ResolveGetRequestListener(
+            SpiceManager spiceManager,
+            Set<UserDetailsCallback> userDetailsCallbacks,
+            RequestBuilderProvider requestBuilderProvider
+    ) {
         this.spiceManager = spiceManager;
         this.userDetailsCallbacks = userDetailsCallbacks;
+        this.requestBuilderProvider = requestBuilderProvider;
     }
 
     @Override
@@ -42,8 +49,9 @@ public class ResolveGetRequestListener implements RequestListener<UserDetailsDTO
         // TODO timeout
         ResolveGetRequest request = ResolveGetRequest.builder()
                 .userDetaildDTO(userDetailsDTO)
+                .requestBuilderProvider(requestBuilderProvider)
                 .build();
-        ResolveGetRequestListener requestListener = new ResolveGetRequestListener(spiceManager, userDetailsCallbacks);
+        ResolveGetRequestListener requestListener = new ResolveGetRequestListener(spiceManager, userDetailsCallbacks, requestBuilderProvider);
         spiceManager.execute(request, requestListener);
     }
 }

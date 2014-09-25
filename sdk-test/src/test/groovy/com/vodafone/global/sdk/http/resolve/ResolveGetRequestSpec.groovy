@@ -3,6 +3,7 @@ import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.mockwebserver.MockResponse
 import com.squareup.okhttp.mockwebserver.MockWebServer
 import com.squareup.okhttp.mockwebserver.RecordedRequest
+import com.vodafone.global.sdk.RequestBuilderProvider
 import com.vodafone.global.sdk.UserDetails
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
@@ -20,7 +21,7 @@ class ResolveGetRequestSpec extends Specification {
     def String androidId = "2"
     def String mobileCountryCode = "DE"
     def String sdkId = "3"
-    def String appId = "4"
+    def String backendAppKey = "4"
     def boolean stillRunning = false
     def String source = "?"
     def boolean tetheringConflict = false
@@ -121,11 +122,8 @@ class ResolveGetRequestSpec extends Specification {
         def request = ResolveGetRequest.builder()
                 .url(url)
                 .accessToken(accessToken)
-                .androidId(androidId)
-                .mobileCountryCode(mobileCountryCode)
-                .sdkId(sdkId)
-                .backendAppKey(appId)
                 .userDetaildDTO(userDetailsDTO)
+                .requestBuilderProvider(new RequestBuilderProvider(sdkId, androidId, mobileCountryCode, backendAppKey))
                 .build()
         request.okHttpClient = new OkHttpClient()
         return request

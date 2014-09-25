@@ -3,6 +3,7 @@ package com.vodafone.global.sdk.http.resolve;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.UserDetailsCallback;
 
@@ -40,16 +41,14 @@ public class ResolvePostRequestListener implements RequestListener<UserDetailsDT
 
     private void loop(UserDetailsDTO userDetailsDTO) {
         // TODO timeout
+        RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider("", "", "", "");
         ResolveGetRequest request = ResolveGetRequest.builder()
                 .url("")
                 .accessToken("")
-                .androidId("")
-                .mobileCountryCode("")
-                .sdkId("")
-                .backendAppKey("")
                 .userDetaildDTO(userDetailsDTO)
+                .requestBuilderProvider(requestBuilderProvider)
                 .build();
-        ResolveGetRequestListener requestListener = new ResolveGetRequestListener(spiceManager, userDetailsCallbacks);
+        ResolveGetRequestListener requestListener = new ResolveGetRequestListener(spiceManager, userDetailsCallbacks, requestBuilderProvider);
         spiceManager.execute(request, requestListener);
     }
 }

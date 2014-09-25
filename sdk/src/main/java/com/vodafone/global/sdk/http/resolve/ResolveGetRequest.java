@@ -5,6 +5,7 @@ import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.http.ExpiredAccessToken;
 
@@ -12,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.NOT_MODIFIED_304;
@@ -24,11 +24,8 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
 
     private final String url;
     private final String accessToken;
-    private final String androidId;
-    private final String mobileCountryCode;
-    private final String sdkId;
-    private final String backendAppKey;
     private final UserDetailsDTO userDetailsDTO;
+    private RequestBuilderProvider requestBuilderProvider;
 
     /**
      * Provides builder for {@link ResolveGetRequest}.
@@ -38,32 +35,24 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
     }
 
     protected ResolveGetRequest(
-            String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String backendAppKey, UserDetailsDTO userDetailsDTO
+            String url,
+            String accessToken,
+            UserDetailsDTO userDetailsDTO,
+            RequestBuilderProvider requestBuilderProvider
     ) {
         super(UserDetailsDTO.class);
         this.url = url;
         this.accessToken = accessToken;
-        this.androidId = androidId;
-        this.mobileCountryCode = mobileCountryCode;
-        this.sdkId = sdkId;
-        this.backendAppKey = backendAppKey;
         this.userDetailsDTO = userDetailsDTO;
+        this.requestBuilderProvider = requestBuilderProvider;
     }
 
     @Override
     public UserDetailsDTO loadDataFromNetwork() throws Exception {
-        Request request = new Request.Builder()
+        Request request = requestBuilderProvider.builder()
                 .url(url)
-                .addHeader("Accept", "application/json")
                 .addHeader("Authorization", "Bearer " + accessToken)
-                .addHeader("User-Agent", sdkId)
-                .addHeader("Application-ID", backendAppKey)
                 .addHeader("etag", userDetailsDTO.etag)
-                .addHeader("x-vf-trace-subject-id", androidId)
-                .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "" + backendAppKey)
-                .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .get()
                 .build();
         OkHttpClient client = getOkHttpClient();
@@ -100,11 +89,8 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
 
         private String url;
         private String accessToken;
-        private String androidId;
-        private String mobileCountryCode;
-        private String sdkId;
-        private String backendAppKey;
         private UserDetailsDTO userDetailsDTO;
+        private RequestBuilderProvider requestBuilderProvider;
 
         private Builder() {
         }
@@ -119,33 +105,18 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
             return this;
         }
 
-        public Builder androidId(String androidId) {
-            this.androidId = androidId;
-            return this;
-        }
-
-        public Builder mobileCountryCode(String mobileCountryCode) {
-            this.mobileCountryCode = mobileCountryCode;
-            return this;
-        }
-
-        public Builder sdkId(String sdkId) {
-            this.sdkId = sdkId;
-            return this;
-        }
-
-        public Builder backendAppKey(String backendAppKey) {
-            this.backendAppKey = backendAppKey;
-            return this;
-        }
-
         public Builder userDetaildDTO(UserDetailsDTO userDetailsDTO) {
             this.userDetailsDTO = userDetailsDTO;
             return this;
         }
 
+        public Builder requestBuilderProvider(RequestBuilderProvider requestBuilderProvider) {
+            this.requestBuilderProvider = requestBuilderProvider;
+            return this;
+        }
+
         public ResolveGetRequest build() {
-            return new ResolveGetRequest(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey, userDetailsDTO);
+            return new ResolveGetRequest(url, accessToken, userDetailsDTO, requestBuilderProvider);
         }
     }
 }

@@ -12,6 +12,7 @@ import com.vodafone.global.sdk.IMSI;
 import com.vodafone.global.sdk.InternalSdkError;
 import com.vodafone.global.sdk.InvalidMsisdn;
 import com.vodafone.global.sdk.MSISDN;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.UserDetailsCallback;
@@ -39,12 +40,22 @@ import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 public class ResolveUserProcessor extends RequestProcessor {
     private String backendAppKey;
     private IMSI imsi;
+    private final RequestBuilderProvider requestBuilderProvider;
     private Optional<OAuthToken> authToken;
 
-    public ResolveUserProcessor(Context context, Worker worker, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public ResolveUserProcessor(
+            Context context,
+            Worker worker,
+            Settings settings,
+            String backendAppKey,
+            IMSI imsi,
+            Set<UserDetailsCallback> userDetailsCallbacks,
+            RequestBuilderProvider requestBuilderProvider
+    ) {
         super(context, worker, settings, userDetailsCallbacks);
         this.backendAppKey = backendAppKey;
         this.imsi = imsi;
+        this.requestBuilderProvider = requestBuilderProvider;
     }
 
     @Override
@@ -69,7 +80,6 @@ public class ResolveUserProcessor extends RequestProcessor {
     }
 
     private Response queryServer(UserDetailsRequestParameters details) throws IOException, JSONException, VodafoneException {
-        String androidId = Utils.getAndroidId(context);
         MSISDN msisdn = details.getMSISDN();
         String market = msisdn.marketCode();
         String url = getUrl(context, msisdn);
@@ -77,14 +87,11 @@ public class ResolveUserProcessor extends RequestProcessor {
         ResolvePostRequestDirect request = ResolvePostRequestDirect.builder()
                 .url(url)
                 .accessToken(authToken.get().accessToken)
-                .androidId(androidId)
-                .mobileCountryCode(Utils.getMCC(context))
-                .sdkId(settings.sdkId)
-                .backendAppKey(backendAppKey)
                 .imsi(imsi)
                 .smsValidation(details.smsValidation())
                 .msisdn(msisdn.get())
                 .market(market)
+                .requestBuilderProvider(requestBuilderProvider)
                 .build();
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());

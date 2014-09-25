@@ -8,6 +8,7 @@ import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.GenericServerError;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.RequestValidationError;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.TokenNotFound;
@@ -31,11 +32,20 @@ import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class ValidatePinProcessor extends RequestProcessor {
     private String backendAppKey;
+    private final RequestBuilderProvider requestBuilderProvider;
     private Optional<OAuthToken> authToken;
 
-    public ValidatePinProcessor(Context context, Worker worker, Settings settings, String backendAppKey, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public ValidatePinProcessor(
+            Context context,
+            Worker worker,
+            Settings settings,
+            String backendAppKey,
+            Set<UserDetailsCallback> userDetailsCallbacks,
+            RequestBuilderProvider requestBuilderProvider
+    ) {
         super(context, worker, settings, userDetailsCallbacks);
         this.backendAppKey = backendAppKey;
+        this.requestBuilderProvider = requestBuilderProvider;
     }
 
     void parseResponse(Response response) {
@@ -79,11 +89,8 @@ public class ValidatePinProcessor extends RequestProcessor {
         ValidatePinRequestDirect request = ValidatePinRequestDirect.builder()
                 .url(uri.toString())
                 .accessToken(authToken.get().accessToken)
-                .androidId(androidId)
-                .mobileCountryCode(Utils.getMCC(context))
-                .sdkId(settings.sdkId)
-                .backendAppKey(backendAppKey)
                 .pin(validatePinParameters.getPin())
+                .requestBuilderProvider(requestBuilderProvider)
                 .build();
 
         request.setRetryPolicy(null);

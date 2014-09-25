@@ -8,26 +8,23 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.IMSI;
 import com.vodafone.global.sdk.LogUtil;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private final String url;
     private final String accessToken;
-    private final String androidId;
-    private final String mobileCountryCode;
-    private final String sdkId;
-    private final String backendAppKey;
     private final IMSI imsi;
     private final String msisdn;
     private final String market;
     private final boolean smsValidation;
+    private RequestBuilderProvider requestBuilderProvider;
 
     /**
      * Provides builder for {@link com.vodafone.global.sdk.http.resolve.ResolvePostRequestDirect}.
@@ -37,38 +34,30 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
     }
 
     protected ResolvePostRequestDirect(
-            String url, String accessToken, String androidId, String mobileCountryCode,
-            String sdkId, String backendAppKey, String msisdn, String market, IMSI imsi, boolean smsValidation
+            String url, String accessToken,
+            String msisdn, String market, IMSI imsi, boolean smsValidation,
+            RequestBuilderProvider requestBuilderProvider
     ) {
         super(Response.class);
         this.url = url;
         this.accessToken = accessToken;
-        this.androidId = androidId;
-        this.mobileCountryCode = mobileCountryCode;
-        this.sdkId = sdkId;
-        this.backendAppKey = backendAppKey;
         this.imsi = imsi;
         this.smsValidation = smsValidation;
         this.msisdn = msisdn;
         this.market = market;
+        this.requestBuilderProvider = requestBuilderProvider;
     }
 
     @Override
     public Response loadDataFromNetwork() throws IOException, JSONException {
         String content = prepareBody(msisdn, market, imsi, smsValidation);
         RequestBody body = RequestBody.create(JSON, content);
-        Request request = new Request.Builder()
+        Request request = requestBuilderProvider.builder()
                 .url(url)
-                .addHeader("Accept", "application/json")
-                .addHeader("User-Agent", sdkId)
                 .addHeader("scope", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("backendScopes", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("x-int-opco", market) //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("Authorization", "Bearer " + accessToken)
-                .addHeader("x-vf-trace-subject-id", androidId)
-                .addHeader("x-vf-trace-subject-region", mobileCountryCode)
-                .addHeader("x-vf-trace-source", sdkId + "-" + backendAppKey)
-                .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString())
                 .post(body)
                 .build();
 
@@ -104,14 +93,11 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
         private String url;
         private String accessToken;
-        private String androidId;
-        private String mobileCountryCode;
-        private String sdkId;
-        private String backendAppKey;
         private String msisdn;
         private String market;
         private IMSI imsi;
         private boolean smsValidation;
+        private RequestBuilderProvider requestBuilderProvider;
 
         private Builder() {
         }
@@ -123,26 +109,6 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
         public Builder accessToken(String accessToken) {
             this.accessToken = accessToken;
-            return this;
-        }
-
-        public Builder androidId(String androidId) {
-            this.androidId = androidId;
-            return this;
-        }
-
-        public Builder mobileCountryCode(String mobileCountryCode) {
-            this.mobileCountryCode = mobileCountryCode;
-            return this;
-        }
-
-        public Builder sdkId(String sdkId) {
-            this.sdkId = sdkId;
-            return this;
-        }
-
-        public Builder backendAppKey(String backendAppKey) {
-            this.backendAppKey = backendAppKey;
             return this;
         }
 
@@ -166,8 +132,13 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
+        public Builder requestBuilderProvider(RequestBuilderProvider requestBuilderProvider) {
+            this.requestBuilderProvider = requestBuilderProvider;
+            return this;
+        }
+
         public ResolvePostRequestDirect build() {
-            return new ResolvePostRequestDirect(url, accessToken, androidId, mobileCountryCode, sdkId, backendAppKey, msisdn, market, imsi, smsValidation);
+            return new ResolvePostRequestDirect(url, accessToken, msisdn, market, imsi, smsValidation, requestBuilderProvider);
         }
     }
 }

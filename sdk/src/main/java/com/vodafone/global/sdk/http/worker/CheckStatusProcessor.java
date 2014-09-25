@@ -10,6 +10,7 @@ import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.GenericServerError;
 import com.vodafone.global.sdk.IMSI;
 import com.vodafone.global.sdk.InternalSdkError;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.RequestNotAuthorized;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.Settings;
@@ -37,10 +38,12 @@ import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 public class CheckStatusProcessor extends RequestProcessor {
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
+    private RequestBuilderProvider requestBuilderProvider;
 
-    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks, RequestBuilderProvider requestBuilderProvider) {
         super(context, worker, settings, userDetailsCallbacks);
         this.backendAppKey = backendAppKey;
+        this.requestBuilderProvider = requestBuilderProvider;
     }
 
     void parseResponse(Worker worker, Response response, UserDetailsDTO oldRedirectDetails) {
@@ -94,7 +97,6 @@ public class CheckStatusProcessor extends RequestProcessor {
     }
 
     Response queryServer(UserDetailsDTO details) throws IOException, JSONException {
-        String androidId = Utils.getAndroidId(context);
         Uri.Builder builder = new Uri.Builder();
         Uri uri = builder.scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
@@ -106,10 +108,7 @@ public class CheckStatusProcessor extends RequestProcessor {
         ResolveGetRequestDirect request = ResolveGetRequestDirect.builder()
                 .url(uri.toString())
                 .accessToken(authToken.get().accessToken)
-                .androidId(androidId)
-                .mobileCountryCode(Utils.getMCC(context))
-                .sdkId(settings.sdkId)
-                .backendAppKey(backendAppKey)
+                .requestBuilderProvider(requestBuilderProvider)
                 .etag(details.etag)
                 .build();
         request.setRetryPolicy(null);
