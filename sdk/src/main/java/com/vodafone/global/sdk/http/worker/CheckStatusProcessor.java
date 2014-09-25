@@ -36,13 +36,11 @@ import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class CheckStatusProcessor extends RequestProcessor {
     private String backendAppKey;
-    private IMSI imsi;
     private Optional<OAuthToken> authToken;
 
     public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks) {
         super(context, worker, settings, userDetailsCallbacks);
         this.backendAppKey = backendAppKey;
-        this.imsi = imsi;
     }
 
     void parseResponse(Worker worker, Response response, UserDetailsDTO oldRedirectDetails) {
