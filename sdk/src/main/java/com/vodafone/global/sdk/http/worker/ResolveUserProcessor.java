@@ -7,7 +7,10 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.GenericServerError;
 import com.vodafone.global.sdk.IMSI;
+import com.vodafone.global.sdk.InternalSdkError;
+import com.vodafone.global.sdk.InvalidMsisdn;
 import com.vodafone.global.sdk.MSISDN;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.Settings;
@@ -58,9 +61,9 @@ public class ResolveUserProcessor extends RequestProcessor {
             } catch (VodafoneException e) {
                 notifyError(e);
             } catch (IOException e) {
-                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+                notifyError(new GenericServerError());
             } catch (JSONException e) {
-                notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+                notifyError(new GenericServerError());
             }
         }
     }
@@ -110,11 +113,11 @@ public class ResolveUserProcessor extends RequestProcessor {
                 break;
                 case BAD_REQUEST_400:
                     //ERROR bad request - internal SDK error
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.INTERNAL_SDK_ERROR));
+                    notifyError(new InternalSdkError());
                     break;
                 case UNAUTHORIZED_401:
                     //ERROR generic server error
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+                    notifyError(new GenericServerError());
                     break;
                 case FORBIDDEN_403:
                     if (!response.body().string().isEmpty() && Utils.isHasTimedOut(authToken.get().expirationTime)) {
@@ -122,17 +125,17 @@ public class ResolveUserProcessor extends RequestProcessor {
                         worker.sendMessage(worker.createMessage(MESSAGE_ID.RETRIEVE_USER_DETAILS.ordinal()));
                     } else {
                         //ERROR other error
-                        notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+                        notifyError(new GenericServerError());
                     }
                     break;
                 default:
                     //ERROR generic server error
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+                    notifyError(new GenericServerError());
             }
         } catch (JSONException e) {
-            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            notifyError(new GenericServerError());
         } catch (IOException e) {
-            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            notifyError(new GenericServerError());
         }
     }
 
@@ -158,7 +161,7 @@ public class ResolveUserProcessor extends RequestProcessor {
                     .appendQueryParameter("backendId", backendAppKey).build();
         } else {
             // TODO some reasonable error handling/code
-            throw new VodafoneException(VodafoneException.EXCEPTION_TYPE.INVALID_MSISDN);
+            throw new InvalidMsisdn();
         }
         return uri.toString();
     }

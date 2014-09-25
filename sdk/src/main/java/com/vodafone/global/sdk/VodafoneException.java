@@ -1,6 +1,6 @@
 package com.vodafone.global.sdk;
 
-public class VodafoneException extends RuntimeException {
+public abstract class VodafoneException extends RuntimeException {
     public enum EXCEPTION_TYPE {
         TOKEN_NOT_FOUND(""),
         GENERIC_SERVER_ERROR("Generic server failure"),

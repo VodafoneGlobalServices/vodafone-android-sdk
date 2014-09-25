@@ -7,11 +7,13 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.GenericServerError;
+import com.vodafone.global.sdk.RequestValidationError;
 import com.vodafone.global.sdk.Settings;
+import com.vodafone.global.sdk.TokenNotFound;
 import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.ValidatePinParameters;
-import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.HttpCode;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.parser.Parsers;
@@ -44,22 +46,22 @@ public class ValidatePinProcessor extends RequestProcessor {
                     notifyUserDetailUpdate(Parsers.parseUserDetails(response));
                     break;
                 case BAD_REQUEST_400:
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_VALIDATION_ERROR));
+                    notifyError(new RequestValidationError());
                     break;
                 case UNAUTHORIZED_401:
                 case FORBIDDEN_403:
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
+                    notifyError(new TokenNotFound());
                     break;
                 case NOT_FOUND_404:
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.TOKEN_NOT_FOUND));
+                    notifyError(new TokenNotFound());
                     break;
                 default: //5xx and other critical errors
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+                    notifyError(new GenericServerError());
             }
         } catch (JSONException e) {
-            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            notifyError(new GenericServerError());
         } catch (IOException e) {
-            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            notifyError(new GenericServerError());
         }
     }
 
@@ -97,7 +99,7 @@ public class ValidatePinProcessor extends RequestProcessor {
             this.authToken = authToken;
             parseResponse(queryServer(validatePinParameters));
         } catch (Exception e) {
-            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            notifyError(new GenericServerError());
         }
     }
 }

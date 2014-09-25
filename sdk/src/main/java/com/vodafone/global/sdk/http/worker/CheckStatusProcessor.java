@@ -7,12 +7,14 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.GenericServerError;
 import com.vodafone.global.sdk.IMSI;
+import com.vodafone.global.sdk.InternalSdkError;
+import com.vodafone.global.sdk.RequestNotAuthorized;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.Utils;
-import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.VodafoneManager.MESSAGE_ID;
 import com.vodafone.global.sdk.http.HttpCode;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
@@ -65,18 +67,18 @@ public class CheckStatusProcessor extends RequestProcessor {
                 break;
                 case BAD_REQUEST_400:
                     //ERROR bad request - internal SDK error
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.INTERNAL_SDK_ERROR));
+                    notifyError(new InternalSdkError());
                     break;
                 case UNAUTHORIZED_401:
                     //ERROR Unauthorized access
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.REQUEST_NOT_AUTHORIZED));
+                    notifyError(new RequestNotAuthorized());
                     break;
                 case FORBIDDEN_403:
                     if (!response.body().string().isEmpty() && Utils.isHasTimedOut(authToken.get().expirationTime)) {
                         worker.sendMessage(worker.createMessage(MESSAGE_ID.AUTHENTICATE.ordinal()));
                         worker.sendMessage(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), oldRedirectDetails));
                     } else {
-                        notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+                        notifyError(new GenericServerError());
                     }
                     break;
                 case NOT_FOUND_404:
@@ -84,12 +86,12 @@ public class CheckStatusProcessor extends RequestProcessor {
                     worker.sendMessage(worker.createMessage(MESSAGE_ID.RETRIEVE_USER_DETAILS.ordinal()));
                     break;
                 default: //5xx and other critical errors
-                    notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+                    notifyError(new GenericServerError());
             }
         } catch (JSONException e) {
-            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            notifyError(new GenericServerError());
         } catch (IOException e) {
-            notifyError(new VodafoneException(VodafoneException.EXCEPTION_TYPE.GENERIC_SERVER_ERROR));
+            notifyError(new GenericServerError());
         }
     }
 
