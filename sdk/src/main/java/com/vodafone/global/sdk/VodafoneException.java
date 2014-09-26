@@ -12,7 +12,8 @@ public abstract class VodafoneException extends RuntimeException {
         INVALID_TOKEN_STATE("Invalid token state"),
         INVALID_MSISDN("Invalid MSISDN"),
         CALL_THRESHOLD_REACHED("Call threshold reached"),
-        BAD_REQUEST("Bad request");
+        BAD_REQUEST("Bad request"),
+        NO_INTERNET_CONNECTION("No internet connection");
 
         private final String message;
 

@@ -6,6 +6,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.RequestBuilderProvider;
+import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.http.ExpiredAccessToken;
 
@@ -76,7 +77,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
 
     private UserDetailsDTO parseJson(Response response) throws IOException, JSONException {
         String jsonString = response.body().string();
-        UserDetails userDetails = UserDetails.fromJson(jsonString);
+        UserDetails userDetails = UserDetails.fromJson(jsonString, ResolutionStatus.FIXME);
         String etag = response.header("etag");
         return new UserDetailsDTO(userDetails, etag);
     }

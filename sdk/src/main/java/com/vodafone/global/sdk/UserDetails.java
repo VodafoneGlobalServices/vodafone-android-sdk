@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.util.Date;
 
 public class UserDetails {
+    public static final UserDetails RESOLUTION_FAILED = new UserDetails(ResolutionStatus.FAILED, "", new Date(), "");
     public final ResolutionStatus status;
     public final String token;
     public final Date expires;
@@ -22,7 +23,7 @@ public class UserDetails {
         this.acr = acr;
     }
 
-    public static UserDetails fromJson(String jsonString) throws JSONException {
+    public static UserDetails fromJson(String jsonString, ResolutionStatus status) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
         String acr = json.getString("acr");
         String token = json.getString("token");
@@ -30,7 +31,11 @@ public class UserDetails {
         long currentTime = System.currentTimeMillis();
         long expirationTime = currentTime + expiresIn;
         Date expires = new Date(expirationTime);
-        return new UserDetails(ResolutionStatus.FIXME, token, expires, acr);
+        return new UserDetails(status, token, expires, acr);
+    }
+
+    public static UserDetails validationRequired(String token) {
+        return new UserDetails(ResolutionStatus.VALIDATION_REQUIRED, token, new Date(), "");
     }
 
     @Override

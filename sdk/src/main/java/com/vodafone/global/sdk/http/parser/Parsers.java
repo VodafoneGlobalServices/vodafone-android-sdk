@@ -1,6 +1,7 @@
 package com.vodafone.global.sdk.http.parser;
 
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 
@@ -12,9 +13,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parsers {
+
+    public static UserDetails resolutionCompleted(Response response) throws JSONException, IOException {
+        String jsonString = response.body().string();
+        return UserDetails.fromJson(jsonString, ResolutionStatus.COMPLETED);
+    }
+
     public static UserDetailsDTO parseUserDetails(Response response) throws IOException, JSONException {
         String jsonString = response.body().string();
-        UserDetails userDetails = UserDetails.fromJson(jsonString);
+        UserDetails userDetails = UserDetails.fromJson(jsonString, ResolutionStatus.FIXME);
         String etag = response.header("etag");
         return new UserDetailsDTO(userDetails, etag, -1);
     }

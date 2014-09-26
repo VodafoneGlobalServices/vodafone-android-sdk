@@ -16,6 +16,10 @@ public class IMSI {
         imsi = systemService.getSubscriberId();
     }
 
+    public boolean isValid() {
+        return isPresent() && mccAndMncOfSimCardBelongToVodafone();
+    }
+
     public boolean isPresent() {
         return imsi != null;
     }

@@ -8,6 +8,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.IMSI;
 import com.vodafone.global.sdk.LogUtil;
+import com.vodafone.global.sdk.MSISDN;
 import com.vodafone.global.sdk.RequestBuilderProvider;
 
 import org.json.JSONException;
@@ -21,7 +22,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
     private final String url;
     private final String accessToken;
     private final IMSI imsi;
-    private final String msisdn;
+    private final MSISDN msisdn;
     private final String market;
     private final boolean smsValidation;
     private RequestBuilderProvider requestBuilderProvider;
@@ -35,7 +36,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
     protected ResolvePostRequestDirect(
             String url, String accessToken,
-            String msisdn, String market, IMSI imsi, boolean smsValidation,
+            MSISDN msisdn, String market, IMSI imsi, boolean smsValidation,
             RequestBuilderProvider requestBuilderProvider
     ) {
         super(Response.class);
@@ -71,15 +72,15 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         return response;
     }
 
-    protected String prepareBody(String msisdn, String market, IMSI imsi, boolean smsValidation) throws JSONException {
+    protected String prepareBody(MSISDN msisdn, String market, IMSI imsi, boolean smsValidation) throws JSONException {
         JSONObject json = new JSONObject();
         if (imsi.isPresent()) {
             //json.put("imsi", imsi.get());
             json.put("imsi", "204049810027400"); //TODO: REMOVE ONLY FOR TESTING!!!
         }
-        if (!msisdn.isEmpty() && !market.isEmpty()) {
+        if (msisdn.isPresent() && msisdn.isValid()) {
             json.put("msisdn", msisdn);
-            json.put("market", market);
+            json.put("market", msisdn.marketCode());
         }
         json.put("smsValidation", smsValidation);
         return json.toString();
@@ -93,7 +94,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
         private String url;
         private String accessToken;
-        private String msisdn;
+        private MSISDN msisdn;
         private String market;
         private IMSI imsi;
         private boolean smsValidation;
@@ -122,13 +123,8 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public Builder msisdn(String  msisdn) {
+        public Builder msisdn(MSISDN msisdn) {
             this.msisdn = msisdn;
-            return this;
-        }
-
-        public Builder market(String market) {
-            this.market = market;
             return this;
         }
 
