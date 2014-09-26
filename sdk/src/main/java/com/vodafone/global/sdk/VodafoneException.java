@@ -1,7 +1,7 @@
 package com.vodafone.global.sdk;
 
 public abstract class VodafoneException extends RuntimeException {
-    public enum EXCEPTION_TYPE {
+    public enum ExceptionType {
         TOKEN_NOT_FOUND(""),
         GENERIC_SERVER_ERROR("Generic server failure"),
         INTERNAL_SDK_ERROR("Internal SDK error"),
@@ -15,27 +15,27 @@ public abstract class VodafoneException extends RuntimeException {
 
         private final String message;
 
-        EXCEPTION_TYPE(String message) {
+        ExceptionType(String message) {
             this.message = message;
         }
     }
-    private EXCEPTION_TYPE exceptionType;
+    private ExceptionType exceptionType;
 
-    public EXCEPTION_TYPE getExceptionType() {
+    public ExceptionType getExceptionType() {
         return exceptionType;
     }
 
-    public VodafoneException(EXCEPTION_TYPE exceptionType) {
+    public VodafoneException(ExceptionType exceptionType) {
         super();
         this.exceptionType = exceptionType;
     }
 
-    public VodafoneException(EXCEPTION_TYPE exceptionType, String detailMessage) {
+    public VodafoneException(ExceptionType exceptionType, String detailMessage) {
         super(detailMessage);
         this.exceptionType = exceptionType;
     }
 
-    public VodafoneException(EXCEPTION_TYPE exceptionType, String detailMessage, Throwable throwable) {
+    public VodafoneException(ExceptionType exceptionType, String detailMessage, Throwable throwable) {
         super(detailMessage, throwable);
         this.exceptionType = exceptionType;
     }
