@@ -7,9 +7,9 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.BadRequest;
 import com.vodafone.global.sdk.GenericServerError;
 import com.vodafone.global.sdk.IMSI;
-import com.vodafone.global.sdk.InternalSdkError;
 import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.RequestNotAuthorized;
 import com.vodafone.global.sdk.ResolutionStatus;
@@ -68,7 +68,7 @@ public class CheckStatusProcessor extends RequestProcessor {
                 break;
                 case BAD_REQUEST_400:
                     //ERROR bad request - internal SDK error
-                    notifyError(new InternalSdkError());
+                    notifyError(new BadRequest());
                     break;
                 case UNAUTHORIZED_401:
                     //ERROR Unauthorized access

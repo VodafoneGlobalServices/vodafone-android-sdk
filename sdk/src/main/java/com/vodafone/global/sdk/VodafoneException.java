@@ -11,7 +11,8 @@ public abstract class VodafoneException extends RuntimeException {
         INVALID_OTP_FORMAT("Invalid OTP format"),
         INVALID_TOKEN_STATE("Invalid token state"),
         INVALID_MSISDN("Invalid MSISDN"),
-        CALL_THRESHOLD_REACHED("Call threshold reached");
+        CALL_THRESHOLD_REACHED("Call threshold reached"),
+        BAD_REQUEST("Bad request");
 
         private final String message;
 
