@@ -54,4 +54,9 @@ public class SmsValidationActivity extends Activity implements ValidateSmsCallba
     public void onSmsValidationError(VodafoneException ex) {
         // handle error
     }
+
+    @Override
+    public void onPinGenerationSuccess() {
+        // TODO
+    }
 }

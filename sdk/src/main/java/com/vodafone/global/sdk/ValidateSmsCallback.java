@@ -19,4 +19,6 @@ public interface ValidateSmsCallback extends VodafoneCallback {
      * @param ex exception detailing type of error
      */
     void onSmsValidationError(VodafoneException ex);
+
+    void onPinGenerationSuccess();
 }

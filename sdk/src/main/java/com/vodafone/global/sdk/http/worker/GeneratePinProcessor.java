@@ -16,16 +16,27 @@ import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
-public class GeneratePinProcessor extends PinProcessor {
+public class GeneratePinProcessor {
+    protected final Worker worker;
+    protected final Settings settings;
+    protected final Context context;
+    private final Set<ValidateSmsCallback> validateSmsCallbacks;
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
     private RequestBuilderProvider requestBuilderProvider;
 
     public GeneratePinProcessor(
-            Context context, Worker worker, Settings settings, String backendAppKey, Set<ValidateSmsCallback> validateSmsCallbacks,
+            Context context,
+            Worker worker,
+            Settings settings,
+            String backendAppKey,
+            Set<ValidateSmsCallback> validateSmsCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
-        super(context, worker, settings, validateSmsCallbacks);
+        this.context = context;
+        this.worker = worker;
+        this.settings = settings;
+        this.validateSmsCallbacks = validateSmsCallbacks;
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
     }
@@ -33,54 +44,75 @@ public class GeneratePinProcessor extends PinProcessor {
     void parseResponse(Response response) {
         int code = response.code();
         switch (code) {
-            case OK_200: //TODO update listeners properly
+            case OK_200:
                 notifySuccess();
                 break;
             case BAD_REQUEST_400:
+            case FORBIDDEN_403:
+                // TODO validate error, error invalid input
                 notifyError(new RequestValidationError());
                 break;
-            case FORBIDDEN_403:
+            case NOT_FOUND_404: // TODO
+                // TODO notify user details callback about
+                // TODO validate error
                 notifyError(new TokenNotFound());
                 break;
-            case NOT_FOUND_404:
-                notifyError(new TokenNotFound());
-                break;
-            default: //5xx and other critical errors
+            default:
                 notifyError(new GenericServerError());
         }
     }
 
     Response queryServer(String token) throws IOException, JSONException {
-        String androidId = Utils.getAndroidId(context);
+        PinRequestDirect request = getRequest(token);
 
-        Uri.Builder builder = new Uri.Builder();
-        Uri uri = builder.scheme(settings.apix.protocol)
+        request.setRetryPolicy(null);
+        request.setOkHttpClient(new OkHttpClient());
+
+        return request.loadDataFromNetwork();
+    }
+
+    private PinRequestDirect getRequest(String token) {
+        return PinRequestDirect.builder()
+                .url(getUrl(token))
+                .accessToken(authToken.get().accessToken)
+                .requestBuilderProvider(requestBuilderProvider)
+                .build();
+    }
+
+    private String getUrl(String token) {
+        return new Uri.Builder().scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
                 .appendPath(token)
                 .appendPath("pins")
-                .appendQueryParameter("backendId", backendAppKey).build();
-
-        PinRequestDirect request = PinRequestDirect.builder()
-                .url(uri.toString())
-                .accessToken(authToken.get().accessToken)
-                .requestBuilderProvider(requestBuilderProvider)
-                .build();
-
-        request.setRetryPolicy(null);
-        request.setOkHttpClient(new OkHttpClient());
-        return request.loadDataFromNetwork();
+                .appendQueryParameter("backendId", backendAppKey)
+                .build()
+                .toString();
     }
 
-    @Override
     public void process(Optional<OAuthToken> authToken, Message msg) {
+        this.authToken = authToken;
         String token = (String) msg.obj;
 
         try {
-            this.authToken = authToken;
-            parseResponse(queryServer(token));
+            Response response = queryServer(token);
+            parseResponse(response);
         } catch (Exception e) {
             notifyError(new GenericServerError());
+        }
+    }
+
+    protected void notifySuccess() {
+        // TODO callback call on main thread
+        for (ValidateSmsCallback callback : validateSmsCallbacks) {
+            callback.onPinGenerationSuccess();
+        }
+    }
+
+    protected void notifyError(VodafoneException vodafoneException) {
+        // TODO callback call on main thread
+        for (ValidateSmsCallback callback : validateSmsCallbacks) {
+            callback.onSmsValidationError(vodafoneException);
         }
     }
 }
