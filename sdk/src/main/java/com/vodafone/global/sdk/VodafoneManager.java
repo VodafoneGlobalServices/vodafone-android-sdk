@@ -46,7 +46,7 @@ public class VodafoneManager {
     private Optional<OAuthToken> authToken = Optional.absent();
     private Optional<UserDetails> cachedUserDetails = Optional.absent();
 
-    private MaximumThresholdChecker tresholdChecker;
+    private MaximumThresholdChecker thresholdChecker;
 
     /**
      * Initializes SDK Manager for a given application.
@@ -77,7 +77,7 @@ public class VodafoneManager {
         generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks, requestBuilderProvider);
         validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolutionCallbacks, requestBuilderProvider);
 
-        tresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
+        thresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
         worker.start();
     }
@@ -167,7 +167,7 @@ public class VodafoneManager {
     }
 
     private void checkCallThreshold() {
-        if (tresholdChecker.thresholdReached()) {
+        if (thresholdChecker.thresholdReached()) {
             throw new CallThresholdReached();
         }
     }
