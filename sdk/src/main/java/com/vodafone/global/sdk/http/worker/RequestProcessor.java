@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import com.google.common.base.Optional;
-import com.vodafone.global.sdk.ResolutionCallback;
+import com.vodafone.global.sdk.ResolveCallback;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
@@ -18,13 +18,13 @@ public abstract class RequestProcessor {
     protected final Worker worker;
     protected final Settings settings;
     protected final Context context;
-    protected final Set<ResolutionCallback> resolutionCallbacks;
+    protected final Set<ResolveCallback> resolveCallbacks;
 
-    public RequestProcessor(Context context, Worker worker, Settings settings, Set<ResolutionCallback> resolutionCallback) {
+    public RequestProcessor(Context context, Worker worker, Settings settings, Set<ResolveCallback> resolveCallback) {
         this.context = context;
         this.worker = worker;
         this.settings = settings;
-        this.resolutionCallbacks = resolutionCallback;
+        this.resolveCallbacks = resolveCallback;
     }
 
     abstract void process(Optional<OAuthToken> authToken, Message msg);
@@ -36,7 +36,7 @@ public abstract class RequestProcessor {
     protected void notifyUserDetailUpdate(final UserDetailsDTO userDetailsDto) {
         Timber.d(userDetailsDto.toString());
         Handler handler = new Handler(Looper.getMainLooper());
-        for (final ResolutionCallback callback : resolutionCallbacks) {
+        for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -65,7 +65,7 @@ public abstract class RequestProcessor {
     protected void notifyError(final VodafoneException exception) {
         Timber.e(exception, exception.getMessage());
         Handler handler = new Handler(Looper.getMainLooper());
-        for (final ResolutionCallback callback : resolutionCallbacks) {
+        for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {

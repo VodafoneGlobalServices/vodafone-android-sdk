@@ -6,7 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.GenericServerError;
-import com.vodafone.global.sdk.ResolutionCallback;
+import com.vodafone.global.sdk.ResolveCallback;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.HttpCode;
 import com.vodafone.global.sdk.http.parser.Parsers;
@@ -29,13 +29,13 @@ import static com.vodafone.global.sdk.http.HttpCode.*;
 import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
 
 public class CheckStatusParser {
-    private final Set<ResolutionCallback> resolutionCallbacks;
+    private final Set<ResolveCallback> resolveCallbacks;
     private final Context context;
     private final Worker worker;
 
-    public CheckStatusParser(Worker worker, Context context, Set<ResolutionCallback> resolutionCallbacks) {
+    public CheckStatusParser(Worker worker, Context context, Set<ResolveCallback> resolveCallbacks) {
         this.worker = worker;
-        this.resolutionCallbacks = resolutionCallbacks;
+        this.resolveCallbacks = resolveCallbacks;
         this.context = context;
     }
 
@@ -91,7 +91,7 @@ public class CheckStatusParser {
     protected void notifyUserDetailUpdate(final UserDetailsDTO userDetailsDto) {
         Timber.d(userDetailsDto.toString());
         Handler handler = new Handler(Looper.getMainLooper());
-        for (final ResolutionCallback callback : resolutionCallbacks) {
+        for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -145,7 +145,7 @@ public class CheckStatusParser {
     protected void notifyError(final VodafoneException exception) {
         Timber.e(exception, exception.getMessage());
         Handler handler = new Handler(Looper.getMainLooper());
-        for (final ResolutionCallback callback : resolutionCallbacks) {
+        for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {

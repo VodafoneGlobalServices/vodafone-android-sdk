@@ -28,10 +28,10 @@ public class ValidatePinProcessor extends RequestProcessor {
             Worker worker,
             Settings settings,
             String backendAppKey,
-            Set<ResolutionCallback> resolutionCallbacks,
+            Set<ResolveCallback> resolveCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
-        super(context, worker, settings, resolutionCallbacks);
+        super(context, worker, settings, resolveCallbacks);
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
     }

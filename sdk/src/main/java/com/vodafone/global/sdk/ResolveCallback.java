@@ -3,7 +3,7 @@ package com.vodafone.global.sdk;
 /**
  * Interface for receiving events about retrieving UserDetails.
  */
-public interface ResolutionCallback extends VodafoneCallback {
+public interface ResolveCallback extends VodafoneCallback {
     /**
      * Called when UserDetails get updated.
      * @param userDetails current version of UserDetails

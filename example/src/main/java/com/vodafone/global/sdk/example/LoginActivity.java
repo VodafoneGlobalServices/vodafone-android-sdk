@@ -11,7 +11,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import com.vodafone.global.sdk.*;
 
-public class LoginActivity extends Activity implements ResolutionCallback
+public class LoginActivity extends Activity implements ResolveCallback
 {
     @InjectView(R.id.resolved) TextView resolved;
     @InjectView(R.id.stillRunning) TextView stillRunning;

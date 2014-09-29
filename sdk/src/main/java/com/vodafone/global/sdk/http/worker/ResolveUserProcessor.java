@@ -29,14 +29,14 @@ public class ResolveUserProcessor extends RequestProcessor {
             Settings settings,
             String backendAppKey,
             IMSI imsi,
-            Set<ResolutionCallback> resolutionCallbacks,
+            Set<ResolveCallback> resolveCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
-        super(context, worker, settings, resolutionCallbacks);
+        super(context, worker, settings, resolveCallbacks);
         this.backendAppKey = backendAppKey;
         this.imsi = imsi;
         this.requestBuilderProvider = requestBuilderProvider;
-        parser = new ResolveUserParser(worker, context, resolutionCallbacks);
+        parser = new ResolveUserParser(worker, context, resolveCallbacks);
     }
 
     @Override

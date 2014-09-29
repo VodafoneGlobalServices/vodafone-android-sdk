@@ -40,7 +40,7 @@ public class VodafoneManager {
     private final GeneratePinProcessor generatePinProc;
     private final ValidatePinProcessor validatePinProc;
 
-    Set<ResolutionCallback> resolutionCallbacks = new CopyOnWriteArraySet<ResolutionCallback>();
+    Set<ResolveCallback> resolveCallbacks = new CopyOnWriteArraySet<ResolveCallback>();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
     private IMSI imsi;
     private Optional<OAuthToken> authToken = Optional.absent();
@@ -72,10 +72,10 @@ public class VodafoneManager {
 
         worker = new Worker(callback);
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey);
-        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolutionCallbacks, requestBuilderProvider);
-        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolutionCallbacks, requestBuilderProvider);
+        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider);
+        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider);
         generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks, requestBuilderProvider);
-        validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolutionCallbacks, requestBuilderProvider);
+        validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider);
 
         thresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
@@ -129,15 +129,15 @@ public class VodafoneManager {
     private HashMap<Class<?>, Registrar> prepareRegistrars() {
         HashMap<Class<?>, Registrar> registrars = new HashMap<Class<?>, Registrar>();
 
-        registrars.put(ResolutionCallback.class, new Registrar() {
+        registrars.put(ResolveCallback.class, new Registrar() {
             @Override
             public void register(VodafoneCallback callback) {
-                resolutionCallbacks.add((ResolutionCallback) callback);
+                resolveCallbacks.add((ResolveCallback) callback);
             }
 
             @Override
             public void unregister(VodafoneCallback callback) {
-                resolutionCallbacks.remove(callback);
+                resolveCallbacks.remove(callback);
             }
         });
 
@@ -195,7 +195,7 @@ public class VodafoneManager {
     /**
      * Callback used internally to cache UserDetails.
      */
-    private class CacheResolutionCallback implements ResolutionCallback {
+    private class CacheResolutionCallback implements ResolveCallback {
         @Override
         public void onCompleted(UserDetails userDetails) {
             cachedUserDetails = Optional.of(userDetails);

@@ -4,7 +4,7 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.vodafone.global.sdk.RequestBuilderProvider;
-import com.vodafone.global.sdk.ResolutionCallback;
+import com.vodafone.global.sdk.ResolveCallback;
 import com.vodafone.global.sdk.ResolutionStatus;
 import timber.log.Timber;
 
@@ -12,18 +12,18 @@ import java.util.Set;
 
 public class ResolvePostRequestListener implements RequestListener<UserDetailsDTO> {
     private final SpiceManager spiceManager;
-    private final Set<ResolutionCallback> resolutionCallbacks;
+    private final Set<ResolveCallback> resolveCallbacks;
 
-    public ResolvePostRequestListener(SpiceManager spiceManager, Set<ResolutionCallback> resolutionCallbacks) {
+    public ResolvePostRequestListener(SpiceManager spiceManager, Set<ResolveCallback> resolveCallbacks) {
         this.spiceManager = spiceManager;
-        this.resolutionCallbacks = resolutionCallbacks;
+        this.resolveCallbacks = resolveCallbacks;
     }
 
     @Override
     public void onRequestFailure(SpiceException e) {
         Timber.e(e, e.getMessage());
 
-        for (ResolutionCallback callback : resolutionCallbacks) {
+        for (ResolveCallback callback : resolveCallbacks) {
             //callback.onError(new VodafoneException(e.getMessage(), e));
         }
     }
@@ -34,7 +34,7 @@ public class ResolvePostRequestListener implements RequestListener<UserDetailsDT
         if (stillRunning)
             loop(userDetailsDTO);
 
-        for (ResolutionCallback callback : resolutionCallbacks)
+        for (ResolveCallback callback : resolveCallbacks)
             callback.onCompleted(userDetailsDTO.userDetails);
     }
 
@@ -47,7 +47,7 @@ public class ResolvePostRequestListener implements RequestListener<UserDetailsDT
                 .userDetaildDTO(userDetailsDTO)
                 .requestBuilderProvider(requestBuilderProvider)
                 .build();
-        ResolveGetRequestListener requestListener = new ResolveGetRequestListener(spiceManager, resolutionCallbacks, requestBuilderProvider);
+        ResolveGetRequestListener requestListener = new ResolveGetRequestListener(spiceManager, resolveCallbacks, requestBuilderProvider);
         spiceManager.execute(request, requestListener);
     }
 }

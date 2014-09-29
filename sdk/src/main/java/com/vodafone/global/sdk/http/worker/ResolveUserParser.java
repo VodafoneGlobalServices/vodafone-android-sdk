@@ -24,12 +24,12 @@ import static com.vodafone.global.sdk.http.HttpCode.*;
 public class ResolveUserParser {
     private final Worker worker;
     private final Context context;
-    private final Set<ResolutionCallback> resolutionCallbacks;
+    private final Set<ResolveCallback> resolveCallbacks;
 
-    public ResolveUserParser(Worker worker, Context context, Set<ResolutionCallback> resolutionCallbacks) {
+    public ResolveUserParser(Worker worker, Context context, Set<ResolveCallback> resolveCallbacks) {
         this.worker = worker;
         this.context = context;
-        this.resolutionCallbacks = resolutionCallbacks;
+        this.resolveCallbacks = resolveCallbacks;
     }
 
     public void parseResponse(Response response) throws IOException, JSONException {
@@ -81,7 +81,7 @@ public class ResolveUserParser {
     protected void notifyUserDetailUpdate(final UserDetailsDTO userDetailsDto) {
         Timber.d(userDetailsDto.toString());
         Handler handler = new Handler(Looper.getMainLooper());
-        for (final ResolutionCallback callback : resolutionCallbacks) {
+        for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -106,7 +106,7 @@ public class ResolveUserParser {
     protected void notifyError(final VodafoneException exception) {
         Timber.e(exception, exception.getMessage());
         Handler handler = new Handler(Looper.getMainLooper());
-        for (final ResolutionCallback callback : resolutionCallbacks) {
+        for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {

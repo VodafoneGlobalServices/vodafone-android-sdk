@@ -8,7 +8,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.GenericServerError;
 import com.vodafone.global.sdk.RequestBuilderProvider;
-import com.vodafone.global.sdk.ResolutionCallback;
+import com.vodafone.global.sdk.ResolveCallback;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.resolve.ResolveGetRequestDirect;
@@ -25,11 +25,11 @@ public class CheckStatusProcessor extends RequestProcessor {
     private RequestBuilderProvider requestBuilderProvider;
     private UserDetailsDTO userDetailsDto;
 
-    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, Set<ResolutionCallback> resolutionCallbacks, RequestBuilderProvider requestBuilderProvider) {
-        super(context, worker, settings, resolutionCallbacks);
+    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, Set<ResolveCallback> resolveCallbacks, RequestBuilderProvider requestBuilderProvider) {
+        super(context, worker, settings, resolveCallbacks);
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
-        parser = new CheckStatusParser(worker, context, resolutionCallbacks);
+        parser = new CheckStatusParser(worker, context, resolveCallbacks);
     }
 
     @Override
