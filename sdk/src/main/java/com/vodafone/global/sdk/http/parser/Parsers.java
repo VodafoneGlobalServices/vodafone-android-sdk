@@ -45,8 +45,8 @@ public class Parsers {
         return new UserDetailsDTO(ResolutionStatus.FIXME, userDetails, etag, retryAfter);
     }
 
-    public static UserDetailsDTO updateRetryAfter(UserDetailsDTO oldDetails, Response response) {
-        int retryAfter = Integer.valueOf(response.header("RetryAfter", "-1"));
-        return new UserDetailsDTO(ResolutionStatus.FIXME, oldDetails.userDetails, oldDetails.etag, retryAfter);
+    public static UserDetailsDTO updateRetryAfter(UserDetailsDTO userDetailsDTO, Response response) {
+        int retryAfter = Integer.valueOf(response.header("RetryAfter", "500"));
+        return new UserDetailsDTO(ResolutionStatus.FIXME, userDetailsDTO.userDetails, userDetailsDTO.etag, retryAfter);
     }
 }

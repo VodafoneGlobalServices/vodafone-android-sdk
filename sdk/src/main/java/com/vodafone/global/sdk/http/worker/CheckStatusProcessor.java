@@ -13,13 +13,13 @@ import com.vodafone.global.sdk.http.parser.Parsers;
 import com.vodafone.global.sdk.http.resolve.ResolveGetRequestDirect;
 import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Set;
 
 import static com.vodafone.global.sdk.MessageType.AUTHENTICATE;
 import static com.vodafone.global.sdk.MessageType.CHECK_STATUS;
-import static com.vodafone.global.sdk.MessageType.RETRIEVE_USER_DETAILS;
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
 public class CheckStatusProcessor extends RequestProcessor {
@@ -50,7 +50,6 @@ public class CheckStatusProcessor extends RequestProcessor {
     }
 
     Response queryServer() throws IOException, JSONException {
-
         ResolveGetRequestDirect request = getRequest();
 
         request.setRetryPolicy(null);
@@ -98,37 +97,35 @@ public class CheckStatusProcessor extends RequestProcessor {
                     worker.sendMessageDelayed(message, retryAfter);
                 }
                 break;
-            case HttpCode.NOT_MODIFIED_304: { // TODO
+            case HttpCode.NOT_MODIFIED_304:
                 UserDetailsDTO redirectDetails = Parsers.updateRetryAfter(userDetailsDto, response);
                 Message message = worker.createMessage(CHECK_STATUS, redirectDetails);
                 worker.sendMessageDelayed(message, redirectDetails.retryAfter);
-            }
-            break;
+                break;
             case BAD_REQUEST_400:
                 resolutionFailed();
                 break;
-            case UNAUTHORIZED_401: // TODO
-                //ERROR Unauthorized access
+            case UNAUTHORIZED_401: // TODO 401 doesn't appear in documentation, it either should be removed or documented
                 notifyError(new RequestNotAuthorized());
                 break;
-            case FORBIDDEN_403: // TODO
-                if (!response.body().string().isEmpty() && Utils.isHasTimedOut(authToken.get().expirationTime)) {
-                    worker.sendMessage(worker.createMessage(AUTHENTICATE));
-                    worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDto));
+            case FORBIDDEN_403:
+                String body = response.body().string();
+                if (!body.isEmpty()) {
+                    JSONObject json = new JSONObject(response.body().string());
+                    String id = json.getString("id");
+                    if (id.equals("POL0002")) {
+                        worker.sendMessage(worker.createMessage(AUTHENTICATE));
+                        worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDto));
+                    }
                 } else {
                     notifyError(new GenericServerError());
                 }
                 break;
-            case NOT_FOUND_404: // TODO
-                //ERROR repeat from get user status
-                worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS));
+            case NOT_FOUND_404:
+                super.resolutionFailed();
                 break;
             default:
                 notifyError(new GenericServerError());
         }
-    }
-
-    private void resolutionFailed() {
-        notifyUserDetailUpdate(UserDetailsDTO.FAILED);
     }
 }

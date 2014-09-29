@@ -19,8 +19,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static android.Manifest.permission.RECEIVE_SMS;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.vodafone.global.sdk.MessageType.*;
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
@@ -133,10 +131,6 @@ public class ResolveUserProcessor extends RequestProcessor {
         parseResponse(worker, response);
     }
 
-    private void resolutionFailed() {
-        notifyUserDetailUpdate(UserDetailsDTO.FAILED);
-    }
-
     private boolean noInternetConnection() {
         return !connectedToInternet();
     }
@@ -206,7 +200,7 @@ public class ResolveUserProcessor extends RequestProcessor {
     }
 
     private void checkStatus() {
-        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(ResolutionStatus.STILL_RUNNING); // TODO init
+        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(ResolutionStatus.STILL_RUNNING);
         worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDTO));
     }
 }

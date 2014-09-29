@@ -95,4 +95,8 @@ public abstract class RequestProcessor {
     protected boolean canReadSMS() {
         return context.checkCallingOrSelfPermission(RECEIVE_SMS) == PERMISSION_GRANTED;
     }
+
+    protected void resolutionFailed() {
+        notifyUserDetailUpdate(UserDetailsDTO.FAILED);
+    }
 }
