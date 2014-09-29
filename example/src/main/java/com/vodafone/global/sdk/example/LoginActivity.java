@@ -6,19 +6,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.vodafone.global.sdk.ResolutionStatus;
-import com.vodafone.global.sdk.UserDetails;
-import com.vodafone.global.sdk.UserDetailsCallback;
-import com.vodafone.global.sdk.UserDetailsRequestParameters;
-import com.vodafone.global.sdk.Vodafone;
-import com.vodafone.global.sdk.VodafoneException;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import com.vodafone.global.sdk.*;
 
-public class LoginActivity extends Activity implements UserDetailsCallback
+public class LoginActivity extends Activity implements ResolutionCallback
 {
     @InjectView(R.id.resolved) TextView resolved;
     @InjectView(R.id.stillRunning) TextView stillRunning;
@@ -47,11 +40,19 @@ public class LoginActivity extends Activity implements UserDetailsCallback
     }
 
     @Override
-    public void onUserDetailsUpdate(UserDetails userDetails) {
+    public void onCompleted(UserDetails userDetails) {
         token.setText(userDetails.token);
         validated.setText(String.valueOf(userDetails.token));
-        if (userDetails.status == ResolutionStatus.VALIDATION_REQUIRED)
-            requestSendPinConfirmation();
+    }
+
+    @Override
+    public void onValidationRequired() {
+        requestSendPinConfirmation();
+    }
+
+    @Override
+    public void onFailed() {
+        // TODO inform about failed resolve
     }
 
     private void requestSendPinConfirmation() {
@@ -74,7 +75,7 @@ public class LoginActivity extends Activity implements UserDetailsCallback
     }
 
     @Override
-    public void onUserDetailsError(VodafoneException ex) {
+    public void onError(VodafoneException ex) {
         Toast.makeText(LoginActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
     }
 

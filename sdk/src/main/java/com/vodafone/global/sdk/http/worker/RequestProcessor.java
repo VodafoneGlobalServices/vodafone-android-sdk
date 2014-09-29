@@ -4,29 +4,27 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-
 import com.google.common.base.Optional;
+import com.vodafone.global.sdk.ResolutionCallback;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.UserDetails;
-import com.vodafone.global.sdk.UserDetailsCallback;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
+import timber.log.Timber;
 
 import java.util.Set;
-
-import timber.log.Timber;
 
 public abstract class RequestProcessor {
     protected final Worker worker;
     protected final Settings settings;
     protected final Context context;
-    private final Set<UserDetailsCallback> userDetailsCallbacks;
+    private final Set<ResolutionCallback> resolutionCallbacks;
 
-    public RequestProcessor(Context context, Worker worker, Settings settings, Set<UserDetailsCallback> userDetailsCallback) {
+    public RequestProcessor(Context context, Worker worker, Settings settings, Set<ResolutionCallback> resolutionCallback) {
         this.context = context;
         this.worker = worker;
         this.settings = settings;
-        this.userDetailsCallbacks = userDetailsCallback;
+        this.resolutionCallbacks = resolutionCallback;
     }
 
     abstract void process(Optional<OAuthToken> authToken, Message msg);
@@ -34,11 +32,11 @@ public abstract class RequestProcessor {
     protected void notifyUserDetailUpdate(final UserDetails userDetails) {
         Timber.d(userDetails.toString());
         Handler handler = new Handler(Looper.getMainLooper());
-        for (final UserDetailsCallback callback : userDetailsCallbacks) {
+        for (final ResolutionCallback callback : resolutionCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onUserDetailsUpdate(userDetails);
+                    callback.onCompleted(userDetails);
                 }
             });
         }
@@ -47,11 +45,11 @@ public abstract class RequestProcessor {
     protected void notifyError(final VodafoneException exception) {
         Timber.e(exception, exception.getMessage());
         Handler handler = new Handler(Looper.getMainLooper());
-        for (final UserDetailsCallback callback : userDetailsCallbacks) {
+        for (final ResolutionCallback callback : resolutionCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onUserDetailsError(exception);
+                    callback.onError(exception);
                 }
             });
         }

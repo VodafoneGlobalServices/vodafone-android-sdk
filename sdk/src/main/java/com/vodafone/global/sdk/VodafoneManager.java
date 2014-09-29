@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.octo.android.robospice.SpiceManager;
@@ -12,19 +11,14 @@ import com.squareup.okhttp.OkHttpClient;
 import com.vodafone.global.sdk.http.VodafoneService;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.oauth.OAuthTokenRequest;
-import com.vodafone.global.sdk.http.worker.CheckStatusProcessor;
-import com.vodafone.global.sdk.http.worker.GeneratePinProcessor;
-import com.vodafone.global.sdk.http.worker.ResolveUserProcessor;
-import com.vodafone.global.sdk.http.worker.ValidatePinProcessor;
-import com.vodafone.global.sdk.http.worker.Worker;
+import com.vodafone.global.sdk.http.worker.*;
+import timber.log.Timber;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import timber.log.Timber;
 
 public class VodafoneManager {
     private static HashMap<Class<?>, Registrar> registrars;
@@ -44,7 +38,7 @@ public class VodafoneManager {
     private final GeneratePinProcessor generatePinProc;
     private final ValidatePinProcessor ValidatePinProc;
 
-    Set<UserDetailsCallback> userDetailsCallbacks = new CopyOnWriteArraySet<UserDetailsCallback>();
+    Set<ResolutionCallback> resolutionCallbacks = new CopyOnWriteArraySet<ResolutionCallback>();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
     private IMSI imsi;
     private Optional<OAuthToken> authToken = Optional.absent();
@@ -70,16 +64,16 @@ public class VodafoneManager {
         client = new OkHttpClient();
         imsi = new IMSI(context);
         settings = new Settings(context);
-        register(new CacheUserDetailsCallback());
+        register(new CacheResolutionCallback());
         spiceManager = new SpiceManager(VodafoneService.class);
         spiceManager.start(this.context);
 
         worker = new Worker(callback);
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey);
-        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, userDetailsCallbacks, requestBuilderProvider);
-        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, imsi, userDetailsCallbacks, requestBuilderProvider);
+        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolutionCallbacks, requestBuilderProvider);
+        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, imsi, resolutionCallbacks, requestBuilderProvider);
         generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks, requestBuilderProvider);
-        ValidatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, userDetailsCallbacks, requestBuilderProvider);
+        ValidatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolutionCallbacks, requestBuilderProvider);
 
         tresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
@@ -133,15 +127,15 @@ public class VodafoneManager {
     private HashMap<Class<?>, Registrar> prepareRegistrars() {
         HashMap<Class<?>, Registrar> registrars = new HashMap<Class<?>, Registrar>();
 
-        registrars.put(UserDetailsCallback.class, new Registrar() {
+        registrars.put(ResolutionCallback.class, new Registrar() {
             @Override
             public void register(VodafoneCallback callback) {
-                userDetailsCallbacks.add((UserDetailsCallback) callback);
+                resolutionCallbacks.add((ResolutionCallback) callback);
             }
 
             @Override
             public void unregister(VodafoneCallback callback) {
-                userDetailsCallbacks.remove(callback);
+                resolutionCallbacks.remove(callback);
             }
         });
 
@@ -199,14 +193,27 @@ public class VodafoneManager {
     /**
      * Callback used internally to cache UserDetails.
      */
-    private class CacheUserDetailsCallback implements UserDetailsCallback {
+    private class CacheResolutionCallback implements ResolutionCallback {
         @Override
-        public void onUserDetailsUpdate(UserDetails userDetails) {
+        public void onCompleted(UserDetails userDetails) {
             cachedUserDetails = Optional.of(userDetails);
         }
 
         @Override
-        public void onUserDetailsError(VodafoneException ex) {
+        public void onValidationRequired() {
+        }
+
+        @Override
+        public void onFailed() {
+            clearCache();
+        }
+
+        @Override
+        public void onError(VodafoneException ex) {
+            clearCache();
+        }
+
+        private void clearCache() {
             cachedUserDetails = Optional.absent();
         }
     }

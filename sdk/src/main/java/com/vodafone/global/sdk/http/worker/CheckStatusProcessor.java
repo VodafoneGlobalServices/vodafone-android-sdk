@@ -14,7 +14,7 @@ import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.RequestNotAuthorized;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.UserDetailsCallback;
+import com.vodafone.global.sdk.ResolutionCallback;
 import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.VodafoneManager.MESSAGE_ID;
 import com.vodafone.global.sdk.http.HttpCode;
@@ -40,8 +40,8 @@ public class CheckStatusProcessor extends RequestProcessor {
     private Optional<OAuthToken> authToken;
     private RequestBuilderProvider requestBuilderProvider;
 
-    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, IMSI imsi, Set<UserDetailsCallback> userDetailsCallbacks, RequestBuilderProvider requestBuilderProvider) {
-        super(context, worker, settings, userDetailsCallbacks);
+    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, IMSI imsi, Set<ResolutionCallback> resolutionCallbacks, RequestBuilderProvider requestBuilderProvider) {
+        super(context, worker, settings, resolutionCallbacks);
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
     }

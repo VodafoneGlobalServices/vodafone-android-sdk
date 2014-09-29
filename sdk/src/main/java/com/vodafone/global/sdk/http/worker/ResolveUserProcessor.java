@@ -15,7 +15,7 @@ import com.vodafone.global.sdk.NoInternetConnection;
 import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.UserDetails;
-import com.vodafone.global.sdk.UserDetailsCallback;
+import com.vodafone.global.sdk.ResolutionCallback;
 import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.VodafoneException;
@@ -54,10 +54,10 @@ public class ResolveUserProcessor extends RequestProcessor {
             Settings settings,
             String backendAppKey,
             IMSI imsi,
-            Set<UserDetailsCallback> userDetailsCallbacks,
+            Set<ResolutionCallback> resolutionCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
-        super(context, worker, settings, userDetailsCallbacks);
+        super(context, worker, settings, resolutionCallbacks);
         this.backendAppKey = backendAppKey;
         this.imsi = imsi;
         this.requestBuilderProvider = requestBuilderProvider;

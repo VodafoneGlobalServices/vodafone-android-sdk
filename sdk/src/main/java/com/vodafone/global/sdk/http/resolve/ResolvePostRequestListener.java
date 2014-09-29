@@ -4,28 +4,27 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.vodafone.global.sdk.RequestBuilderProvider;
+import com.vodafone.global.sdk.ResolutionCallback;
 import com.vodafone.global.sdk.ResolutionStatus;
-import com.vodafone.global.sdk.UserDetailsCallback;
+import timber.log.Timber;
 
 import java.util.Set;
 
-import timber.log.Timber;
-
 public class ResolvePostRequestListener implements RequestListener<UserDetailsDTO> {
     private final SpiceManager spiceManager;
-    private final Set<UserDetailsCallback> userDetailsCallbacks;
+    private final Set<ResolutionCallback> resolutionCallbacks;
 
-    public ResolvePostRequestListener(SpiceManager spiceManager, Set<UserDetailsCallback> userDetailsCallbacks) {
+    public ResolvePostRequestListener(SpiceManager spiceManager, Set<ResolutionCallback> resolutionCallbacks) {
         this.spiceManager = spiceManager;
-        this.userDetailsCallbacks = userDetailsCallbacks;
+        this.resolutionCallbacks = resolutionCallbacks;
     }
 
     @Override
     public void onRequestFailure(SpiceException e) {
         Timber.e(e, e.getMessage());
 
-        for (UserDetailsCallback callback : userDetailsCallbacks) {
-            //callback.onUserDetailsError(new VodafoneException(e.getMessage(), e));
+        for (ResolutionCallback callback : resolutionCallbacks) {
+            //callback.onError(new VodafoneException(e.getMessage(), e));
         }
     }
 
@@ -35,8 +34,8 @@ public class ResolvePostRequestListener implements RequestListener<UserDetailsDT
         if (stillRunning)
             loop(userDetailsDTO);
 
-        for (UserDetailsCallback callback : userDetailsCallbacks)
-            callback.onUserDetailsUpdate(userDetailsDTO.userDetails);
+        for (ResolutionCallback callback : resolutionCallbacks)
+            callback.onCompleted(userDetailsDTO.userDetails);
     }
 
     private void loop(UserDetailsDTO userDetailsDTO) {
@@ -48,7 +47,7 @@ public class ResolvePostRequestListener implements RequestListener<UserDetailsDT
                 .userDetaildDTO(userDetailsDTO)
                 .requestBuilderProvider(requestBuilderProvider)
                 .build();
-        ResolveGetRequestListener requestListener = new ResolveGetRequestListener(spiceManager, userDetailsCallbacks, requestBuilderProvider);
+        ResolveGetRequestListener requestListener = new ResolveGetRequestListener(spiceManager, resolutionCallbacks, requestBuilderProvider);
         spiceManager.execute(request, requestListener);
     }
 }

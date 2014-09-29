@@ -12,7 +12,7 @@ import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.RequestValidationError;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.TokenNotFound;
-import com.vodafone.global.sdk.UserDetailsCallback;
+import com.vodafone.global.sdk.ResolutionCallback;
 import com.vodafone.global.sdk.Utils;
 import com.vodafone.global.sdk.ValidatePinParameters;
 import com.vodafone.global.sdk.http.HttpCode;
@@ -40,10 +40,10 @@ public class ValidatePinProcessor extends RequestProcessor {
             Worker worker,
             Settings settings,
             String backendAppKey,
-            Set<UserDetailsCallback> userDetailsCallbacks,
+            Set<ResolutionCallback> resolutionCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
-        super(context, worker, settings, userDetailsCallbacks);
+        super(context, worker, settings, resolutionCallbacks);
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
     }
