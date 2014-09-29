@@ -8,4 +8,5 @@ public interface HttpCode {
     int BAD_REQUEST_400 = 400;
     int FORBIDDEN_403 = 403;
     int NOT_FOUND_404 = 404;
+    int CONFLICT_409 = 409;
 }

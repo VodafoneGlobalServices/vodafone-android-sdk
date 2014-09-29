@@ -81,8 +81,10 @@ public class ValidatePinProcessor extends RequestProcessor {
         switch (code) {
             case HttpCode.OK_200:
                 notifyUserDetailUpdate(Parsers.parseUserDetails(response));
+                // TODO ValidateSmsCallback.onSmsValidationSuccessful()
                 break;
             case BAD_REQUEST_400:
+                // TODO verify behaviour with flow diagram
                 notifyError(new RequestValidationError());
                 break;
             case FORBIDDEN_403:
@@ -90,6 +92,13 @@ public class ValidatePinProcessor extends RequestProcessor {
                 break;
             case NOT_FOUND_404:
                 notifyError(new TokenNotFound());
+                break;
+            case CONFLICT_409:
+                // TODO pin validated failed
+                // if (intercepts)
+                //   com.vodafone.global.sdk.ResolutionCallback.onFailed()
+                // else
+                //   com.vodafone.global.sdk.ValidateSmsCallback.onSmsValidationError()
                 break;
             default:
                 notifyError(new GenericServerError());
