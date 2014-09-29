@@ -41,24 +41,15 @@ public class GeneratePinProcessor {
         this.requestBuilderProvider = requestBuilderProvider;
     }
 
-    void parseResponse(Response response) {
-        int code = response.code();
-        switch (code) {
-            case OK_200:
-                notifySuccess();
-                break;
-            case BAD_REQUEST_400:
-            case FORBIDDEN_403:
-                // TODO validate error, error invalid input
-                notifyError(new RequestValidationError());
-                break;
-            case NOT_FOUND_404: // TODO
-                // TODO notify user details callback about
-                // TODO validate error
-                notifyError(new TokenNotFound());
-                break;
-            default:
-                notifyError(new GenericServerError());
+    public void process(Optional<OAuthToken> authToken, Message msg) {
+        this.authToken = authToken;
+        String token = (String) msg.obj;
+
+        try {
+            Response response = queryServer(token);
+            parseResponse(response);
+        } catch (Exception e) {
+            notifyError(new GenericServerError());
         }
     }
 
@@ -90,15 +81,24 @@ public class GeneratePinProcessor {
                 .toString();
     }
 
-    public void process(Optional<OAuthToken> authToken, Message msg) {
-        this.authToken = authToken;
-        String token = (String) msg.obj;
-
-        try {
-            Response response = queryServer(token);
-            parseResponse(response);
-        } catch (Exception e) {
-            notifyError(new GenericServerError());
+    void parseResponse(Response response) {
+        int code = response.code();
+        switch (code) {
+            case OK_200:
+                notifySuccess();
+                break;
+            case BAD_REQUEST_400:
+            case FORBIDDEN_403:
+                // TODO validate error, error invalid input
+                notifyError(new RequestValidationError());
+                break;
+            case NOT_FOUND_404: // TODO
+                // TODO notify user details callback about
+                // TODO validate error
+                notifyError(new TokenNotFound());
+                break;
+            default:
+                notifyError(new GenericServerError());
         }
     }
 
