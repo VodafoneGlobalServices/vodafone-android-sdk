@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import static com.vodafone.global.sdk.MessageType.*;
+
 public class VodafoneManager {
     private static HashMap<Class<?>, Registrar> registrars;
     private final OkHttpClient client;
@@ -161,7 +163,7 @@ public class VodafoneManager {
      */
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
         checkCallThreshold();
-        worker.sendMessage(worker.createMessage(MESSAGE_ID.RETRIEVE_USER_DETAILS.ordinal(), parameters));
+        worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS, parameters));
     }
 
     private void checkCallThreshold() {
@@ -179,7 +181,7 @@ public class VodafoneManager {
         ValidatePinParameters parameters = ValidatePinParameters.builder()
                 .token(cachedUserDetails.get().token)
                 .pin(code).build();
-        worker.sendMessage(worker.createMessage(MESSAGE_ID.VALIDATE_PIN.ordinal(), parameters));
+        worker.sendMessage(worker.createMessage(VALIDATE_PIN, parameters));
     }
 
     /**
@@ -187,7 +189,7 @@ public class VodafoneManager {
      */
     public void generatePin() {
         Timber.d("generate pin");
-        worker.sendMessage(worker.createMessage(MESSAGE_ID.GENERATE_PIN.ordinal(), cachedUserDetails.get().token));
+        worker.sendMessage(worker.createMessage(GENERATE_PIN, cachedUserDetails.get().token));
     }
 
     /**
@@ -218,18 +220,10 @@ public class VodafoneManager {
         }
     }
 
-    public enum MESSAGE_ID {
-        RETRIEVE_USER_DETAILS,
-        AUTHENTICATE,
-        CHECK_STATUS,
-        GENERATE_PIN,
-        VALIDATE_PIN
-    }
-
     private Handler.Callback callback  = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
-            MESSAGE_ID id = MESSAGE_ID.values()[msg.what];
+            MessageType id = MessageType.values()[msg.what];
             switch (id) {
                 case AUTHENTICATE:
                     authenticate();

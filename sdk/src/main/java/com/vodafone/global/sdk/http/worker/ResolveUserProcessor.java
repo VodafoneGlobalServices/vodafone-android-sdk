@@ -7,7 +7,6 @@ import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.*;
-import com.vodafone.global.sdk.VodafoneManager.MESSAGE_ID;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.parser.Parsers;
 import com.vodafone.global.sdk.http.resolve.ResolvePostRequestDirect;
@@ -22,6 +21,7 @@ import java.util.regex.Pattern;
 
 import static android.Manifest.permission.RECEIVE_SMS;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.vodafone.global.sdk.MessageType.*;
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
 public class ResolveUserProcessor extends RequestProcessor {
@@ -66,7 +66,7 @@ public class ResolveUserProcessor extends RequestProcessor {
     }
 
     private void requestNewToken(Message msg) {
-        worker.sendMessage(worker.createMessage(MESSAGE_ID.AUTHENTICATE.ordinal()));
+        worker.sendMessage(worker.createMessage(AUTHENTICATE));
         worker.sendMessage(worker.createMessage(msg));
     }
 
@@ -189,8 +189,8 @@ public class ResolveUserProcessor extends RequestProcessor {
                         JSONObject json = new JSONObject(response.body().string());
                         String id = json.getString("id");
                         if (id.equals("POL0002")) {
-                            worker.sendMessage(worker.createMessage(MESSAGE_ID.AUTHENTICATE.ordinal()));
-                            worker.sendMessage(worker.createMessage(MESSAGE_ID.RETRIEVE_USER_DETAILS.ordinal()));
+                            worker.sendMessage(worker.createMessage(AUTHENTICATE));
+                            worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS));
                         }
                     } else {
                         notifyError(new GenericServerError());
@@ -226,11 +226,11 @@ public class ResolveUserProcessor extends RequestProcessor {
 
     private void checkStatus() {
         UserDetailsDTO userDetailsDTO = null; // TODO init
-        worker.sendMessage(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), userDetailsDTO));
+        worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDTO));
     }
 
     private void generatePin(String token) {
-        worker.sendMessage(worker.createMessage(MESSAGE_ID.GENERATE_PIN.ordinal(), token));
+        worker.sendMessage(worker.createMessage(GENERATE_PIN, token));
     }
 
     private boolean canReadSMS() {

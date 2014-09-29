@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import com.vodafone.global.sdk.MessageType;
 import timber.log.Timber;
 
 public class Worker extends Thread {
@@ -25,15 +26,14 @@ public class Worker extends Thread {
         }
     }
 
-    public Message createMessage(int what) {
+    public Message createMessage(MessageType messageType) {
         Message message = Message.obtain();
-        message.what = what;
+        message.what = messageType.ordinal();
         return message;
     }
 
-    public Message createMessage(int what, Object object) {
-        Message message = Message.obtain();
-        message.what = what;
+    public Message createMessage(MessageType messageType, Object object) {
+        Message message = createMessage(messageType);
         message.obj = object;
         return message;
     }
