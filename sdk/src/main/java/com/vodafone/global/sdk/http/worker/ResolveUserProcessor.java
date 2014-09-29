@@ -12,7 +12,6 @@ import com.vodafone.global.sdk.http.resolve.ResolvePostRequestDirect;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.Set;
 
 import static com.vodafone.global.sdk.MessageType.AUTHENTICATE;
 
@@ -29,7 +28,7 @@ public class ResolveUserProcessor extends RequestProcessor {
             Settings settings,
             String backendAppKey,
             IMSI imsi,
-            Set<ResolveCallback> resolveCallbacks,
+            ResolveCallbacks resolveCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
         super(context, worker, settings, resolveCallbacks);
@@ -48,11 +47,11 @@ public class ResolveUserProcessor extends RequestProcessor {
             try {
               startResolve(msg);
             } catch (VodafoneException e) {
-                notifyError(e);
+                resolveCallbacks.notifyError(e);
             } catch (IOException e) {
-                notifyError(new GenericServerError());
+                resolveCallbacks.notifyError(new GenericServerError());
             } catch (JSONException e) {
-                notifyError(new GenericServerError());
+                resolveCallbacks.notifyError(new GenericServerError());
             }
         }
     }
@@ -73,19 +72,19 @@ public class ResolveUserProcessor extends RequestProcessor {
             if (msisdn.isValid()) {
                 resolveWithMsisdn(msisdn);
             } else {
-                resolutionFailed();
+                resolveCallbacks.resolutionFailed();
             }
         } else if (overWifi() && imsi.isValid()) {
             resolveWithImsi(imsi, smsValidation, settings.apix);
         } else if (overMobileNetwork() && imsi.isValid()) {
             resolveWithImsi(imsi, smsValidation, settings.hap);
         } else {
-            resolutionFailed();
+            resolveCallbacks.resolutionFailed();
         }
     }
 
     private void resolutionCantBeDoneWithoutNetworkConnection() {
-        notifyError(new NoInternetConnection());
+        resolveCallbacks.notifyError(new NoInternetConnection());
     }
 
     private void resolveWithMsisdn(MSISDN msisdn) throws IOException, JSONException {

@@ -14,7 +14,6 @@ import com.vodafone.global.sdk.http.sms.ValidatePinRequestDirect;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
@@ -28,7 +27,7 @@ public class ValidatePinProcessor extends RequestProcessor {
             Worker worker,
             Settings settings,
             String backendAppKey,
-            Set<ResolveCallback> resolveCallbacks,
+            ResolveCallbacks resolveCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
         super(context, worker, settings, resolveCallbacks);
@@ -45,7 +44,7 @@ public class ValidatePinProcessor extends RequestProcessor {
             Response response = queryServer(validatePinParameters);
             parseResponse(response);
         } catch (Exception e) {
-            notifyError(new GenericServerError());
+            resolveCallbacks.notifyError(new GenericServerError());
         }
     }
 
@@ -80,18 +79,18 @@ public class ValidatePinProcessor extends RequestProcessor {
         int code = response.code();
         switch (code) {
             case HttpCode.OK_200:
-                notifyUserDetailUpdate(Parsers.parseUserDetails(response));
+                resolveCallbacks.notifyUserDetailUpdate(Parsers.parseUserDetails(response));
                 // TODO ValidateSmsCallback.onSmsValidationSuccessful()
                 break;
             case BAD_REQUEST_400:
                 // TODO verify behaviour with flow diagram
-                notifyError(new RequestValidationError());
+                resolveCallbacks.notifyError(new RequestValidationError());
                 break;
             case FORBIDDEN_403:
-                notifyError(new TokenNotFound());
+                resolveCallbacks.notifyError(new TokenNotFound());
                 break;
             case NOT_FOUND_404:
-                notifyError(new TokenNotFound());
+                resolveCallbacks.notifyError(new TokenNotFound());
                 break;
             case CONFLICT_409:
                 // TODO pin validated failed
@@ -101,7 +100,7 @@ public class ValidatePinProcessor extends RequestProcessor {
                 //   com.vodafone.global.sdk.ValidateSmsCallback.onSmsValidationError()
                 break;
             default:
-                notifyError(new GenericServerError());
+                resolveCallbacks.notifyError(new GenericServerError());
         }
     }
 }

@@ -8,7 +8,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.GenericServerError;
 import com.vodafone.global.sdk.RequestBuilderProvider;
-import com.vodafone.global.sdk.ResolveCallback;
+import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.resolve.ResolveGetRequestDirect;
@@ -16,7 +16,6 @@ import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.Set;
 
 public class CheckStatusProcessor extends RequestProcessor {
     private final CheckStatusParser parser;
@@ -25,7 +24,7 @@ public class CheckStatusProcessor extends RequestProcessor {
     private RequestBuilderProvider requestBuilderProvider;
     private UserDetailsDTO userDetailsDto;
 
-    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, Set<ResolveCallback> resolveCallbacks, RequestBuilderProvider requestBuilderProvider) {
+    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, ResolveCallbacks resolveCallbacks, RequestBuilderProvider requestBuilderProvider) {
         super(context, worker, settings, resolveCallbacks);
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
@@ -41,9 +40,9 @@ public class CheckStatusProcessor extends RequestProcessor {
             Response response = queryServer();
             parser.parseResponse(response, userDetailsDto);
         } catch (IOException e) {
-            notifyError(new GenericServerError());
+            resolveCallbacks.notifyError(new GenericServerError());
         } catch (JSONException e) {
-            notifyError(new GenericServerError());
+            resolveCallbacks.notifyError(new GenericServerError());
         }
     }
 

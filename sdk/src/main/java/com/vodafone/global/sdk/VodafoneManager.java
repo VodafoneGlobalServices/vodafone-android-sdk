@@ -40,7 +40,7 @@ public class VodafoneManager {
     private final GeneratePinProcessor generatePinProc;
     private final ValidatePinProcessor validatePinProc;
 
-    Set<ResolveCallback> resolveCallbacks = new CopyOnWriteArraySet<ResolveCallback>();
+    ResolveCallbacks resolveCallbacks = new ResolveCallbacks();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
     private IMSI imsi;
     private Optional<OAuthToken> authToken = Optional.absent();
@@ -137,7 +137,7 @@ public class VodafoneManager {
 
             @Override
             public void unregister(VodafoneCallback callback) {
-                resolveCallbacks.remove(callback);
+                resolveCallbacks.remove((ResolveCallback) callback);
             }
         });
 

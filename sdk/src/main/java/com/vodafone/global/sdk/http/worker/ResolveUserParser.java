@@ -1,18 +1,17 @@
 package com.vodafone.global.sdk.http.worker;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.*;
+import com.vodafone.global.sdk.BadRequest;
+import com.vodafone.global.sdk.GenericServerError;
+import com.vodafone.global.sdk.ResolutionStatus;
+import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.http.parser.Parsers;
 import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import org.json.JSONException;
 import org.json.JSONObject;
-import timber.log.Timber;
 
 import java.io.IOException;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,9 +23,9 @@ import static com.vodafone.global.sdk.http.HttpCode.*;
 public class ResolveUserParser {
     private final Worker worker;
     private final Context context;
-    private final Set<ResolveCallback> resolveCallbacks;
+    private final ResolveCallbacks resolveCallbacks;
 
-    public ResolveUserParser(Worker worker, Context context, Set<ResolveCallback> resolveCallbacks) {
+    public ResolveUserParser(Worker worker, Context context, ResolveCallbacks resolveCallbacks) {
         this.worker = worker;
         this.context = context;
         this.resolveCallbacks = resolveCallbacks;
@@ -36,7 +35,7 @@ public class ResolveUserParser {
         int code = response.code();
         switch (code) {
             case CREATED_201:
-                notifyUserDetailUpdate(Parsers.resolutionCompleted(response));
+                resolveCallbacks.notifyUserDetailUpdate(Parsers.resolutionCompleted(response));
                 break;
             case FOUND_302:
                 String location = response.header("Location");
@@ -49,7 +48,7 @@ public class ResolveUserParser {
                 } else if (resolutionIsOngoing(location)) {
                     checkStatus();
                 } else {
-                    notifyError(new GenericServerError());
+                    resolveCallbacks.notifyError(new GenericServerError());
                 }
                 break;
             case NOT_FOUND_404:
@@ -58,7 +57,7 @@ public class ResolveUserParser {
             case BAD_REQUEST_400:
                 // Application ID doesn't exist on APIX
                 // Application ID has no seamlessID scope associated
-                notifyError(new BadRequest());
+                resolveCallbacks.notifyError(new BadRequest());
                 break;
             case FORBIDDEN_403:
                 String body = response.body().string();
@@ -70,49 +69,11 @@ public class ResolveUserParser {
                         worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS));
                     }
                 } else {
-                    notifyError(new GenericServerError());
+                    resolveCallbacks.notifyError(new GenericServerError());
                 }
                 break;
             default:
-                notifyError(new GenericServerError());
-        }
-    }
-
-    protected void notifyUserDetailUpdate(final UserDetailsDTO userDetailsDto) {
-        Timber.d(userDetailsDto.toString());
-        Handler handler = new Handler(Looper.getMainLooper());
-        for (final ResolveCallback callback : resolveCallbacks) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    switch (userDetailsDto.status) {
-                        case COMPLETED:
-                            callback.onCompleted(userDetailsDto.userDetails);
-                            break;
-                        case STILL_RUNNING:
-                            break;
-                        case VALIDATION_REQUIRED:
-                            callback.onValidationRequired();
-                            break;
-                        case FAILED:
-                            callback.onFailed();
-                            break;
-                    }
-                }
-            });
-        }
-    }
-
-    protected void notifyError(final VodafoneException exception) {
-        Timber.e(exception, exception.getMessage());
-        Handler handler = new Handler(Looper.getMainLooper());
-        for (final ResolveCallback callback : resolveCallbacks) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onError(exception);
-                }
-            });
+                resolveCallbacks.notifyError(new GenericServerError());
         }
     }
 
@@ -138,7 +99,7 @@ public class ResolveUserParser {
 
     protected void validationRequired(String token) {
         UserDetailsDTO userDetailsDTO = UserDetailsDTO.validationRequired(token);
-        notifyUserDetailUpdate(userDetailsDTO);
+        resolveCallbacks.notifyUserDetailUpdate(userDetailsDTO);
     }
 
     private boolean resolutionIsOngoing(String location) {
@@ -153,6 +114,6 @@ public class ResolveUserParser {
     }
 
     protected void resolutionFailed() {
-        notifyUserDetailUpdate(UserDetailsDTO.FAILED);
+        resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.FAILED);
     }
 }
