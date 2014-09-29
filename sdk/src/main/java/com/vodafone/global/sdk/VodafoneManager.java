@@ -73,7 +73,7 @@ public class VodafoneManager {
         worker = new Worker(callback);
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey);
         resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolutionCallbacks, requestBuilderProvider);
-        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, imsi, resolutionCallbacks, requestBuilderProvider);
+        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolutionCallbacks, requestBuilderProvider);
         generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks, requestBuilderProvider);
         validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolutionCallbacks, requestBuilderProvider);
 

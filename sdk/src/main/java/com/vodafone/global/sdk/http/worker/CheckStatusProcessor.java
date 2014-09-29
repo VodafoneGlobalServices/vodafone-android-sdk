@@ -17,100 +17,118 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.Set;
 
-import static com.vodafone.global.sdk.MessageType.*;
+import static com.vodafone.global.sdk.MessageType.AUTHENTICATE;
+import static com.vodafone.global.sdk.MessageType.CHECK_STATUS;
+import static com.vodafone.global.sdk.MessageType.RETRIEVE_USER_DETAILS;
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
 public class CheckStatusProcessor extends RequestProcessor {
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
     private RequestBuilderProvider requestBuilderProvider;
+    private UserDetailsDTO userDetailsDto;
 
-    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, IMSI imsi, Set<ResolutionCallback> resolutionCallbacks, RequestBuilderProvider requestBuilderProvider) {
+    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, Set<ResolutionCallback> resolutionCallbacks, RequestBuilderProvider requestBuilderProvider) {
         super(context, worker, settings, resolutionCallbacks);
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
     }
 
-    void parseResponse(Worker worker, Response response, UserDetailsDTO oldRedirectDetails) {
-        int code = response.code();
+    @Override
+    public void process(Optional<OAuthToken> authToken, Message msg) {
+        this.authToken = authToken;
+        userDetailsDto = (UserDetailsDTO) msg.obj;
+
         try {
-            switch (code) {
-                case OK_200:
-                    notifyUserDetailUpdate(Parsers.parseUserDetails(response));
-                case FOUND_302: {
-                    UserDetailsDTO redirectDetails  = Parsers.parseRedirectDetails(response);
-                    if (oldRedirectDetails.status == ResolutionStatus.VALIDATION_REQUIRED) {
-                        notifyUserDetailUpdate(redirectDetails);
-                    } else {
-                        worker.sendMessageDelayed(worker.createMessage(CHECK_STATUS, redirectDetails), redirectDetails.retryAfter);
-                    }
-                }
-                break;
-                case HttpCode.NOT_MODIFIED_304: {
-                    UserDetailsDTO redirectDetails = Parsers.updateRetryAfter(oldRedirectDetails, response);
-                    worker.sendMessageDelayed(worker.createMessage(CHECK_STATUS, redirectDetails), redirectDetails.retryAfter);
-                }
-                break;
-                case BAD_REQUEST_400:
-                    //ERROR bad request - internal SDK error
-                    notifyError(new BadRequest());
-                    break;
-                case UNAUTHORIZED_401:
-                    //ERROR Unauthorized access
-                    notifyError(new RequestNotAuthorized());
-                    break;
-                case FORBIDDEN_403:
-                    if (!response.body().string().isEmpty() && Utils.isHasTimedOut(authToken.get().expirationTime)) {
-                        worker.sendMessage(worker.createMessage(AUTHENTICATE));
-                        worker.sendMessage(worker.createMessage(CHECK_STATUS, oldRedirectDetails));
-                    } else {
-                        notifyError(new GenericServerError());
-                    }
-                    break;
-                case NOT_FOUND_404:
-                    //ERROR repeat from get user status
-                    worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS));
-                    break;
-                default: //5xx and other critical errors
-                    notifyError(new GenericServerError());
-            }
-        } catch (JSONException e) {
-            notifyError(new GenericServerError());
+            Response response = queryServer();
+            parseResponse(worker, response);
         } catch (IOException e) {
+            notifyError(new GenericServerError());
+        } catch (JSONException e) {
             notifyError(new GenericServerError());
         }
     }
 
-    Response queryServer(UserDetailsDTO details) throws IOException, JSONException {
-        Uri.Builder builder = new Uri.Builder();
-        Uri uri = builder.scheme(settings.apix.protocol)
-                .authority(settings.apix.host)
-                .path(settings.apix.path)
-                .appendPath(details.userDetails.token)
-                .appendQueryParameter("backendId", backendAppKey)
-                    .build();
+    Response queryServer() throws IOException, JSONException {
 
-        ResolveGetRequestDirect request = ResolveGetRequestDirect.builder()
-                .url(uri.toString())
-                .accessToken(authToken.get().accessToken)
-                .requestBuilderProvider(requestBuilderProvider)
-                .etag(details.etag)
-                .build();
+        ResolveGetRequestDirect request = getRequest();
+
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
 
         return request.loadDataFromNetwork();
     }
 
-    @Override
-    public void process(Optional<OAuthToken> authToken, Message msg) {
-        UserDetailsDTO redirectDetails = (UserDetailsDTO) msg.obj;
+    private ResolveGetRequestDirect getRequest() {
+        ResolveGetRequestDirect.Builder requestBuilder = ResolveGetRequestDirect.builder()
+                .url(getUrl())
+                .accessToken(authToken.get().accessToken)
+                .requestBuilderProvider(requestBuilderProvider);
+        if (!userDetailsDto.etag.isEmpty())
+            requestBuilder.etag(userDetailsDto.etag);
+        return requestBuilder.build();
+    }
 
-        try {
-            this.authToken = authToken;
-            parseResponse(worker, queryServer(redirectDetails), redirectDetails);
-        } catch (Exception e) {
+    private String getUrl() {
+        return new Uri.Builder().scheme(settings.apix.protocol)
+                .authority(settings.apix.host)
+                .path(settings.apix.path)
+                .appendPath(userDetailsDto.userDetails.token)
+                .appendQueryParameter("backendId", backendAppKey)
+                .build().toString();
+    }
 
+    void parseResponse(Worker worker, Response response) throws IOException, JSONException {
+        int code = response.code();
+        switch (code) {
+            case OK_200:
+                notifyUserDetailUpdate(Parsers.resolutionCompleted(response));
+                break;
+            case FOUND_302:
+                String location = response.header("Location");
+                if (requiresSmsValidation(location)) {
+                    if (canReadSMS()) {
+                        generatePin(extractToken(location));
+                    } else {
+                        validationRequired(extractToken(location));
+                    }
+                } else {
+                    int retryAfter = Integer.valueOf(response.header("Retry-After", "500"));
+                    Message message = worker.createMessage(CHECK_STATUS, userDetailsDto);
+                    worker.sendMessageDelayed(message, retryAfter);
+                }
+                break;
+            case HttpCode.NOT_MODIFIED_304: { // TODO
+                UserDetailsDTO redirectDetails = Parsers.updateRetryAfter(userDetailsDto, response);
+                Message message = worker.createMessage(CHECK_STATUS, redirectDetails);
+                worker.sendMessageDelayed(message, redirectDetails.retryAfter);
+            }
+            break;
+            case BAD_REQUEST_400:
+                resolutionFailed();
+                break;
+            case UNAUTHORIZED_401: // TODO
+                //ERROR Unauthorized access
+                notifyError(new RequestNotAuthorized());
+                break;
+            case FORBIDDEN_403: // TODO
+                if (!response.body().string().isEmpty() && Utils.isHasTimedOut(authToken.get().expirationTime)) {
+                    worker.sendMessage(worker.createMessage(AUTHENTICATE));
+                    worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDto));
+                } else {
+                    notifyError(new GenericServerError());
+                }
+                break;
+            case NOT_FOUND_404: // TODO
+                //ERROR repeat from get user status
+                worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS));
+                break;
+            default:
+                notifyError(new GenericServerError());
         }
+    }
+
+    private void resolutionFailed() {
+        notifyUserDetailUpdate(UserDetailsDTO.FAILED);
     }
 }

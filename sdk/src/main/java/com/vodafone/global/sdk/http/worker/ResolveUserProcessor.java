@@ -25,8 +25,6 @@ import static com.vodafone.global.sdk.MessageType.*;
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
 public class ResolveUserProcessor extends RequestProcessor {
-    public static final int RESOLUTION_COMLETED = CREATED_201;
-    public static final int ONGOING_OR_VALIDATION_REQUIRED = FOUND_302;
     private String backendAppKey;
     private IMSI imsi;
     private final RequestBuilderProvider requestBuilderProvider;
@@ -158,10 +156,10 @@ public class ResolveUserProcessor extends RequestProcessor {
     private void parseResponse(Worker worker, Response response) throws IOException, JSONException {
         int code = response.code();
             switch (code) {
-                case RESOLUTION_COMLETED:
+                case CREATED_201:
                     notifyUserDetailUpdate(Parsers.resolutionCompleted(response));
                     break;
-                case ONGOING_OR_VALIDATION_REQUIRED:
+                case FOUND_302:
                     String location = response.header("Location");
                     if (requiresSmsValidation(location)) {
                         if (canReadSMS()) {
@@ -201,39 +199,14 @@ public class ResolveUserProcessor extends RequestProcessor {
             }
     }
 
-    private String extractToken(String location) {
-        Pattern pattern = Pattern.compile(".*/users/tokens/(.*)[/?].*");
-        Matcher matcher = pattern.matcher(location);
-        return matcher.group(1);
-    }
-
-    private boolean requiresSmsValidation(String location) {
-        Pattern pattern = Pattern.compile(".*/users/tokens/[^/]*/pins\\?backendId=.*");
-        Matcher matcher = pattern.matcher(location);
-        return matcher.matches();
-    }
-
     private boolean resolutionIsOngoing(String location) {
         Pattern pattern = Pattern.compile(".*/users/tokens/[^/]*\\?backendId=.*");
         Matcher matcher = pattern.matcher(location);
         return matcher.matches();
     }
 
-    private void validationRequired(String token) {
-        UserDetailsDTO userDetailsDTO = UserDetailsDTO.validationRequired(token);
-        notifyUserDetailUpdate(userDetailsDTO);
-    }
-
     private void checkStatus() {
-        UserDetailsDTO userDetailsDTO = null; // TODO init
+        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(ResolutionStatus.STILL_RUNNING); // TODO init
         worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDTO));
-    }
-
-    private void generatePin(String token) {
-        worker.sendMessage(worker.createMessage(GENERATE_PIN, token));
-    }
-
-    private boolean canReadSMS() {
-        return context.checkCallingOrSelfPermission(RECEIVE_SMS) == PERMISSION_GRANTED;
     }
 }

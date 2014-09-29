@@ -5,14 +5,18 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import com.google.common.base.Optional;
-import com.vodafone.global.sdk.ResolutionCallback;
-import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.VodafoneException;
+import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import timber.log.Timber;
 
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static android.Manifest.permission.RECEIVE_SMS;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.vodafone.global.sdk.MessageType.GENERATE_PIN;
 
 public abstract class RequestProcessor {
     protected final Worker worker;
@@ -65,5 +69,30 @@ public abstract class RequestProcessor {
                 }
             });
         }
+    }
+
+    protected boolean requiresSmsValidation(String location) {
+        Pattern pattern = Pattern.compile(".*/users/tokens/[^/]*/pins\\?backendId=.*");
+        Matcher matcher = pattern.matcher(location);
+        return matcher.matches();
+    }
+
+    protected String extractToken(String location) {
+        Pattern pattern = Pattern.compile(".*/users/tokens/(.*)[/?].*");
+        Matcher matcher = pattern.matcher(location);
+        return matcher.group(1);
+    }
+
+    protected void validationRequired(String token) {
+        UserDetailsDTO userDetailsDTO = UserDetailsDTO.validationRequired(token);
+        notifyUserDetailUpdate(userDetailsDTO);
+    }
+
+    protected void generatePin(String token) {
+        worker.sendMessage(worker.createMessage(GENERATE_PIN, token));
+    }
+
+    protected boolean canReadSMS() {
+        return context.checkCallingOrSelfPermission(RECEIVE_SMS) == PERMISSION_GRANTED;
     }
 }

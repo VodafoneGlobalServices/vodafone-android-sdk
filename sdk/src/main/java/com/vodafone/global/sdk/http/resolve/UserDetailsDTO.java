@@ -6,9 +6,9 @@ import com.vodafone.global.sdk.UserDetails;
 public class UserDetailsDTO {
     public static final UserDetailsDTO FAILED = new UserDetailsDTO(ResolutionStatus.FAILED);
     public final ResolutionStatus status;
-    public final UserDetails userDetails;
-    public final String etag;
-    public final long retryAfter;
+    public final UserDetails userDetails; // FIXME might be absent
+    public final String etag; // FIXME might be absent
+    public final long retryAfter; // FIXME might be absent
 
     // TODO fix default values to Optionals
 
