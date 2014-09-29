@@ -3,27 +3,15 @@ package com.vodafone.global.sdk.http.worker;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Message;
-
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.BadRequest;
-import com.vodafone.global.sdk.GenericServerError;
-import com.vodafone.global.sdk.IMSI;
-import com.vodafone.global.sdk.MSISDN;
-import com.vodafone.global.sdk.NoInternetConnection;
-import com.vodafone.global.sdk.RequestBuilderProvider;
-import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.UserDetails;
-import com.vodafone.global.sdk.ResolutionCallback;
-import com.vodafone.global.sdk.UserDetailsRequestParameters;
-import com.vodafone.global.sdk.Utils;
-import com.vodafone.global.sdk.VodafoneException;
+import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.VodafoneManager.MESSAGE_ID;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.parser.Parsers;
 import com.vodafone.global.sdk.http.resolve.ResolvePostRequestDirect;
-
+import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,11 +22,7 @@ import java.util.regex.Pattern;
 
 import static android.Manifest.permission.RECEIVE_SMS;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
-import static com.vodafone.global.sdk.http.HttpCode.CREATED_201;
-import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
-import static com.vodafone.global.sdk.http.HttpCode.FOUND_302;
-import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
+import static com.vodafone.global.sdk.http.HttpCode.*;
 
 public class ResolveUserProcessor extends RequestProcessor {
     public static final int RESOLUTION_COMLETED = CREATED_201;
@@ -152,7 +136,7 @@ public class ResolveUserProcessor extends RequestProcessor {
     }
 
     private void resolutionFailed() {
-        notifyUserDetailUpdate(UserDetails.RESOLUTION_FAILED);
+        notifyUserDetailUpdate(UserDetailsDTO.FAILED);
     }
 
     private boolean noInternetConnection() {
@@ -236,11 +220,13 @@ public class ResolveUserProcessor extends RequestProcessor {
     }
 
     private void validationRequired(String token) {
-        notifyUserDetailUpdate(UserDetails.validationRequired(token));
+        UserDetailsDTO userDetailsDTO = UserDetailsDTO.validationRequired(token);
+        notifyUserDetailUpdate(userDetailsDTO);
     }
 
     private void checkStatus() {
-        worker.sendMessage(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal()));
+        UserDetailsDTO userDetailsDTO = null; // TODO init
+        worker.sendMessage(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), userDetailsDTO));
     }
 
     private void generatePin(String token) {

@@ -14,16 +14,17 @@ import java.util.regex.Pattern;
 
 public class Parsers {
 
-    public static UserDetails resolutionCompleted(Response response) throws JSONException, IOException {
+    public static UserDetailsDTO resolutionCompleted(Response response) throws JSONException, IOException {
         String jsonString = response.body().string();
-        return UserDetails.fromJson(jsonString, ResolutionStatus.COMPLETED);
+        UserDetails userDetails = UserDetails.fromJson(jsonString);
+        return new UserDetailsDTO(ResolutionStatus.COMPLETED, userDetails);
     }
 
     public static UserDetailsDTO parseUserDetails(Response response) throws IOException, JSONException {
         String jsonString = response.body().string();
-        UserDetails userDetails = UserDetails.fromJson(jsonString, ResolutionStatus.FIXME);
+        UserDetails userDetails = UserDetails.fromJson(jsonString);
         String etag = response.header("etag");
-        return new UserDetailsDTO(userDetails, etag, -1);
+        return new UserDetailsDTO(ResolutionStatus.FIXME, userDetails, etag, -1);
     }
 
     public static UserDetailsDTO parseRedirectDetails(Response response) {
@@ -41,11 +42,11 @@ public class Parsers {
                                     .token(token)
                                     .expires(new Date(0))
                                     .acr("").build();
-        return new UserDetailsDTO(userDetails, etag, retryAfter);
+        return new UserDetailsDTO(ResolutionStatus.FIXME, userDetails, etag, retryAfter);
     }
 
     public static UserDetailsDTO updateRetryAfter(UserDetailsDTO oldDetails, Response response) {
         int retryAfter = Integer.valueOf(response.header("RetryAfter", "-1"));
-        return new UserDetailsDTO(oldDetails.userDetails, oldDetails.etag, retryAfter);
+        return new UserDetailsDTO(ResolutionStatus.FIXME, oldDetails.userDetails, oldDetails.etag, retryAfter);
     }
 }

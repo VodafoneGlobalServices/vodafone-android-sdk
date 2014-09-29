@@ -77,9 +77,9 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
 
     private UserDetailsDTO parseJson(Response response) throws IOException, JSONException {
         String jsonString = response.body().string();
-        UserDetails userDetails = UserDetails.fromJson(jsonString, ResolutionStatus.FIXME);
+        UserDetails userDetails = UserDetails.fromJson(jsonString);
         String etag = response.header("etag");
-        return new UserDetailsDTO(userDetails, etag);
+        return new UserDetailsDTO(ResolutionStatus.FIXME, userDetails, etag);
     }
 
     /**

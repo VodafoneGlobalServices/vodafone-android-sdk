@@ -51,11 +51,11 @@ public class CheckStatusProcessor extends RequestProcessor {
         try {
             switch (code) {
                 case OK_200:
-                    notifyUserDetailUpdate(Parsers.parseUserDetails(response).userDetails);
+                    notifyUserDetailUpdate(Parsers.parseUserDetails(response));
                 case FOUND_302: {
                     UserDetailsDTO redirectDetails  = Parsers.parseRedirectDetails(response);
-                    if (oldRedirectDetails.userDetails.status == ResolutionStatus.VALIDATION_REQUIRED) {
-                        notifyUserDetailUpdate(redirectDetails.userDetails);
+                    if (oldRedirectDetails.status == ResolutionStatus.VALIDATION_REQUIRED) {
+                        notifyUserDetailUpdate(redirectDetails);
                     } else {
                         worker.sendMessageDelayed(worker.createMessage(MESSAGE_ID.CHECK_STATUS.ordinal(), redirectDetails), redirectDetails.retryAfter);
                     }

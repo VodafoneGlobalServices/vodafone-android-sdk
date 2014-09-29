@@ -6,8 +6,6 @@ import org.json.JSONObject;
 import java.util.Date;
 
 public class UserDetails {
-    public static final UserDetails RESOLUTION_FAILED = new UserDetails(ResolutionStatus.FAILED, "", new Date(), "");
-    public final ResolutionStatus status;
     public final String token;
     public final Date expires;
     public final String acr;
@@ -16,14 +14,13 @@ public class UserDetails {
         return new Builder();
     }
 
-    protected UserDetails(ResolutionStatus status, String token, Date expires, String acr) {
-        this.status = status;
+    protected UserDetails(String token, Date expires, String acr) {
         this.token = token;
         this.expires = expires;
         this.acr = acr;
     }
 
-    public static UserDetails fromJson(String jsonString, ResolutionStatus status) throws JSONException {
+    public static UserDetails fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
         String acr = json.getString("acr");
         String token = json.getString("token");
@@ -31,11 +28,11 @@ public class UserDetails {
         long currentTime = System.currentTimeMillis();
         long expirationTime = currentTime + expiresIn;
         Date expires = new Date(expirationTime);
-        return new UserDetails(status, token, expires, acr);
+        return new UserDetails(token, expires, acr);
     }
 
     public static UserDetails validationRequired(String token) {
-        return new UserDetails(ResolutionStatus.VALIDATION_REQUIRED, token, new Date(), "");
+        return new UserDetails(token, new Date(), "");
     }
 
     @Override
@@ -47,7 +44,6 @@ public class UserDetails {
 
         if (!acr.equals(that.acr)) return false;
         if (!expires.equals(that.expires)) return false;
-        if (status != that.status) return false;
         if (!token.equals(that.token)) return false;
 
         return true;
@@ -55,24 +51,27 @@ public class UserDetails {
 
     @Override
     public int hashCode() {
-        int result = status.hashCode();
-        result = 31 * result + token.hashCode();
+        int result = token.hashCode();
         result = 31 * result + expires.hashCode();
         result = 31 * result + acr.hashCode();
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "UserDetails{" +
+                "token='" + token + '\'' +
+                ", expires=" + expires +
+                ", acr='" + acr + '\'' +
+                '}';
+    }
+
     public static class Builder {
-        public ResolutionStatus status;
         public String token;
         public Date expires;
         public String acr;
 
         private Builder() {
-        }
-
-        public void status(ResolutionStatus status) {
-            this.status = status;
         }
 
         public Builder token(String token) {
@@ -91,7 +90,7 @@ public class UserDetails {
         }
 
         public UserDetails build() {
-            return new UserDetails(status, token, expires, acr);
+            return new UserDetails(token, expires, acr);
         }
     }
 }

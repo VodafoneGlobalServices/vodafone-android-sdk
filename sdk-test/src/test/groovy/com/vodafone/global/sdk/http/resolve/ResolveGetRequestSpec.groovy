@@ -16,7 +16,7 @@ class ResolveGetRequestSpec extends Specification {
     def path = "/he/users/token/" + token
     def etag = "ar62d6f2d65af65df"
     def userDetails = userDetails()
-    def userDetailsDTO = new UserDetailsDTO(userDetails, etag)
+    def userDetailsDTO = new UserDetailsDTO(status, userDetails, etag)
     def String accessToken = "1"
     def String androidId = "2"
     def String mobileCountryCode = "DE"

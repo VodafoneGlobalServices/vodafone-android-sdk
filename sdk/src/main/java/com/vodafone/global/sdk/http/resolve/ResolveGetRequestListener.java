@@ -27,7 +27,7 @@ public class ResolveGetRequestListener implements RequestListener<UserDetailsDTO
 
     @Override
     public void onRequestSuccess(UserDetailsDTO userDetailsDTO) {
-        boolean stillRunning = userDetailsDTO.userDetails.status == ResolutionStatus.STILL_RUNNING;
+        boolean stillRunning = userDetailsDTO.status == ResolutionStatus.STILL_RUNNING;
         if (stillRunning)
             loop(userDetailsDTO);
 

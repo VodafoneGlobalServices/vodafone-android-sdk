@@ -7,9 +7,9 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.vodafone.global.sdk.ResolutionCallback;
 import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.VodafoneException;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
+import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import timber.log.Timber;
 
 import java.util.Set;
@@ -29,14 +29,26 @@ public abstract class RequestProcessor {
 
     abstract void process(Optional<OAuthToken> authToken, Message msg);
 
-    protected void notifyUserDetailUpdate(final UserDetails userDetails) {
-        Timber.d(userDetails.toString());
+    protected void notifyUserDetailUpdate(final UserDetailsDTO userDetailsDto) {
+        Timber.d(userDetailsDto.toString());
         Handler handler = new Handler(Looper.getMainLooper());
         for (final ResolutionCallback callback : resolutionCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onCompleted(userDetails);
+                    switch (userDetailsDto.status) {
+                        case COMPLETED:
+                            callback.onCompleted(userDetailsDto.userDetails);
+                            break;
+                        case STILL_RUNNING:
+                            break;
+                        case VALIDATION_REQUIRED:
+                            callback.onValidationRequired();
+                            break;
+                        case FAILED:
+                            callback.onFailed();
+                            break;
+                    }
                 }
             });
         }
