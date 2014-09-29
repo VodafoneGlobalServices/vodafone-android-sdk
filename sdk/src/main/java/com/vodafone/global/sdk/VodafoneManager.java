@@ -38,7 +38,7 @@ public class VodafoneManager {
     private final ResolveUserProcessor resolveUserProc;
     private final CheckStatusProcessor checkStatusProc;
     private final GeneratePinProcessor generatePinProc;
-    private final ValidatePinProcessor ValidatePinProc;
+    private final ValidatePinProcessor validatePinProc;
 
     Set<ResolutionCallback> resolutionCallbacks = new CopyOnWriteArraySet<ResolutionCallback>();
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
@@ -75,7 +75,7 @@ public class VodafoneManager {
         resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolutionCallbacks, requestBuilderProvider);
         checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, imsi, resolutionCallbacks, requestBuilderProvider);
         generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks, requestBuilderProvider);
-        ValidatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolutionCallbacks, requestBuilderProvider);
+        validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolutionCallbacks, requestBuilderProvider);
 
         tresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
@@ -238,7 +238,7 @@ public class VodafoneManager {
                     generatePinProc.process(authToken, msg);
                     break;
                 case VALIDATE_PIN:
-                    ValidatePinProc.process(authToken, msg);
+                    validatePinProc.process(authToken, msg);
                     break;
                 default:
                     return false;
