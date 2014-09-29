@@ -3,30 +3,18 @@ package com.vodafone.global.sdk.http.worker;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Message;
-
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.GenericServerError;
-import com.vodafone.global.sdk.RequestBuilderProvider;
-import com.vodafone.global.sdk.RequestValidationError;
-import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.TokenNotFound;
-import com.vodafone.global.sdk.Utils;
-import com.vodafone.global.sdk.ValidateSmsCallback;
+import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.sms.PinRequestDirect;
-
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.Set;
 
-import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
-import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
-import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
-import static com.vodafone.global.sdk.http.HttpCode.OK_200;
-import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
+import static com.vodafone.global.sdk.http.HttpCode.*;
 
 public class GeneratePinProcessor extends PinProcessor {
     private String backendAppKey;
@@ -51,7 +39,6 @@ public class GeneratePinProcessor extends PinProcessor {
             case BAD_REQUEST_400:
                 notifyError(new RequestValidationError());
                 break;
-            case UNAUTHORIZED_401:
             case FORBIDDEN_403:
                 notifyError(new TokenNotFound());
                 break;

@@ -105,9 +105,6 @@ public class CheckStatusProcessor extends RequestProcessor {
             case BAD_REQUEST_400:
                 resolutionFailed();
                 break;
-            case UNAUTHORIZED_401: // TODO 401 doesn't appear in documentation, it either should be removed or documented
-                notifyError(new RequestNotAuthorized());
-                break;
             case FORBIDDEN_403:
                 String body = response.body().string();
                 if (!body.isEmpty()) {

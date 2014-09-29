@@ -28,7 +28,6 @@ import java.util.Set;
 import static com.vodafone.global.sdk.http.HttpCode.BAD_REQUEST_400;
 import static com.vodafone.global.sdk.http.HttpCode.FORBIDDEN_403;
 import static com.vodafone.global.sdk.http.HttpCode.NOT_FOUND_404;
-import static com.vodafone.global.sdk.http.HttpCode.UNAUTHORIZED_401;
 
 public class ValidatePinProcessor extends RequestProcessor {
     private String backendAppKey;
@@ -58,7 +57,6 @@ public class ValidatePinProcessor extends RequestProcessor {
                 case BAD_REQUEST_400:
                     notifyError(new RequestValidationError());
                     break;
-                case UNAUTHORIZED_401:
                 case FORBIDDEN_403:
                     notifyError(new TokenNotFound());
                     break;
