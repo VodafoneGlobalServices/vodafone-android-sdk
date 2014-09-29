@@ -8,25 +8,20 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.http.parser.Parsers;
 import com.vodafone.global.sdk.http.resolve.ResolvePostRequestDirect;
-import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static com.vodafone.global.sdk.MessageType.*;
-import static com.vodafone.global.sdk.http.HttpCode.*;
+import static com.vodafone.global.sdk.MessageType.AUTHENTICATE;
 
 public class ResolveUserProcessor extends RequestProcessor {
     private String backendAppKey;
     private IMSI imsi;
     private final RequestBuilderProvider requestBuilderProvider;
     private Optional<OAuthToken> authToken;
+    private final ResolveUserParser parser;
 
     public ResolveUserProcessor(
             Context context,
@@ -41,6 +36,7 @@ public class ResolveUserProcessor extends RequestProcessor {
         this.backendAppKey = backendAppKey;
         this.imsi = imsi;
         this.requestBuilderProvider = requestBuilderProvider;
+        parser = new ResolveUserParser(worker, context, resolutionCallbacks);
     }
 
     @Override
@@ -108,7 +104,7 @@ public class ResolveUserProcessor extends RequestProcessor {
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
         Response response = request.loadDataFromNetwork();
-        parseResponse(worker, response);
+        parser.parseResponse(response);
     }
 
     private void resolveWithImsi(IMSI imsi, boolean smsValidation, Settings.PathSettings server) throws IOException, JSONException {
@@ -128,7 +124,7 @@ public class ResolveUserProcessor extends RequestProcessor {
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
         Response response = request.loadDataFromNetwork();
-        parseResponse(worker, response);
+        parser.parseResponse(response);
     }
 
     private boolean noInternetConnection() {
@@ -145,62 +141,5 @@ public class ResolveUserProcessor extends RequestProcessor {
 
     private boolean overMobileNetwork() {
         return Utils.isDataOverMobileNetwork(context);
-    }
-
-    private void parseResponse(Worker worker, Response response) throws IOException, JSONException {
-        int code = response.code();
-            switch (code) {
-                case CREATED_201:
-                    notifyUserDetailUpdate(Parsers.resolutionCompleted(response));
-                    break;
-                case FOUND_302:
-                    String location = response.header("Location");
-                    if (requiresSmsValidation(location)) {
-                        if (canReadSMS()) {
-                            generatePin(extractToken(location));
-                        } else {
-                            validationRequired(extractToken(location));
-                        }
-                    } else if (resolutionIsOngoing(location)) {
-                        checkStatus();
-                    } else {
-                        notifyError(new GenericServerError());
-                    }
-                    break;
-                case NOT_FOUND_404:
-                    resolutionFailed();
-                    break;
-                case BAD_REQUEST_400:
-                    // Application ID doesn't exist on APIX
-                    // Application ID has no seamlessID scope associated
-                    notifyError(new BadRequest());
-                    break;
-                case FORBIDDEN_403:
-                    String body = response.body().string();
-                    if (!body.isEmpty()) {
-                        JSONObject json = new JSONObject(response.body().string());
-                        String id = json.getString("id");
-                        if (id.equals("POL0002")) {
-                            worker.sendMessage(worker.createMessage(AUTHENTICATE));
-                            worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS));
-                        }
-                    } else {
-                        notifyError(new GenericServerError());
-                    }
-                    break;
-                default:
-                    notifyError(new GenericServerError());
-            }
-    }
-
-    private boolean resolutionIsOngoing(String location) {
-        Pattern pattern = Pattern.compile(".*/users/tokens/[^/]*\\?backendId=.*");
-        Matcher matcher = pattern.matcher(location);
-        return matcher.matches();
-    }
-
-    private void checkStatus() {
-        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(ResolutionStatus.STILL_RUNNING);
-        worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDTO));
     }
 }
