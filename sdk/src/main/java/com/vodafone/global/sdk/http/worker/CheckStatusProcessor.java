@@ -17,7 +17,11 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-public class CheckStatusProcessor extends RequestProcessor {
+public class CheckStatusProcessor {
+    protected final Worker worker;
+    protected final Settings settings;
+    protected final Context context;
+    protected final ResolveCallbacks resolveCallbacks;
     private final CheckStatusParser parser;
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
@@ -25,13 +29,15 @@ public class CheckStatusProcessor extends RequestProcessor {
     private UserDetailsDTO userDetailsDto;
 
     public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, ResolveCallbacks resolveCallbacks, RequestBuilderProvider requestBuilderProvider) {
-        super(context, worker, settings, resolveCallbacks);
+        this.context = context;
+        this.worker = worker;
+        this.settings = settings;
+        this.resolveCallbacks = resolveCallbacks;
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
         parser = new CheckStatusParser(worker, context, resolveCallbacks);
     }
 
-    @Override
     public void process(Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
         userDetailsDto = (UserDetailsDTO) msg.obj;

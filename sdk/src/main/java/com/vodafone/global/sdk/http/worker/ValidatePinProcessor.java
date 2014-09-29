@@ -17,7 +17,11 @@ import java.io.IOException;
 
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
-public class ValidatePinProcessor extends RequestProcessor {
+public class ValidatePinProcessor {
+    protected final Worker worker;
+    protected final Settings settings;
+    protected final Context context;
+    protected final ResolveCallbacks resolveCallbacks;
     private String backendAppKey;
     private final RequestBuilderProvider requestBuilderProvider;
     private Optional<OAuthToken> authToken;
@@ -30,12 +34,14 @@ public class ValidatePinProcessor extends RequestProcessor {
             ResolveCallbacks resolveCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
-        super(context, worker, settings, resolveCallbacks);
+        this.context = context;
+        this.worker = worker;
+        this.settings = settings;
+        this.resolveCallbacks = resolveCallbacks;
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
     }
 
-    @Override
     public void process(Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
         ValidatePinParameters validatePinParameters = (ValidatePinParameters) msg.obj;

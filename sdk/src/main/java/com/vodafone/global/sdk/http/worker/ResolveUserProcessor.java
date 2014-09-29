@@ -15,7 +15,11 @@ import java.io.IOException;
 
 import static com.vodafone.global.sdk.MessageType.AUTHENTICATE;
 
-public class ResolveUserProcessor extends RequestProcessor {
+public class ResolveUserProcessor {
+    protected final Worker worker;
+    protected final Settings settings;
+    protected final Context context;
+    protected final ResolveCallbacks resolveCallbacks;
     private String backendAppKey;
     private IMSI imsi;
     private final RequestBuilderProvider requestBuilderProvider;
@@ -31,14 +35,16 @@ public class ResolveUserProcessor extends RequestProcessor {
             ResolveCallbacks resolveCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
-        super(context, worker, settings, resolveCallbacks);
+        this.context = context;
+        this.worker = worker;
+        this.settings = settings;
+        this.resolveCallbacks = resolveCallbacks;
         this.backendAppKey = backendAppKey;
         this.imsi = imsi;
         this.requestBuilderProvider = requestBuilderProvider;
         parser = new ResolveUserParser(worker, context, resolveCallbacks);
     }
 
-    @Override
     public void process(Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
         if (!authToken.isPresent()) {
