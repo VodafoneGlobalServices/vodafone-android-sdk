@@ -32,7 +32,7 @@ public class ResolveGetRequestListener implements RequestListener<UserDetailsDTO
             loop(userDetailsDTO);
 
         for (ResolveCallback callback : resolveCallbacks)
-            callback.onCompleted(userDetailsDTO.userDetails);
+            callback.onCompleted(userDetailsDTO.userDetails.get());
     }
 
     @Override

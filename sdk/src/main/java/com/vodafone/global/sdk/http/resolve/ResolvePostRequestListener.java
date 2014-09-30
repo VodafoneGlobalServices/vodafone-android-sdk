@@ -35,7 +35,7 @@ public class ResolvePostRequestListener implements RequestListener<UserDetailsDT
             loop(userDetailsDTO);
 
         for (ResolveCallback callback : resolveCallbacks)
-            callback.onCompleted(userDetailsDTO.userDetails);
+            callback.onCompleted(userDetailsDTO.userDetails.get());
     }
 
     private void loop(UserDetailsDTO userDetailsDTO) {

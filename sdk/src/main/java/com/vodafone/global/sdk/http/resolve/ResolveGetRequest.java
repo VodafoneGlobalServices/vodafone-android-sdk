@@ -53,7 +53,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<UserDetailsDTO> {
         Request request = requestBuilderProvider.builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken)
-                .addHeader("etag", userDetailsDTO.etag)
+                .addHeader("etag", userDetailsDTO.etag.get())
                 .get()
                 .build();
         OkHttpClient client = getOkHttpClient();

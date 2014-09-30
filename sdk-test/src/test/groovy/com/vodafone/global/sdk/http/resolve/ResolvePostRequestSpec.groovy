@@ -76,10 +76,10 @@ class ResolvePostRequestSpec extends Specification {
         def userDetailsDTO = request.loadDataFromNetwork()
 
         then:
-        def userDetails = userDetailsDTO.userDetails
+        def userDetails = userDetailsDTO.userDetails.get()
         userDetails.token == token
 //        userDetails.expires == expires
-        userDetailsDTO.etag == newEtag
+        userDetailsDTO.etag.get() == newEtag
 
         RecordedRequest request1 = server.takeRequest()
         request1.path == path

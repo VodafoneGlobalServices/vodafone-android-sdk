@@ -66,8 +66,8 @@ public class CheckStatusProcessor {
                 .url(getUrl())
                 .accessToken(authToken.get().accessToken)
                 .requestBuilderProvider(requestBuilderProvider);
-        if (!userDetailsDto.etag.isEmpty())
-            requestBuilder.etag(userDetailsDto.etag);
+        if (!userDetailsDto.etag.isPresent())
+            requestBuilder.etag(userDetailsDto.etag.get());
         return requestBuilder.build();
     }
 
@@ -75,7 +75,7 @@ public class CheckStatusProcessor {
         return new Uri.Builder().scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
-                .appendPath(userDetailsDto.userDetails.token)
+                .appendPath(userDetailsDto.userDetails.get().token)
                 .appendQueryParameter("backendId", backendAppKey)
                 .build().toString();
     }

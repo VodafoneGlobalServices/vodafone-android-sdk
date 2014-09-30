@@ -54,7 +54,7 @@ public class CheckStatusParser {
             case HttpCode.NOT_MODIFIED_304:
                 UserDetailsDTO redirectDetails = Parsers.updateRetryAfter(userDetailsDto, response);
                 Message message = worker.createMessage(CHECK_STATUS, redirectDetails);
-                worker.sendMessageDelayed(message, redirectDetails.retryAfter);
+                worker.sendMessageDelayed(message, redirectDetails.retryAfter.get());
                 break;
             case BAD_REQUEST_400:
                 resolutionFailed();

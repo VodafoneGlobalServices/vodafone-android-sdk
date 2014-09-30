@@ -72,10 +72,10 @@ class ResolveGetRequestSpec extends Specification {
         def userDetailsDTO = request.loadDataFromNetwork()
 
         then:
-        def userDetails = userDetailsDTO.userDetails
+        def userDetails = userDetailsDTO.userDetails.get()
         userDetails.token == token
 //        userDetails.expires == expires
-        userDetailsDTO.etag == newEtag
+        userDetailsDTO.etag.get() == newEtag
 
         RecordedRequest request1 = server.takeRequest()
         request1.path == path
@@ -93,8 +93,8 @@ class ResolveGetRequestSpec extends Specification {
         def userDetailsDTO = request.loadDataFromNetwork()
 
         then:
-        userDetailsDTO.userDetails == userDetails
-        userDetailsDTO.etag == etag
+        userDetailsDTO.userDetails.get() == userDetails
+        userDetailsDTO.etag.get() == etag
 
         RecordedRequest request1 = server.takeRequest()
         request1.path == path

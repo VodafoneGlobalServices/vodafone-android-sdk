@@ -28,7 +28,7 @@ public class ResolveCallbacks {
                 public void run() {
                     switch (userDetailsDto.status) {
                         case COMPLETED:
-                            callback.onCompleted(userDetailsDto.userDetails);
+                            callback.onCompleted(userDetailsDto.userDetails.get());
                             break;
                         case STILL_RUNNING:
                             break;
