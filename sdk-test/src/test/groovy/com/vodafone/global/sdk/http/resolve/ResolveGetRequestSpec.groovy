@@ -4,6 +4,7 @@ import com.squareup.okhttp.mockwebserver.MockResponse
 import com.squareup.okhttp.mockwebserver.MockWebServer
 import com.squareup.okhttp.mockwebserver.RecordedRequest
 import com.vodafone.global.sdk.RequestBuilderProvider
+import com.vodafone.global.sdk.ResolutionStatus
 import com.vodafone.global.sdk.UserDetails
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
@@ -16,7 +17,7 @@ class ResolveGetRequestSpec extends Specification {
     def path = "/he/users/token/" + token
     def etag = "ar62d6f2d65af65df"
     def userDetails = userDetails()
-    def userDetailsDTO = new UserDetailsDTO(status, userDetails, etag)
+    def userDetailsDTO = new UserDetailsDTO(ResolutionStatus.FIXME, userDetails, etag)
     def String accessToken = "1"
     def String androidId = "2"
     def String mobileCountryCode = "DE"
