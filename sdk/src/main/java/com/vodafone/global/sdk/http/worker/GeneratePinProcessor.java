@@ -12,7 +12,6 @@ import com.vodafone.global.sdk.http.sms.PinRequestDirect;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.Set;
 
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
@@ -20,7 +19,7 @@ public class GeneratePinProcessor {
     protected final Worker worker;
     protected final Settings settings;
     protected final Context context;
-    private final Set<ValidateSmsCallback> validateSmsCallbacks;
+    private final ValidateSmsCallbacks validateSmsCallbacks;
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
     private RequestBuilderProvider requestBuilderProvider;
@@ -30,7 +29,7 @@ public class GeneratePinProcessor {
             Worker worker,
             Settings settings,
             String backendAppKey,
-            Set<ValidateSmsCallback> validateSmsCallbacks,
+            ValidateSmsCallbacks validateSmsCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
         this.context = context;
@@ -49,7 +48,7 @@ public class GeneratePinProcessor {
             Response response = queryServer(token);
             parseResponse(response);
         } catch (Exception e) {
-            notifyError(new GenericServerError());
+            validateSmsCallbacks.notifyError(new GenericServerError());
         }
     }
 
@@ -85,34 +84,20 @@ public class GeneratePinProcessor {
         int code = response.code();
         switch (code) {
             case OK_200:
-                notifySuccess();
+                validateSmsCallbacks.notifySuccess();
                 break;
             case BAD_REQUEST_400:
             case FORBIDDEN_403:
                 // TODO validate error, error invalid input
-                notifyError(new RequestValidationError());
+                validateSmsCallbacks.notifyError(new RequestValidationError());
                 break;
             case NOT_FOUND_404: // TODO
                 // TODO notify user details callback about
                 // TODO validate error
-                notifyError(new TokenNotFound());
+                validateSmsCallbacks.notifyError(new TokenNotFound());
                 break;
             default:
-                notifyError(new GenericServerError());
-        }
-    }
-
-    protected void notifySuccess() {
-        // TODO callback call on main thread
-        for (ValidateSmsCallback callback : validateSmsCallbacks) {
-            callback.onPinGenerationSuccess();
-        }
-    }
-
-    protected void notifyError(VodafoneException vodafoneException) {
-        // TODO callback call on main thread
-        for (ValidateSmsCallback callback : validateSmsCallbacks) {
-            callback.onSmsValidationError(vodafoneException);
+                validateSmsCallbacks.notifyError(new GenericServerError());
         }
     }
 }

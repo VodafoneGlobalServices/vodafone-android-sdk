@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import static com.vodafone.global.sdk.MessageType.*;
 
@@ -41,7 +40,7 @@ public class VodafoneManager {
     private final ValidatePinProcessor validatePinProc;
 
     ResolveCallbacks resolveCallbacks = new ResolveCallbacks();
-    Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
+    ValidateSmsCallbacks validateSmsCallbacks = new ValidateSmsCallbacks();
     private IMSI imsi;
     private Optional<OAuthToken> authToken = Optional.absent();
     private Optional<UserDetails> cachedUserDetails = Optional.absent();
@@ -149,7 +148,7 @@ public class VodafoneManager {
 
             @Override
             public void unregister(VodafoneCallback callback) {
-                validateSmsCallbacks.remove(callback);
+                validateSmsCallbacks.remove((ValidateSmsCallback) callback);
             }
         });
 
