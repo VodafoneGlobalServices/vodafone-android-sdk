@@ -18,9 +18,7 @@ import org.json.JSONException;
 import java.io.IOException;
 
 public class CheckStatusProcessor {
-    protected final Worker worker;
     protected final Settings settings;
-    protected final Context context;
     protected final ResolveCallbacks resolveCallbacks;
     private final CheckStatusParser parser;
     private String backendAppKey;
@@ -29,8 +27,6 @@ public class CheckStatusProcessor {
     private UserDetailsDTO userDetailsDto;
 
     public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, ResolveCallbacks resolveCallbacks, RequestBuilderProvider requestBuilderProvider) {
-        this.context = context;
-        this.worker = worker;
         this.settings = settings;
         this.resolveCallbacks = resolveCallbacks;
         this.backendAppKey = backendAppKey;

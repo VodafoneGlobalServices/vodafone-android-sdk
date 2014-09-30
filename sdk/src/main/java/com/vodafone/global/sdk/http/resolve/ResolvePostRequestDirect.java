@@ -23,7 +23,6 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
     private final String accessToken;
     private final IMSI imsi;
     private final MSISDN msisdn;
-    private final String market;
     private final boolean smsValidation;
     private RequestBuilderProvider requestBuilderProvider;
 
@@ -36,7 +35,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
 
     protected ResolvePostRequestDirect(
             String url, String accessToken,
-            MSISDN msisdn, String market, IMSI imsi, boolean smsValidation,
+            MSISDN msisdn, IMSI imsi, boolean smsValidation,
             RequestBuilderProvider requestBuilderProvider
     ) {
         super(Response.class);
@@ -45,19 +44,18 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         this.imsi = imsi;
         this.smsValidation = smsValidation;
         this.msisdn = msisdn;
-        this.market = market;
         this.requestBuilderProvider = requestBuilderProvider;
     }
 
     @Override
     public Response loadDataFromNetwork() throws IOException, JSONException {
-        String content = prepareBody(msisdn, market, imsi, smsValidation);
+        String content = prepareBody(msisdn, msisdn.marketCode(), imsi, smsValidation);
         RequestBody body = RequestBody.create(JSON, content);
         Request request = requestBuilderProvider.builder()
                 .url(url)
                 .addHeader("scope", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("backendScopes", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
-                .addHeader("x-int-opco", market) //TODO: REMOVE ONLY FOR TESTING!!!
+                .addHeader("x-int-opco", msisdn.marketCode()) //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .post(body)
                 .build();
@@ -95,7 +93,6 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         private String url;
         private String accessToken;
         private MSISDN msisdn;
-        private String market;
         private IMSI imsi;
         private boolean smsValidation;
         private RequestBuilderProvider requestBuilderProvider;
@@ -134,7 +131,7 @@ public class ResolvePostRequestDirect extends OkHttpSpiceRequest<Response> {
         }
 
         public ResolvePostRequestDirect build() {
-            return new ResolvePostRequestDirect(url, accessToken, msisdn, market, imsi, smsValidation, requestBuilderProvider);
+            return new ResolvePostRequestDirect(url, accessToken, msisdn, imsi, smsValidation, requestBuilderProvider);
         }
     }
 }

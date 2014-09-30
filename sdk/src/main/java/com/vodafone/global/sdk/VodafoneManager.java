@@ -23,7 +23,6 @@ import static com.vodafone.global.sdk.MessageType.*;
 
 public class VodafoneManager {
     private static HashMap<Class<?>, Registrar> registrars;
-    private final OkHttpClient client;
 
     private final Context context;
     private final String clientAppKey;
@@ -62,7 +61,6 @@ public class VodafoneManager {
         this.backendAppKey = backendAppKey;
 
         registrars = prepareRegistrars();
-        client = new OkHttpClient();
         imsi = new IMSI(context);
         settings = new Settings(context);
         register(new CacheResolutionCallback());

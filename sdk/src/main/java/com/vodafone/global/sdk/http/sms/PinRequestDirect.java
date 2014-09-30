@@ -1,7 +1,6 @@
 package com.vodafone.global.sdk.http.sms;
 
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -11,9 +10,6 @@ import com.vodafone.global.sdk.RequestBuilderProvider;
 import java.io.IOException;
 
 public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
-
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
     private final String url;
     private final String accessToken;
     private RequestBuilderProvider requestBuilderProvider;

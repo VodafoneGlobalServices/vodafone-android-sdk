@@ -40,8 +40,4 @@ public class Utils {
             }
             return MCC;
     }
-
-    public static boolean isHasTimedOut(long timeMillis) {
-        return System.currentTimeMillis() > timeMillis;
-    }
 }
