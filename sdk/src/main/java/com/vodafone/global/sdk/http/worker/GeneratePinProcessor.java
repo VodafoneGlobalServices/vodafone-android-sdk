@@ -6,20 +6,22 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.*;
+import com.vodafone.global.sdk.GenericServerError;
+import com.vodafone.global.sdk.RequestBuilderProvider;
+import com.vodafone.global.sdk.Settings;
+import com.vodafone.global.sdk.ValidateSmsCallbacks;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.sms.PinRequestDirect;
 import org.json.JSONException;
 
 import java.io.IOException;
 
-import static com.vodafone.global.sdk.http.HttpCode.*;
-
 public class GeneratePinProcessor {
     protected final Worker worker;
     protected final Settings settings;
     protected final Context context;
     private final ValidateSmsCallbacks validateSmsCallbacks;
+    private final GeneratePinParser parser;
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
     private RequestBuilderProvider requestBuilderProvider;
@@ -38,6 +40,7 @@ public class GeneratePinProcessor {
         this.validateSmsCallbacks = validateSmsCallbacks;
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
+        parser = new GeneratePinParser(validateSmsCallbacks);
     }
 
     public void process(Optional<OAuthToken> authToken, Message msg) {
@@ -46,7 +49,7 @@ public class GeneratePinProcessor {
 
         try {
             Response response = queryServer(token);
-            parseResponse(response);
+            parser.parseResponse(response);
         } catch (Exception e) {
             validateSmsCallbacks.notifyError(new GenericServerError());
         }
@@ -78,26 +81,5 @@ public class GeneratePinProcessor {
                 .appendQueryParameter("backendId", backendAppKey)
                 .build()
                 .toString();
-    }
-
-    void parseResponse(Response response) {
-        int code = response.code();
-        switch (code) {
-            case OK_200:
-                validateSmsCallbacks.notifySuccess();
-                break;
-            case BAD_REQUEST_400:
-            case FORBIDDEN_403:
-                // TODO validate error, error invalid input
-                validateSmsCallbacks.notifyError(new RequestValidationError());
-                break;
-            case NOT_FOUND_404: // TODO
-                // TODO notify user details callback about
-                // TODO validate error
-                validateSmsCallbacks.notifyError(new TokenNotFound());
-                break;
-            default:
-                validateSmsCallbacks.notifyError(new GenericServerError());
-        }
     }
 }
