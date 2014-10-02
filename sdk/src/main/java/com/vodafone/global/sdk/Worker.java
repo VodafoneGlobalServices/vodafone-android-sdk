@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk.http.worker;
+package com.vodafone.global.sdk;
 
 import android.os.Handler;
 import android.os.Looper;

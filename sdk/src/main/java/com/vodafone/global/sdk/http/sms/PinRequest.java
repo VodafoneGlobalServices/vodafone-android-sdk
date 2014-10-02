@@ -9,19 +9,19 @@ import com.vodafone.global.sdk.RequestBuilderProvider;
 
 import java.io.IOException;
 
-public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
+public class PinRequest extends OkHttpSpiceRequest<Response> {
     private final String url;
     private final String accessToken;
     private RequestBuilderProvider requestBuilderProvider;
 
     /**
-     * Provides builder for {@link com.vodafone.global.sdk.http.sms.PinRequestDirect}.
+     * Provides builder for {@link PinRequest}.
      */
     public static Builder builder() {
         return new Builder();
     }
 
-    protected PinRequestDirect(
+    protected PinRequest(
             String url, String accessToken, RequestBuilderProvider requestBuilderProvider
     ) {
         super(Response.class);
@@ -51,8 +51,8 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
     }
 
     /**
-     * Builder for {@link com.vodafone.global.sdk.http.sms.PinRequestDirect}.
-     * @see com.vodafone.global.sdk.http.sms.PinRequestDirect#builder()
+     * Builder for {@link PinRequest}.
+     * @see PinRequest#builder()
      */
     public static class Builder {
 
@@ -78,8 +78,8 @@ public class PinRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public PinRequestDirect build() {
-            return new PinRequestDirect(url, accessToken, requestBuilderProvider);
+        public PinRequest build() {
+            return new PinRequest(url, accessToken, requestBuilderProvider);
         }
     }
 }

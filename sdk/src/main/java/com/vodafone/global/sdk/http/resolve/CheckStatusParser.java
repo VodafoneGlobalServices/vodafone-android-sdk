@@ -1,13 +1,13 @@
-package com.vodafone.global.sdk.http.worker;
+package com.vodafone.global.sdk.http.resolve;
 
 import android.content.Context;
+import android.os.Message;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.BadRequest;
 import com.vodafone.global.sdk.GenericServerError;
-import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.ResolveCallbacks;
+import com.vodafone.global.sdk.http.HttpCode;
 import com.vodafone.global.sdk.http.parser.Parsers;
-import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
+import com.vodafone.global.sdk.Worker;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,21 +20,21 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.vodafone.global.sdk.MessageType.*;
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
-public class ResolveUserParser {
-    private final Worker worker;
-    private final Context context;
+public class CheckStatusParser {
     private final ResolveCallbacks resolveCallbacks;
+    private final Context context;
+    private final Worker worker;
 
-    public ResolveUserParser(Worker worker, Context context, ResolveCallbacks resolveCallbacks) {
+    public CheckStatusParser(Worker worker, Context context, ResolveCallbacks resolveCallbacks) {
         this.worker = worker;
-        this.context = context;
         this.resolveCallbacks = resolveCallbacks;
+        this.context = context;
     }
 
-    public void parseResponse(Response response) throws IOException, JSONException {
+    void parseResponse(Response response, UserDetailsDTO userDetailsDto) throws IOException, JSONException {
         int code = response.code();
         switch (code) {
-            case CREATED_201:
+            case OK_200:
                 resolveCallbacks.notifyUserDetailUpdate(Parsers.resolutionCompleted(response));
                 break;
             case FOUND_302:
@@ -45,19 +45,19 @@ public class ResolveUserParser {
                     } else {
                         validationRequired(extractToken(location));
                     }
-                } else if (resolutionIsOngoing(location)) {
-                    checkStatus();
                 } else {
-                    resolveCallbacks.notifyError(new GenericServerError());
+                    int retryAfter = Integer.valueOf(response.header("Retry-After", "500"));
+                    Message message = worker.createMessage(CHECK_STATUS, userDetailsDto);
+                    worker.sendMessageDelayed(message, retryAfter);
                 }
                 break;
-            case NOT_FOUND_404:
-                resolutionFailed();
+            case HttpCode.NOT_MODIFIED_304:
+                UserDetailsDTO redirectDetails = Parsers.updateRetryAfter(userDetailsDto, response);
+                Message message = worker.createMessage(CHECK_STATUS, redirectDetails);
+                worker.sendMessageDelayed(message, redirectDetails.retryAfter.get());
                 break;
             case BAD_REQUEST_400:
-                // Application ID doesn't exist on APIX
-                // Application ID has no seamlessID scope associated
-                resolveCallbacks.notifyError(new BadRequest());
+                resolutionFailed();
                 break;
             case FORBIDDEN_403:
                 String body = response.body().string();
@@ -66,11 +66,14 @@ public class ResolveUserParser {
                     String id = json.getString("id");
                     if (id.equals("POL0002")) {
                         worker.sendMessage(worker.createMessage(AUTHENTICATE));
-                        worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS));
+                        worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDto));
                     }
                 } else {
                     resolveCallbacks.notifyError(new GenericServerError());
                 }
+                break;
+            case NOT_FOUND_404:
+                resolutionFailed();
                 break;
             default:
                 resolveCallbacks.notifyError(new GenericServerError());
@@ -92,8 +95,7 @@ public class ResolveUserParser {
     }
 
     protected String extractToken(String location) {
-        String regex = ".*/users/tokens/([^/]*).*";
-        Pattern pattern = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile(".*/users/tokens/(.*)[/?].*");
         Matcher matcher = pattern.matcher(location);
         return matcher.group(1);
     }
@@ -101,17 +103,6 @@ public class ResolveUserParser {
     protected void validationRequired(String token) {
         UserDetailsDTO userDetailsDTO = UserDetailsDTO.validationRequired(token);
         resolveCallbacks.notifyUserDetailUpdate(userDetailsDTO);
-    }
-
-    private boolean resolutionIsOngoing(String location) {
-        Pattern pattern = Pattern.compile(".*/users/tokens/[^/]*\\?backendId=.*");
-        Matcher matcher = pattern.matcher(location);
-        return matcher.matches();
-    }
-
-    private void checkStatus() {
-        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(ResolutionStatus.STILL_RUNNING);
-        worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDTO));
     }
 
     protected void resolutionFailed() {

@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk.http.worker;
+package com.vodafone.global.sdk.http.sms;
 
 import android.content.Context;
 import android.net.Uri;
@@ -6,57 +6,54 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.GenericServerError;
-import com.vodafone.global.sdk.RequestBuilderProvider;
-import com.vodafone.global.sdk.Settings;
-import com.vodafone.global.sdk.ValidateSmsCallbacks;
+import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.http.sms.PinRequestDirect;
+import com.vodafone.global.sdk.Worker;
 import org.json.JSONException;
 
 import java.io.IOException;
 
-public class GeneratePinProcessor {
+public class ValidatePinProcessor {
     protected final Worker worker;
     protected final Settings settings;
     protected final Context context;
-    private final ValidateSmsCallbacks validateSmsCallbacks;
-    private final GeneratePinParser parser;
+    protected final ResolveCallbacks resolveCallbacks;
+    private final ValidatePinParser parser;
     private String backendAppKey;
+    private final RequestBuilderProvider requestBuilderProvider;
     private Optional<OAuthToken> authToken;
-    private RequestBuilderProvider requestBuilderProvider;
 
-    public GeneratePinProcessor(
+    public ValidatePinProcessor(
             Context context,
             Worker worker,
             Settings settings,
             String backendAppKey,
-            ValidateSmsCallbacks validateSmsCallbacks,
+            ResolveCallbacks resolveCallbacks,
             RequestBuilderProvider requestBuilderProvider
     ) {
         this.context = context;
         this.worker = worker;
         this.settings = settings;
-        this.validateSmsCallbacks = validateSmsCallbacks;
+        this.resolveCallbacks = resolveCallbacks;
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
-        parser = new GeneratePinParser(validateSmsCallbacks);
+        parser = new ValidatePinParser(resolveCallbacks);
     }
 
     public void process(Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
-        String token = (String) msg.obj;
+        ValidatePinParameters validatePinParameters = (ValidatePinParameters) msg.obj;
 
         try {
-            Response response = queryServer(token);
+            Response response = queryServer(validatePinParameters);
             parser.parseResponse(response);
         } catch (Exception e) {
-            validateSmsCallbacks.notifyError(new GenericServerError(e));
+            resolveCallbacks.notifyError(new GenericServerError());
         }
     }
 
-    Response queryServer(String token) throws IOException, JSONException {
-        PinRequestDirect request = getRequest(token);
+    Response queryServer(ValidatePinParameters validatePinParameters) throws IOException, JSONException {
+        ValidatePinRequest request = getRequest(validatePinParameters);
 
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
@@ -64,22 +61,21 @@ public class GeneratePinProcessor {
         return request.loadDataFromNetwork();
     }
 
-    private PinRequestDirect getRequest(String token) {
-        return PinRequestDirect.builder()
-                .url(getUrl(token))
+    private ValidatePinRequest getRequest(ValidatePinParameters validatePinParameters) {
+        return ValidatePinRequest.builder()
+                .url(getUrl(validatePinParameters))
                 .accessToken(authToken.get().accessToken)
+                .pin(validatePinParameters.getPin())
                 .requestBuilderProvider(requestBuilderProvider)
                 .build();
     }
 
-    private String getUrl(String token) {
+    private String getUrl(ValidatePinParameters validatePinParameters) {
         return new Uri.Builder().scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
-                .appendPath(token)
+                .appendPath(validatePinParameters.getToken())
                 .appendPath("pins")
-                .appendQueryParameter("backendId", backendAppKey)
-                .build()
-                .toString();
+                .appendQueryParameter("backendId", backendAppKey).build().toString();
     }
 }

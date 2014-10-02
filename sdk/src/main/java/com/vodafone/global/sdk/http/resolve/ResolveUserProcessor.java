@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk.http.worker;
+package com.vodafone.global.sdk.http.resolve;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,7 +8,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.http.resolve.ResolvePostRequestDirect;
+import com.vodafone.global.sdk.Worker;
 import org.json.JSONException;
 import timber.log.Timber;
 
@@ -113,7 +113,7 @@ public class ResolveUserProcessor {
                 .appendQueryParameter("backendId", backendAppKey).build();
         String url = uri.toString();
 
-        ResolvePostRequestDirect request = ResolvePostRequestDirect.builder()
+        ResolvePostRequest request = ResolvePostRequest.builder()
                 .url(url)
                 .accessToken(authToken.get().accessToken)
                 .msisdn(msisdn)
@@ -132,7 +132,7 @@ public class ResolveUserProcessor {
                 .appendQueryParameter("backendId", backendAppKey).build();
         String url = uri.toString();
 
-        ResolvePostRequestDirect request = ResolvePostRequestDirect.builder()
+        ResolvePostRequest request = ResolvePostRequest.builder()
                 .url(url)
                 .accessToken(authToken.get().accessToken)
                 .imsi(imsi)

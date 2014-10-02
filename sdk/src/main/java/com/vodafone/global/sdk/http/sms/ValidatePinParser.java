@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk.http.worker;
+package com.vodafone.global.sdk.http.sms;
 
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.GenericServerError;

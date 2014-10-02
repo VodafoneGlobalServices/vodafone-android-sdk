@@ -9,7 +9,10 @@ import com.google.common.collect.Sets;
 import com.squareup.okhttp.OkHttpClient;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.oauth.OAuthTokenRequest;
-import com.vodafone.global.sdk.http.worker.*;
+import com.vodafone.global.sdk.http.resolve.CheckStatusProcessor;
+import com.vodafone.global.sdk.http.resolve.ResolveUserProcessor;
+import com.vodafone.global.sdk.http.sms.GeneratePinProcessor;
+import com.vodafone.global.sdk.http.sms.ValidatePinProcessor;
 import timber.log.Timber;
 
 import java.util.Arrays;

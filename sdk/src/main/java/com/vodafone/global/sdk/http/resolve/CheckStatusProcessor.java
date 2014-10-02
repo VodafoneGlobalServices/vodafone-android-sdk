@@ -1,4 +1,4 @@
-package com.vodafone.global.sdk.http.worker;
+package com.vodafone.global.sdk.http.resolve;
 
 import android.content.Context;
 import android.net.Uri;
@@ -11,8 +11,7 @@ import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.http.resolve.ResolveGetRequestDirect;
-import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
+import com.vodafone.global.sdk.Worker;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class CheckStatusProcessor {
     }
 
     Response queryServer() throws IOException, JSONException {
-        ResolveGetRequestDirect request = getRequest();
+        ResolveGetRequest request = getRequest();
 
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
@@ -57,8 +56,8 @@ public class CheckStatusProcessor {
         return request.loadDataFromNetwork();
     }
 
-    private ResolveGetRequestDirect getRequest() {
-        ResolveGetRequestDirect.Builder requestBuilder = ResolveGetRequestDirect.builder()
+    private ResolveGetRequest getRequest() {
+        ResolveGetRequest.Builder requestBuilder = ResolveGetRequest.builder()
                 .url(getUrl())
                 .accessToken(authToken.get().accessToken)
                 .requestBuilderProvider(requestBuilderProvider);

@@ -9,20 +9,20 @@ import com.vodafone.global.sdk.RequestBuilderProvider;
 
 import java.io.IOException;
 
-public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
+public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
     private final String url;
     private final String accessToken;
     private final String etag;
     private final RequestBuilderProvider requestBuilderProvider;
 
     /**
-     * Provides builder for {@link com.vodafone.global.sdk.http.resolve.ResolveGetRequestDirect}.
+     * Provides builder for {@link ResolveGetRequest}.
      */
     public static Builder builder() {
         return new Builder();
     }
 
-    protected ResolveGetRequestDirect(
+    protected ResolveGetRequest(
             String url,
             String accessToken,
             String etag,
@@ -57,8 +57,8 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
     }
 
     /**
-     * Builder for {@link com.vodafone.global.sdk.http.resolve.ResolveGetRequestDirect}.
-     * @see com.vodafone.global.sdk.http.resolve.ResolveGetRequestDirect#builder()
+     * Builder for {@link ResolveGetRequest}.
+     * @see ResolveGetRequest#builder()
      */
     public static class Builder {
 
@@ -90,8 +90,8 @@ public class ResolveGetRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public ResolveGetRequestDirect build() {
-            return new ResolveGetRequestDirect(url, accessToken, etag, requestBuilderProvider);
+        public ResolveGetRequest build() {
+            return new ResolveGetRequest(url, accessToken, etag, requestBuilderProvider);
         }
     }
 }

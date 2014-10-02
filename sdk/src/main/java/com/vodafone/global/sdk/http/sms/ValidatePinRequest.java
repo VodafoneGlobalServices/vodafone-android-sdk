@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class ValidatePinRequestDirect extends OkHttpSpiceRequest<Response> {
+public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -25,13 +25,13 @@ public class ValidatePinRequestDirect extends OkHttpSpiceRequest<Response> {
     private final RequestBuilderProvider requestBuilderProvider;
 
     /**
-     * Provides builder for {@link com.vodafone.global.sdk.http.sms.ValidatePinRequestDirect}.
+     * Provides builder for {@link ValidatePinRequest}.
      */
     public static Builder builder() {
         return new Builder();
     }
 
-    protected ValidatePinRequestDirect(
+    protected ValidatePinRequest(
             String url,
             String accessToken,
             String pin,
@@ -101,8 +101,8 @@ public class ValidatePinRequestDirect extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public ValidatePinRequestDirect build() {
-            return new ValidatePinRequestDirect(url, accessToken, pin, requestBuilderProvider);
+        public ValidatePinRequest build() {
+            return new ValidatePinRequest(url, accessToken, pin, requestBuilderProvider);
         }
     }
 }
