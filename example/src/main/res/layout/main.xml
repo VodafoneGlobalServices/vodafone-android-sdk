@@ -35,9 +35,15 @@
         android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/log_in"
+        android:id="@+id/log_in_without_msisdn"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/log_in" />
+        android:text="@string/log_in_without_MSISDN" />
+
+    <Button
+        android:id="@+id/log_in_with_msisdn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/log_in_with_MSISDN" />
 </LinearLayout>
 

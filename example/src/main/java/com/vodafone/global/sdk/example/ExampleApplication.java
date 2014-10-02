@@ -10,7 +10,7 @@ public class ExampleApplication extends Application {
 
     public static final String APP_KEY = "I1OpZaPfBcI378Bt7PBhQySW5Setb8eb";
     public static final String APP_SECRET = "k4l1RXZGqMnw2cD8";
-    public static final String BACKEND_APP_KEY = "1234";
+    public static final String BACKEND_APP_KEY = "6V8HQ9JCSeRBGDhLGRApx9GBaXqTKeuY";
 
     @Override
     public void onCreate() {

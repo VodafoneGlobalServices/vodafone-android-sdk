@@ -4,5 +4,6 @@
     <string name="token">token</string>
     <string name="expires">expires</string>
     <string name="acr">validated</string>
-    <string name="log_in">Log in with Vodafone</string>
+    <string name="log_in_without_MSISDN">Log in without MSISDN</string>
+    <string name="log_in_with_MSISDN">Log in with MSISDN</string>
 </resources>
