@@ -6,9 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import com.octo.android.robospice.SpiceManager;
 import com.squareup.okhttp.OkHttpClient;
-import com.vodafone.global.sdk.http.VodafoneService;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.oauth.OAuthTokenRequest;
 import com.vodafone.global.sdk.http.worker.*;
@@ -30,7 +28,6 @@ public class VodafoneManager {
     private final String backendAppKey;
 
     private final Settings settings;
-    private final SpiceManager spiceManager;
     private final Worker worker;
 
     private final ResolveUserProcessor resolveUserProc;
@@ -64,8 +61,6 @@ public class VodafoneManager {
         imsi = new IMSI(context);
         settings = new Settings(context);
         register(new CacheResolutionCallback());
-        spiceManager = new SpiceManager(VodafoneService.class);
-        spiceManager.start(this.context);
 
         worker = new Worker(callback);
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey);
