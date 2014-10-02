@@ -2,13 +2,13 @@ package com.vodafone.global.sdk;
 
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import okio.Buffer;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.util.Arrays;
-
-import okio.Buffer;
-import timber.log.Timber;
 
 public class LogUtil {
     private LogUtil() {
@@ -57,9 +57,13 @@ public class LogUtil {
     private static void addRequestBody(Request request, StringBuilder builder) {
         try {
             Buffer buffer = new Buffer();
-            request.body().writeTo(buffer);
-            String body = String.format("\n%s", buffer.readUtf8());
-            builder.append(body);
+            RequestBody body = request.body();
+            if (body != null) {
+                body.writeTo(buffer);
+                builder.append(String.format("\n%s", buffer.readUtf8()));
+            } else {
+                builder.append("EMPTY BODY");
+            }
         } catch (IOException e) {
             addExceptionMsg(e, builder);
         }
