@@ -7,36 +7,6 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/resolved" />
-
-    <TextView
-        android:id="@+id/resolved"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/stillRunning" />
-
-    <TextView
-        android:id="@+id/stillRunning"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/source" />
-
-    <TextView
-        android:id="@+id/source"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
         android:text="@string/token" />
 
     <TextView
@@ -47,30 +17,20 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/tetheringConflict" />
+        android:text="@string/expires" />
 
     <TextView
-        android:id="@+id/tetheringConflict"
+        android:id="@+id/expires"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/secure" />
+        android:text="@string/acr" />
 
     <TextView
-        android:id="@+id/secure"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/validated" />
-
-    <TextView
-        android:id="@+id/validated"
+        android:id="@+id/acr"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 

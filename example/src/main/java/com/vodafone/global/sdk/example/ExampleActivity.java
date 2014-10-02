@@ -10,13 +10,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import com.vodafone.global.sdk.*;
+import timber.log.Timber;
 
-public class LoginActivity extends Activity implements ResolveCallback
+public class ExampleActivity extends Activity implements ResolveCallback
 {
-    @InjectView(R.id.resolved) TextView resolved;
-    @InjectView(R.id.stillRunning) TextView stillRunning;
     @InjectView(R.id.token) TextView token;
-    @InjectView(R.id.validated) TextView validated;
+    @InjectView(R.id.expires) TextView expires;
+    @InjectView(R.id.acr) TextView acr;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,18 +41,16 @@ public class LoginActivity extends Activity implements ResolveCallback
 
     @Override
     public void onCompleted(UserDetails userDetails) {
+        Timber.d("completed %s", userDetails.toString());
         token.setText(userDetails.token);
-        validated.setText(String.valueOf(userDetails.token));
+        expires.setText(userDetails.expires.toString());
+        acr.setText(userDetails.acr);
     }
 
     @Override
     public void onValidationRequired() {
+        Timber.d("validation required");
         requestSendPinConfirmation();
-    }
-
-    @Override
-    public void onFailed() {
-        // TODO inform about failed resolve
     }
 
     private void requestSendPinConfirmation() {
@@ -75,12 +73,19 @@ public class LoginActivity extends Activity implements ResolveCallback
     }
 
     @Override
+    public void onFailed() {
+        Timber.d("failed");
+    }
+
+    @Override
     public void onError(VodafoneException ex) {
-        Toast.makeText(LoginActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
+        Timber.e(ex, "");
+        Toast.makeText(ExampleActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @OnClick(R.id.log_in)
     public void logIn() {
+        Timber.i("start resolve");
         // prepare parameters for service
         Vodafone.retrieveUserDetails(UserDetailsRequestParameters.builder().build());
     }
