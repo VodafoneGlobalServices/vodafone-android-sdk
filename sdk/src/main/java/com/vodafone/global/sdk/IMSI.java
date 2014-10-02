@@ -27,4 +27,9 @@ public class IMSI {
     public boolean mccAndMncOfSimCardBelongToVodafone() {
         return true; // TODO validation with data from configuration server
     }
+
+    public String get() {
+        if (!isPresent()) throw new IllegalStateException("IMSI.get() cannot be called on an absent value");
+        return imsi;
+    }
 }
