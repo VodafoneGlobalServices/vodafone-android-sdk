@@ -10,6 +10,7 @@ import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.resolve.ResolvePostRequestDirect;
 import org.json.JSONException;
+import timber.log.Timber;
 
 import java.io.IOException;
 
@@ -81,12 +82,22 @@ public class ResolveUserProcessor {
                 resolveCallbacks.resolutionFailed();
             }
         } else if (overWifi() && imsi.isValid()) {
-            resolveWithImsi(imsi, smsValidation, settings.apix);
+            resolveThroughApix(smsValidation);
         } else if (overMobileNetwork() && imsi.isValid()) {
-            resolveWithImsi(imsi, smsValidation, settings.hap);
+            resolveThroughHap(smsValidation);
         } else {
             resolveCallbacks.resolutionFailed();
         }
+    }
+
+    private void resolveThroughApix(boolean smsValidation) throws IOException, JSONException {
+        Timber.i("over wifi, resolving through APIX");
+        resolveWithImsi(imsi, smsValidation, settings.apix);
+    }
+
+    private void resolveThroughHap(boolean smsValidation) throws IOException, JSONException {
+        Timber.i("over mobile, resolving through HAP");
+        resolveWithImsi(imsi, smsValidation, settings.hap);
     }
 
     private void resolutionCantBeDoneWithoutNetworkConnection() {
@@ -94,6 +105,8 @@ public class ResolveUserProcessor {
     }
 
     private void resolveWithMsisdn(MSISDN msisdn) throws IOException, JSONException {
+        Timber.i("MSISDN is valid, resolving with MSISDN");
+
         Uri uri = new Uri.Builder().scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
