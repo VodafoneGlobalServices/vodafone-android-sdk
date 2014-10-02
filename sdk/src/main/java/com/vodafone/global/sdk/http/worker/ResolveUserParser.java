@@ -92,7 +92,8 @@ public class ResolveUserParser {
     }
 
     protected String extractToken(String location) {
-        Pattern pattern = Pattern.compile(".*/users/tokens/(.*)[/?].*");
+        String regex = ".*/users/tokens/(.*)[/]?.*";
+        Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(location);
         return matcher.group(1);
     }
