@@ -9,7 +9,7 @@ public class MSISDN {
     }
 
     public boolean isPresent() {
-        return msisdn == null || msisdn.isEmpty();
+        return msisdn != null && !msisdn.isEmpty();
     }
 
     public boolean isValid() {
