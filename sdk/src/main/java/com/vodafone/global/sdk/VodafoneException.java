@@ -32,6 +32,11 @@ public abstract class VodafoneException extends RuntimeException {
         this.exceptionType = exceptionType;
     }
 
+    public VodafoneException(ExceptionType exceptionType, Throwable t) {
+        super(t);
+        this.exceptionType = exceptionType;
+    }
+
     public VodafoneException(ExceptionType exceptionType, String detailMessage) {
         super(detailMessage);
         this.exceptionType = exceptionType;

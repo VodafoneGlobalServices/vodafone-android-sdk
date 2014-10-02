@@ -5,6 +5,10 @@ public class GenericServerError extends VodafoneException {
         super(ExceptionType.GENERIC_SERVER_ERROR);
     }
 
+    public GenericServerError(Throwable throwable) {
+        super(ExceptionType.GENERIC_SERVER_ERROR, throwable);
+    }
+
     public GenericServerError(String detailMessage) {
         super(ExceptionType.GENERIC_SERVER_ERROR, detailMessage);
     }

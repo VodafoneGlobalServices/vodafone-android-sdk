@@ -33,7 +33,7 @@ public class GeneratePinParser {
                 validateSmsCallbacks.notifyError(new TokenNotFound());
                 break;
             default:
-                validateSmsCallbacks.notifyError(new GenericServerError());
+                validateSmsCallbacks.notifyError(new GenericServerError("unknown http code " + code));
         }
     }
 }

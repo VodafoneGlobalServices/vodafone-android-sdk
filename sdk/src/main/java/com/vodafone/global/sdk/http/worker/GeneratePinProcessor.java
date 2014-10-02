@@ -51,7 +51,7 @@ public class GeneratePinProcessor {
             Response response = queryServer(token);
             parser.parseResponse(response);
         } catch (Exception e) {
-            validateSmsCallbacks.notifyError(new GenericServerError());
+            validateSmsCallbacks.notifyError(new GenericServerError(e));
         }
     }
 
