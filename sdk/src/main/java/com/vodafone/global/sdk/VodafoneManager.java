@@ -124,11 +124,13 @@ public class VodafoneManager {
         registrars.put(ResolveCallback.class, new Registrar() {
             @Override
             public void register(VodafoneCallback callback) {
+                Timber.d("registered ResolveCallback");
                 resolveCallbacks.add((ResolveCallback) callback);
             }
 
             @Override
             public void unregister(VodafoneCallback callback) {
+                Timber.d("unregistered ResolveCallback");
                 resolveCallbacks.remove((ResolveCallback) callback);
             }
         });
@@ -136,11 +138,13 @@ public class VodafoneManager {
         registrars.put(ValidateSmsCallback.class, new Registrar() {
             @Override
             public void register(VodafoneCallback callback) {
+                Timber.d("registered ValidateSmsCallback");
                 validateSmsCallbacks.add((ValidateSmsCallback) callback);
             }
 
             @Override
             public void unregister(VodafoneCallback callback) {
+                Timber.d("unregistered ValidateSmsCallback");
                 validateSmsCallbacks.remove((ValidateSmsCallback) callback);
             }
         });
