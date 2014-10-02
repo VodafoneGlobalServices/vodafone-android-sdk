@@ -33,6 +33,7 @@ public class ResolveCallbacks {
                         case STILL_RUNNING:
                             break;
                         case VALIDATION_REQUIRED:
+                            callback.onCompleted(userDetailsDto.userDetails.get()); // TODO temporary solution, before new token caching solution
                             callback.onValidationRequired();
                             break;
                         case FAILED:
