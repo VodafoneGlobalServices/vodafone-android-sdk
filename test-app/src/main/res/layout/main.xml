@@ -4,24 +4,29 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/et_appKey"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:hint="app key"/>
 
-        <EditText
-            android:id="@+id/et_appId"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="appId" />
+    <EditText
+        android:id="@+id/et_appSecret"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="app secret"/>
 
-        <Button
-            android:id="@+id/btn_setAppId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="set" />
-    </LinearLayout>
+    <EditText
+        android:id="@+id/et_backendAppKey"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="backend app key"/>
+
+    <Button
+        android:id="@+id/btn_setInitData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="set"/>
 
     <EditText
         android:id="@+id/et_imsi"
