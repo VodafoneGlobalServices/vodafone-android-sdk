@@ -1,6 +1,7 @@
 package com.vodafone.global.sdk.testapp;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import com.vodafone.global.sdk.Vodafone;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import com.vodafone.global.sdk.testapp.logging.ui.LogFragment;
 import timber.log.Timber;
 
 public class MainActivity extends Activity {
@@ -26,12 +28,23 @@ public class MainActivity extends Activity {
     @InjectView(R.id.et_smsCode) EditText smsCode;
     @InjectView(R.id.et_tokenSms) EditText tokenSms;
 
+    private static final String FRAGMENT_LOG =
+            "com.vodafone.global.sdk.testapp.MainActivity.LOG";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(com.vodafone.global.sdk.testapp.R.layout.main);
         ButterKnife.inject(this);
         readInitData();
+
+        if (savedInstanceState == null) {
+            Fragment f = LogFragment.newInstance();
+            getFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.log, f, FRAGMENT_LOG)
+                    .commit();
+        }
     }
 
     private void readInitData() {

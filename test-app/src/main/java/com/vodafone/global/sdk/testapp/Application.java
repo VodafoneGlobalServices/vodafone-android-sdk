@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Process;
 import com.vodafone.global.sdk.Vodafone;
+import com.vodafone.global.sdk.testapp.logging.PersistTree;
 import timber.log.Timber;
 
 public class Application extends android.app.Application {
@@ -18,6 +19,7 @@ public class Application extends android.app.Application {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
+            Timber.plant(new PersistTree(this));
         }
 
         SharedPreferences preferences = getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);

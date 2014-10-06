@@ -21,5 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:authorities="com.vodafone.global.sdk.testapp.LogsProvider"
+            android:name="com.vodafone.global.sdk.testapp.provider.LogsProvider"
+            android:exported="false"/>
     </application>
 </manifest>
