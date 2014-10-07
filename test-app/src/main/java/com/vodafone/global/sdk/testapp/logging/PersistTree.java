@@ -1,5 +1,6 @@
 package com.vodafone.global.sdk.testapp.logging;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
@@ -15,10 +16,10 @@ import java.util.regex.Pattern;
 public class PersistTree implements Timber.TaggedTree {
     private static final Pattern ANONYMOUS_CLASS = Pattern.compile("\\$\\d+$");
     private static final ThreadLocal<String> NEXT_TAG = new ThreadLocal<String>();
-    private final Context context;
+    private final Context appContext;
 
     public PersistTree(Context context) {
-        this.context = context.getApplicationContext();
+        this.appContext = context.getApplicationContext();
     }
 
     @Override
@@ -93,12 +94,18 @@ public class PersistTree implements Timber.TaggedTree {
             message += "\n" + Log.getStackTraceString(t);
         }
 
-        ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
         cv.put(LogColumns.TIMESTAMP, ISODateTimeFormat.dateTime().print(new DateTime()));
         cv.put(LogColumns.LEVEL, priority);
         cv.put(LogColumns.TAG, createTag());
         cv.put(LogColumns.MSG, message);
-        context.getContentResolver().insert(LogsProvider.Logs.LOGS, cv);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ContentResolver contentResolver = appContext.getContentResolver();
+                contentResolver.insert(LogsProvider.Logs.LOGS, cv);
+            }
+        }).run();
     }
 
     private static String createTag() {
