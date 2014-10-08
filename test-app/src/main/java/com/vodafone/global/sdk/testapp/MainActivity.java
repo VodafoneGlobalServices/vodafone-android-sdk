@@ -9,8 +9,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.vodafone.global.sdk.UserDetailsRequestParameters;
-import com.vodafone.global.sdk.Vodafone;
+import com.vodafone.global.sdk.*;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -31,6 +30,9 @@ public class MainActivity extends Activity {
     private static final String FRAGMENT_LOG =
             "com.vodafone.global.sdk.testapp.MainActivity.LOG";
 
+    private ResolveCallbackImpl resolveCallback;
+    private ValidateSmsCallbackImpl validateSmsCallback;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +47,23 @@ public class MainActivity extends Activity {
                     .add(R.id.log, f, FRAGMENT_LOG)
                     .commit();
         }
+
+        resolveCallback = new ResolveCallbackImpl();
+        validateSmsCallback = new ValidateSmsCallbackImpl();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Vodafone.register(resolveCallback);
+        Vodafone.register(validateSmsCallback);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Vodafone.register(resolveCallback);
+        Vodafone.register(validateSmsCallback);
     }
 
     private void readInitData() {
@@ -103,5 +122,49 @@ public class MainActivity extends Activity {
         String code = smsCode.getText().toString();
         Timber.v("send sms code button clicked, sms code: " + code);
         Vodafone.validateSmsCode(code);
+    }
+
+    class ResolveCallbackImpl implements ResolveCallback {
+        @Override
+        public void onCompleted(UserDetails userDetails) {
+            Timber.d("ResolveCallback::onCompleted");
+        }
+
+        @Override
+        public void onValidationRequired() {
+            Timber.d("ResolveCallback::onValidationRequired");
+        }
+
+        @Override
+        public void onFailed() {
+            Timber.d("ResolveCallback::onFailed");
+        }
+
+        @Override
+        public void onError(VodafoneException ex) {
+            Timber.d("ResolveCallback::onError");
+        }
+    }
+
+    class ValidateSmsCallbackImpl implements ValidateSmsCallback {
+        @Override
+        public void onSmsValidationSuccessful() {
+            Timber.d("ValidateSmsCallback::onSmsValidationSuccessful");
+        }
+
+        @Override
+        public void onSmsValidationFailure() {
+            Timber.d("ValidateSmsCallback::onSmsValidationFailure");
+        }
+
+        @Override
+        public void onSmsValidationError(VodafoneException ex) {
+            Timber.d("ValidateSmsCallback::onSmsValidationError");
+        }
+
+        @Override
+        public void onPinGenerationSuccess() {
+            Timber.d("ValidateSmsCallback::onPinGenerationSuccess");
+        }
     }
 }
