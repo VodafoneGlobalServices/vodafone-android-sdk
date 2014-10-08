@@ -2,25 +2,19 @@ package com.vodafone.global.sdk.testapp;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
-
-import com.vodafone.global.sdk.*;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.testapp.logging.ui.LogFragment;
 import timber.log.Timber;
 
 public class MainActivity extends Activity {
-    @InjectView(R.id.et_appKey) EditText appKeyET;
-    @InjectView(R.id.et_appSecret) EditText appSecretET;
-    @InjectView(R.id.et_backendAppKey) EditText backendAppKeyET;
     @InjectView(R.id.et_imsi) EditText imsi;
     @InjectView(R.id.et_token) EditText token;
     @InjectView(R.id.cb_smsValidation) CheckBox smsValidation;
@@ -36,9 +30,8 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.vodafone.global.sdk.testapp.R.layout.main);
+        setContentView(com.vodafone.global.sdk.testapp.R.layout.activity_main);
         ButterKnife.inject(this);
-        readInitData();
 
         if (savedInstanceState == null) {
             Fragment f = LogFragment.newInstance();
@@ -66,45 +59,19 @@ public class MainActivity extends Activity {
         Vodafone.register(validateSmsCallback);
     }
 
-    private void readInitData() {
-        SharedPreferences preferences = getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);
-        String appKey = preferences.getString(Preferences.APP_KEY, "");
-        String appSecret = preferences.getString(Preferences.APP_SECRET, "");
-        String backendAppKey = preferences.getString(Preferences.BACKEND_APP_KEY, "");
-
-        appKeyET.setText(appKey);
-        appSecretET.setText(appSecret);
-        backendAppKeyET.setText(backendAppKey);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
-    @OnClick(R.id.btn_setInitData)
-    public void setAppId() {
-        String appKey = appKeyET.getText().toString();
-        String appSecret = appSecretET.getText().toString();
-        String backendAppKey = backendAppKeyET.getText().toString();
-        boolean commitSucceeded = persistInitData(appKey, appSecret, backendAppKey);
-        if (commitSucceeded) {
-            Timber.d("setting init data succeeded; app key: '%s', app secret: '%s', backend key: '%s'",
-                    appKey, appSecret, backendAppKey);
-            Application.exit();
-        } else {
-            Timber.e("setting init data failed; app key: '%s', app secret: '%s', backend key: '%s'",
-                    appKey, appSecret, backendAppKey);
-            Toast.makeText(this, "saving app id failed", Toast.LENGTH_LONG).show();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_init) {
+            new InitDialog().show(getFragmentManager(), "init_fragment");
+            return true;
         }
-    }
-
-    /**
-     * Saves SDK init data for later use.
-     * @return true if the new values were successfully written to persistent storage
-     */
-    private boolean persistInitData(String appId, String appSecret, String backendAppKey) {
-        SharedPreferences preferences = getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(Preferences.APP_KEY, appId);
-        editor.putString(Preferences.APP_SECRET, appSecret);
-        editor.putString(Preferences.BACKEND_APP_KEY, backendAppKey);
-        return editor.commit();
+        return super.onOptionsItemSelected(item);
     }
 
     @OnClick(R.id.btn_retrieve)
