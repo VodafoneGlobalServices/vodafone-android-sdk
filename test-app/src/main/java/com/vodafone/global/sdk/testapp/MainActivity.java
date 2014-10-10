@@ -95,6 +95,7 @@ public class MainActivity extends Activity {
         @Override
         public void onCompleted(UserDetails userDetails) {
             Timber.d("ResolveCallback::onCompleted");
+            Timber.i(userDetails.toString());
         }
 
         @Override
@@ -110,6 +111,7 @@ public class MainActivity extends Activity {
         @Override
         public void onError(VodafoneException ex) {
             Timber.d("ResolveCallback::onError");
+            Timber.e(ex, ex.getMessage());
         }
     }
 
@@ -127,6 +129,7 @@ public class MainActivity extends Activity {
         @Override
         public void onSmsValidationError(VodafoneException ex) {
             Timber.d("ValidateSmsCallback::onSmsValidationError");
+            Timber.e(ex, ex.getMessage());
         }
 
         @Override
