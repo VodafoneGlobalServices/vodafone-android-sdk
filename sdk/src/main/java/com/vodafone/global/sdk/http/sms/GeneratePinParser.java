@@ -1,9 +1,7 @@
 package com.vodafone.global.sdk.http.sms;
 
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.GenericServerError;
-import com.vodafone.global.sdk.RequestValidationError;
-import com.vodafone.global.sdk.TokenNotFound;
+import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.ValidateSmsCallbacks;
 
 import static com.vodafone.global.sdk.http.HttpCode.*;

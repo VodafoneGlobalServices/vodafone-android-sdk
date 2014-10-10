@@ -2,8 +2,8 @@ package com.vodafone.global.sdk.http.resolve;
 
 import android.content.Context;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.BadRequest;
-import com.vodafone.global.sdk.GenericServerError;
+import com.vodafone.global.sdk.http.BadRequest;
+import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.http.parser.Parsers;

@@ -6,7 +6,7 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.GenericServerError;
+import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.Settings;

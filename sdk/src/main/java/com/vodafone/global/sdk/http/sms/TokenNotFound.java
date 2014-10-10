@@ -1,4 +1,6 @@
-package com.vodafone.global.sdk;
+package com.vodafone.global.sdk.http.sms;
+
+import com.vodafone.global.sdk.VodafoneException;
 
 public class TokenNotFound extends VodafoneException {
     public TokenNotFound() {

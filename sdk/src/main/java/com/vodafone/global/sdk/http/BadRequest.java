@@ -1,4 +1,6 @@
-package com.vodafone.global.sdk;
+package com.vodafone.global.sdk.http;
+
+import com.vodafone.global.sdk.VodafoneException;
 
 public class BadRequest extends VodafoneException {
     public BadRequest() {

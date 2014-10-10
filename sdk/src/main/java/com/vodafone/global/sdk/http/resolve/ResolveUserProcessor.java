@@ -7,6 +7,8 @@ import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.*;
+import com.vodafone.global.sdk.http.GenericServerError;
+import com.vodafone.global.sdk.http.NoInternetConnection;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.Worker;
 import org.json.JSONException;
