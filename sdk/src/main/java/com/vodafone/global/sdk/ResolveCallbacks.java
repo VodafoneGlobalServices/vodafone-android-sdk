@@ -3,7 +3,6 @@ package com.vodafone.global.sdk;
 import android.os.Handler;
 import android.os.Looper;
 import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
-import timber.log.Timber;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -20,7 +19,6 @@ public class ResolveCallbacks {
     }
 
     public void notifyUserDetailUpdate(final UserDetailsDTO userDetailsDto) {
-        Timber.d(userDetailsDto.toString());
         Handler handler = new Handler(Looper.getMainLooper());
         for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {
@@ -46,7 +44,6 @@ public class ResolveCallbacks {
     }
 
     public void notifyError(final VodafoneException exception) {
-        Timber.e(exception, exception.getMessage());
         Handler handler = new Handler(Looper.getMainLooper());
         for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {

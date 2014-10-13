@@ -7,9 +7,10 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.LogUtil;
+import com.vodafone.global.sdk.logging.LogUtil;
 import com.vodafone.global.sdk.RequestBuilderProvider;
 
+import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +24,7 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
     private final String accessToken;
     private final String pin;
     private final RequestBuilderProvider requestBuilderProvider;
+    private final Logger logger;
 
     /**
      * Provides builder for {@link ValidatePinRequest}.
@@ -35,13 +37,15 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
             String url,
             String accessToken,
             String pin,
-            RequestBuilderProvider requestBuilderProvider
+            RequestBuilderProvider requestBuilderProvider,
+            Logger logger
     ) {
         super(Response.class);
         this.url = url;
         this.accessToken = accessToken;
         this.pin = pin;
         this.requestBuilderProvider = requestBuilderProvider;
+        this.logger = logger;
     }
 
     @Override
@@ -56,12 +60,12 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
                 .post(body)
                 .build();
 
-        LogUtil.log(request);
+        logger.d(LogUtil.prepareRequestLogMsg(request));
 
         OkHttpClient client = getOkHttpClient();
         Response response = client.newCall(request).execute();
 
-        LogUtil.log(response);
+        logger.d(LogUtil.prepareResponseLogMsg(response));
         return response;
     }
 
@@ -77,6 +81,7 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
         private String accessToken;
         private String pin;
         private RequestBuilderProvider requestBuilderProvider;
+        private Logger logger;
 
         private Builder() {
         }
@@ -101,8 +106,13 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
+        public Builder logger(Logger logger) {
+            this.logger = logger;
+            return this;
+        }
+
         public ValidatePinRequest build() {
-            return new ValidatePinRequest(url, accessToken, pin, requestBuilderProvider);
+            return new ValidatePinRequest(url, accessToken, pin, requestBuilderProvider, logger);
         }
     }
 }

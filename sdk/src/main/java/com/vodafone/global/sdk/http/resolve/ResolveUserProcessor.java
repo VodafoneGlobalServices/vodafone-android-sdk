@@ -10,9 +10,8 @@ import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.NoInternetConnection;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.Worker;
+import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
-import timber.log.Timber;
 
 import java.io.IOException;
 
@@ -26,6 +25,7 @@ public class ResolveUserProcessor {
     private String backendAppKey;
     private IMSI imsi;
     private final RequestBuilderProvider requestBuilderProvider;
+    private final Logger logger;
     private Optional<OAuthToken> authToken;
     private final ResolveUserParser parser;
 
@@ -36,7 +36,8 @@ public class ResolveUserProcessor {
             String backendAppKey,
             IMSI imsi,
             ResolveCallbacks resolveCallbacks,
-            RequestBuilderProvider requestBuilderProvider
+            RequestBuilderProvider requestBuilderProvider,
+            Logger logger
     ) {
         this.context = context;
         this.worker = worker;
@@ -45,6 +46,7 @@ public class ResolveUserProcessor {
         this.backendAppKey = backendAppKey;
         this.imsi = imsi;
         this.requestBuilderProvider = requestBuilderProvider;
+        this.logger = logger;
         parser = new ResolveUserParser(worker, context, resolveCallbacks);
     }
 
@@ -93,12 +95,12 @@ public class ResolveUserProcessor {
     }
 
     private void resolveThroughApix(boolean smsValidation) throws IOException, JSONException {
-        Timber.i("over wifi, resolving through APIX");
+        logger.i("over wifi, resolving through APIX");
         resolveWithImsi(imsi, smsValidation, settings.apix);
     }
 
     private void resolveThroughHap(boolean smsValidation) throws IOException, JSONException {
-        Timber.i("over mobile, resolving through HAP");
+        logger.i("over mobile, resolving through HAP");
         resolveWithImsi(imsi, smsValidation, settings.hap);
     }
 
@@ -107,7 +109,7 @@ public class ResolveUserProcessor {
     }
 
     private void resolveWithMsisdn(MSISDN msisdn) throws IOException, JSONException {
-        Timber.i("MSISDN is valid, resolving with MSISDN");
+        logger.i("MSISDN is valid, resolving with MSISDN");
 
         Uri uri = new Uri.Builder().scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
@@ -140,6 +142,7 @@ public class ResolveUserProcessor {
                 .imsi(imsi)
                 .smsValidation(smsValidation)
                 .requestBuilderProvider(requestBuilderProvider)
+                .logger(logger)
                 .build();
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());

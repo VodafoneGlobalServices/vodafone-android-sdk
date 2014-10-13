@@ -4,9 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-import com.vodafone.global.sdk.MessageType;
-import timber.log.Timber;
-
 public class Worker extends Thread {
     private final Handler.Callback callback;
     private Handler handler;
@@ -22,7 +19,7 @@ public class Worker extends Thread {
             handler = new Handler(callback);
             Looper.loop();
         } catch (Throwable t) {
-            Timber.e(t, "");
+            // TODO can't be left like that
         }
     }
 

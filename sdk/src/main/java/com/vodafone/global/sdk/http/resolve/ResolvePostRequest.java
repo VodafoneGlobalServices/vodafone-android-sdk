@@ -3,9 +3,10 @@ package com.vodafone.global.sdk.http.resolve;
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.*;
 import com.vodafone.global.sdk.IMSI;
-import com.vodafone.global.sdk.LogUtil;
+import com.vodafone.global.sdk.logging.LogUtil;
 import com.vodafone.global.sdk.MSISDN;
 import com.vodafone.global.sdk.RequestBuilderProvider;
+import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
     private final String accessToken;
     protected final boolean smsValidation;
     private RequestBuilderProvider requestBuilderProvider;
+    private final Logger logger;
 
     /**
      * Provides builder for {@link ResolvePostRequest}.
@@ -28,13 +30,15 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
     protected ResolvePostRequest(
             String url, String accessToken,
             boolean smsValidation,
-            RequestBuilderProvider requestBuilderProvider
+            RequestBuilderProvider requestBuilderProvider,
+            Logger logger
     ) {
         super(Response.class);
         this.url = url;
         this.accessToken = accessToken;
         this.smsValidation = smsValidation;
         this.requestBuilderProvider = requestBuilderProvider;
+        this.logger = logger;
     }
 
     @Override
@@ -50,13 +54,13 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
                 .post(body)
                 .build();
 
-        LogUtil.log(request);
+        logger.d(LogUtil.prepareRequestLogMsg(request));
 
         OkHttpClient client = getOkHttpClient();
         client.setFollowRedirects(false);
         Response response = client.newCall(request).execute();
 
-        LogUtil.log(response);
+        logger.d(LogUtil.prepareResponseLogMsg(response));
         return response;
     }
 
@@ -74,6 +78,7 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
         private IMSI imsi;
         private boolean smsValidation;
         private RequestBuilderProvider requestBuilderProvider;
+        private Logger logger;
 
         private Builder() {
         }
@@ -108,11 +113,16 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
+        public Builder logger(Logger logger) {
+            this.logger = logger;
+            return this;
+        }
+
         public ResolvePostRequest build() {
             if (msisdn != null && imsi == null)
-                return new ResolvePostMsisdnRequest(url, accessToken, msisdn, smsValidation, requestBuilderProvider);
+                return new ResolvePostMsisdnRequest(url, accessToken, msisdn, smsValidation, requestBuilderProvider, logger);
             else if (imsi != null && msisdn == null)
-                return new ResolvePostImsiRequest(url, accessToken, imsi, smsValidation, requestBuilderProvider);
+                return new ResolvePostImsiRequest(url, accessToken, imsi, smsValidation, requestBuilderProvider, logger);
             else
                 throw new IllegalStateException("bad usage of request builder");
         }

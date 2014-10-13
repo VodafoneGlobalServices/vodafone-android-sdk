@@ -10,6 +10,7 @@ import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.Worker;
+import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class ValidatePinProcessor {
     private final ValidatePinParser parser;
     private String backendAppKey;
     private final RequestBuilderProvider requestBuilderProvider;
+    private final Logger logger;
     private Optional<OAuthToken> authToken;
 
     public ValidatePinProcessor(
@@ -30,7 +32,8 @@ public class ValidatePinProcessor {
             Settings settings,
             String backendAppKey,
             ResolveCallbacks resolveCallbacks,
-            RequestBuilderProvider requestBuilderProvider
+            RequestBuilderProvider requestBuilderProvider,
+            Logger logger
     ) {
         this.context = context;
         this.worker = worker;
@@ -38,6 +41,7 @@ public class ValidatePinProcessor {
         this.resolveCallbacks = resolveCallbacks;
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
+        this.logger = logger;
         parser = new ValidatePinParser(resolveCallbacks);
     }
 
@@ -68,6 +72,7 @@ public class ValidatePinProcessor {
                 .accessToken(authToken.get().accessToken)
                 .pin(validatePinParameters.getPin())
                 .requestBuilderProvider(requestBuilderProvider)
+                .logger(logger)
                 .build();
     }
 

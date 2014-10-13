@@ -12,6 +12,7 @@ import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.Worker;
+import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -23,13 +24,23 @@ public class CheckStatusProcessor {
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
     private RequestBuilderProvider requestBuilderProvider;
+    private final Logger logger;
     private UserDetailsDTO userDetailsDto;
 
-    public CheckStatusProcessor(Context context, Worker worker, Settings settings, String backendAppKey, ResolveCallbacks resolveCallbacks, RequestBuilderProvider requestBuilderProvider) {
+    public CheckStatusProcessor(
+            Context context,
+            Worker worker,
+            Settings settings,
+            String backendAppKey,
+            ResolveCallbacks resolveCallbacks,
+            RequestBuilderProvider requestBuilderProvider,
+            Logger logger
+    ) {
         this.settings = settings;
         this.resolveCallbacks = resolveCallbacks;
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
+        this.logger = logger;
         parser = new CheckStatusParser(worker, context, resolveCallbacks);
     }
 
@@ -60,7 +71,8 @@ public class CheckStatusProcessor {
         ResolveGetRequest.Builder requestBuilder = ResolveGetRequest.builder()
                 .url(getUrl())
                 .accessToken(authToken.get().accessToken)
-                .requestBuilderProvider(requestBuilderProvider);
+                .requestBuilderProvider(requestBuilderProvider)
+                .logger(logger);
         if (!userDetailsDto.etag.isPresent())
             requestBuilder.etag(userDetailsDto.etag.get());
         return requestBuilder.build();

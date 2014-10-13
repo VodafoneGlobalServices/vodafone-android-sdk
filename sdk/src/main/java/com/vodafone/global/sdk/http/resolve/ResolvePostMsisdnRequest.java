@@ -2,14 +2,22 @@ package com.vodafone.global.sdk.http.resolve;
 
 import com.vodafone.global.sdk.MSISDN;
 import com.vodafone.global.sdk.RequestBuilderProvider;
+import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ResolvePostMsisdnRequest extends ResolvePostRequest {
     private final MSISDN msisdn;
 
-    protected ResolvePostMsisdnRequest(String url, String accessToken, MSISDN msisdn, boolean smsValidation, RequestBuilderProvider requestBuilderProvider) {
-        super(url, accessToken, smsValidation, requestBuilderProvider);
+    protected ResolvePostMsisdnRequest(
+            String url,
+            String accessToken,
+            MSISDN msisdn,
+            boolean smsValidation,
+            RequestBuilderProvider requestBuilderProvider,
+            Logger logger
+    ) {
+        super(url, accessToken, smsValidation, requestBuilderProvider, logger);
         this.msisdn = msisdn;
     }
 

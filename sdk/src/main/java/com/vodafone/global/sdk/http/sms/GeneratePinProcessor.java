@@ -12,6 +12,7 @@ import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.ValidateSmsCallbacks;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.Worker;
+import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class GeneratePinProcessor {
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
     private RequestBuilderProvider requestBuilderProvider;
+    private final Logger logger;
 
     public GeneratePinProcessor(
             Context context,
@@ -32,7 +34,8 @@ public class GeneratePinProcessor {
             Settings settings,
             String backendAppKey,
             ValidateSmsCallbacks validateSmsCallbacks,
-            RequestBuilderProvider requestBuilderProvider
+            RequestBuilderProvider requestBuilderProvider,
+            Logger logger
     ) {
         this.context = context;
         this.worker = worker;
@@ -40,6 +43,7 @@ public class GeneratePinProcessor {
         this.validateSmsCallbacks = validateSmsCallbacks;
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
+        this.logger = logger;
         parser = new GeneratePinParser(validateSmsCallbacks);
     }
 
@@ -69,6 +73,7 @@ public class GeneratePinProcessor {
                 .url(getUrl(token))
                 .accessToken(authToken.get().accessToken)
                 .requestBuilderProvider(requestBuilderProvider)
+                .logger(logger)
                 .build();
     }
 

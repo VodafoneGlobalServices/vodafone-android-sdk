@@ -1,11 +1,10 @@
-package com.vodafone.global.sdk;
+package com.vodafone.global.sdk.logging;
 
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import okio.Buffer;
-import timber.log.Timber;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,20 +13,20 @@ public class LogUtil {
     private LogUtil() {
     }
 
-    public static void log(Request request) {
+    public static String prepareRequestLogMsg(Request request) {
         StringBuilder builder = new StringBuilder();
         addTitle(request, builder);
         addHeaders(request.headers(), builder);
         addRequestBody(request, builder);
-        Timber.d(builder.toString());
+        return builder.toString();
     }
 
-    public static void log(Response response) {
+    public static String prepareResponseLogMsg(Response response) {
         StringBuilder b = new StringBuilder();
         addTitle(response, b);
         addHeaders(response.headers(), b);
         addResponseBody(response, b);
-        Timber.d(b.toString());
+        return b.toString();
     }
 
     private static void addTitle(Request request, StringBuilder builder) {

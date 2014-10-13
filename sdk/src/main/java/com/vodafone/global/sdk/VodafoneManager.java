@@ -13,7 +13,8 @@ import com.vodafone.global.sdk.http.resolve.CheckStatusProcessor;
 import com.vodafone.global.sdk.http.resolve.ResolveUserProcessor;
 import com.vodafone.global.sdk.http.sms.GeneratePinProcessor;
 import com.vodafone.global.sdk.http.sms.ValidatePinProcessor;
-import timber.log.Timber;
+import com.vodafone.global.sdk.logging.Logger;
+import com.vodafone.global.sdk.logging.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -66,11 +67,12 @@ public class VodafoneManager {
         register(new CacheResolutionCallback());
 
         worker = new Worker(callback);
+        Logger networkLogger = LoggerFactory.getNetworkLogger();
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey, clientAppKey);
-        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider);
-        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider);
-        generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks, requestBuilderProvider);
-        validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider);
+        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider, networkLogger);
+        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider, networkLogger);
+        generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, validateSmsCallbacks, requestBuilderProvider, networkLogger);
+        validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider, networkLogger);
 
         thresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
@@ -127,13 +129,11 @@ public class VodafoneManager {
         registrars.put(ResolveCallback.class, new Registrar() {
             @Override
             public void register(VodafoneCallback callback) {
-                Timber.d("registered ResolveCallback");
                 resolveCallbacks.add((ResolveCallback) callback);
             }
 
             @Override
             public void unregister(VodafoneCallback callback) {
-                Timber.d("unregistered ResolveCallback");
                 resolveCallbacks.remove((ResolveCallback) callback);
             }
         });
@@ -141,13 +141,11 @@ public class VodafoneManager {
         registrars.put(ValidateSmsCallback.class, new Registrar() {
             @Override
             public void register(VodafoneCallback callback) {
-                Timber.d("registered ValidateSmsCallback");
                 validateSmsCallbacks.add((ValidateSmsCallback) callback);
             }
 
             @Override
             public void unregister(VodafoneCallback callback) {
-                Timber.d("unregistered ValidateSmsCallback");
                 validateSmsCallbacks.remove((ValidateSmsCallback) callback);
             }
         });
@@ -187,7 +185,6 @@ public class VodafoneManager {
      * Validates identity by providing code send by server via SMS.
      */
     public void generatePin() {
-        Timber.d("generate pin");
         worker.sendMessage(worker.createMessage(GENERATE_PIN, cachedUserDetails.get().token));
     }
 
