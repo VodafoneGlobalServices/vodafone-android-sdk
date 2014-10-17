@@ -1,10 +1,28 @@
-To run tests and generate reports run following command:
+<!-- This is Mardown formatted description of project. -->
 
-  ./gradlew :sdk:clean :sdk-test:clean :sdk:assemble :sdk-test:test :sdk-test:jacocoTestReport
+# Seamless ID
 
-Tests report can be found at:
-  sdk-test/build/reports/tests/index.html
+## Development
 
-Code coverage report can be found at:
-  sdk-test/build/reports/jacoco/test/html/index.html
+### Logging
 
+LoggerFactory is build type dependant implementation. The difference is that
+when you build SDK in debug mode it will log network communications but
+it won't do so in release mode.
+
+Different implementations are located at
+`/sdk/src/debug/java/com/vodafone/global/sdk/logging/LoggerFactory.java`
+and
+`/sdk/src/release/java/com/vodafone/global/sdk/logging/LoggerFactory.java`
+
+### Testing and code coverage
+
+To run tests and generate reports run following command
+
+    ./gradlew :sdk:clean :sdk-test:clean :sdk:assemble :sdk-test:test :sdk-test:jacocoTestReport
+
+Tests report can be found at
+`sdk-test/build/reports/tests/index.html`
+
+Code coverage report can be found at
+`sdk-test/build/reports/jacoco/test/html/index.html`
