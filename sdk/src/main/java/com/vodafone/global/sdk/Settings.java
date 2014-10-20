@@ -1,11 +1,9 @@
 package com.vodafone.global.sdk;
 
 import android.content.Context;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,8 +11,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Settings {
     public final PathSettings apix;
@@ -28,9 +25,9 @@ public class Settings {
     public final String oAuthTokenScope;                  //Scope for oAuthToken retrieval.
     public final String msisdnValidationRegex;              //Regular expression for imsi validation.
     public final String oAuthTokenGrantType;
-
     public final String sdkId = "VFSeamlessID SDK/Android (v1.0.0)";
     public List<String> availableMccMnc;
+    public final Map<String, String> availableMarkets;
 
     public Settings(Context context) {
         JSONObject json = parseJSON(context);
@@ -46,6 +43,7 @@ public class Settings {
             oAuthTokenGrantType = json.getString("oAuthTokenGrantType");
             msisdnValidationRegex = json.getString("msisdnValidationRegex");
             availableMccMnc = getAvailableMccMnc(json);
+            availableMarkets = getAvailableMarkets(json);
         } catch (JSONException e) {
             throw new IllegalStateException(e);
         }
@@ -58,6 +56,26 @@ public class Settings {
             mccMnc.add(array.getString(i));
         }
         return mccMnc;
+    }
+
+    private Map<String, String> getAvailableMarkets(JSONObject json) throws JSONException {
+        JSONObject markets = json.getJSONObject("availableMarkets");
+
+        ArrayList<String> keys = new ArrayList<String>();
+
+        Iterator iterator = markets.keys();
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            keys.add(key);
+        }
+
+        HashMap<String, String> availableMarkets = new HashMap<String, String>();
+        for (String marketCode : keys) {
+            String marketNumber = String.valueOf(markets.getInt(marketCode));
+            availableMarkets.put(marketNumber, marketCode);
+        }
+
+        return availableMarkets;
     }
 
     private JSONObject parseJSON(Context context) {

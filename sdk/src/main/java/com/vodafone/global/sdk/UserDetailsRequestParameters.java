@@ -5,19 +5,19 @@ package com.vodafone.global.sdk;
  */
 public class UserDetailsRequestParameters {
     private final boolean smsValidation;
-    private final MSISDN MSISDN;
+    private final String msisdn;
 
     private UserDetailsRequestParameters(boolean smsValidation, String msisdn) {
         this.smsValidation = smsValidation;
-        this.MSISDN = new MSISDN(msisdn);
+        this.msisdn = msisdn;
     }
 
     public boolean smsValidation() {
         return smsValidation;
     }
 
-    public MSISDN getMSISDN() {
-        return MSISDN;
+    public String getMSISDN() {
+        return msisdn;
     }
 
     public static Builder builder() {

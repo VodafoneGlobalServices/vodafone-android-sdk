@@ -75,7 +75,7 @@ public class ResolveUserProcessor {
     private void startResolve(Message msg) throws IOException, JSONException {
         UserDetailsRequestParameters parameters = (UserDetailsRequestParameters) msg.obj;
         boolean smsValidation = parameters.smsValidation();
-        MSISDN msisdn = parameters.getMSISDN();
+        MSISDN msisdn = new MSISDN(parameters.getMSISDN(), settings.availableMarkets);
 
         if (noInternetConnection()) {
             resolutionCantBeDoneWithoutNetworkConnection();
