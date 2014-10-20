@@ -1,5 +1,8 @@
 package com.vodafone.global.sdk;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -15,16 +18,24 @@ public class ValidateSmsCallbacks {
     }
 
     public void notifySuccess() {
-        // TODO callback call on main thread
-        for (ValidateSmsCallback callback : validateSmsCallbacks) {
-            callback.onPinGenerationSuccess();
+        Handler handler = new Handler(Looper.getMainLooper());
+        for (final ValidateSmsCallback callback : validateSmsCallbacks) {
+            handler.post(new Runnable() {
+                public void run() {
+                    callback.onPinGenerationSuccess();
+                }
+            });
         }
     }
 
-    public void notifyError(VodafoneException vodafoneException) {
-        // TODO callback call on main thread
-        for (ValidateSmsCallback callback : validateSmsCallbacks) {
-            callback.onSmsValidationError(vodafoneException);
+    public void notifyError(final VodafoneException vodafoneException) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        for (final ValidateSmsCallback callback : validateSmsCallbacks) {
+            handler.post(new Runnable() {
+                public void run() {
+                    callback.onSmsValidationError(vodafoneException);
+                }
+            });
         }
     }
 }
