@@ -62,8 +62,8 @@ public class VodafoneManager {
         this.backendAppKey = backendAppKey;
 
         registrars = prepareRegistrars();
-        imsi = new IMSI(context);
         settings = new Settings(context);
+        imsi = new IMSI(context, settings.availableMccMnc);
         register(new CacheResolutionCallback());
 
         worker = new Worker(callback);

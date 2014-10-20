@@ -6,12 +6,15 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Settings {
     public final PathSettings apix;
@@ -27,6 +30,7 @@ public class Settings {
     public final String oAuthTokenGrantType;
 
     public final String sdkId = "VFSeamlessID SDK/Android (v1.0.0)";
+    public List<String> availableMccMnc;
 
     public Settings(Context context) {
         JSONObject json = parseJSON(context);
@@ -41,9 +45,19 @@ public class Settings {
             oAuthTokenScope = json.getString("oAuthTokenScope");
             oAuthTokenGrantType = json.getString("oAuthTokenGrantType");
             msisdnValidationRegex = json.getString("msisdnValidationRegex");
+            availableMccMnc = getAvailableMccMnc(json);
         } catch (JSONException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private List<String> getAvailableMccMnc(JSONObject json) throws JSONException {
+        ArrayList<String> mccMnc = new ArrayList<String>();
+        JSONArray array = json.getJSONArray("availableMccMnc");
+        for (int i = 0, length = array.length(); i < length; i++) {
+            mccMnc.add(array.getString(i));
+        }
+        return mccMnc;
     }
 
     private JSONObject parseJSON(Context context) {
