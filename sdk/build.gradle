@@ -14,9 +14,32 @@ android {
         versionName "1.0"
     }
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+        }
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        dit {}
+        preProd {}
+        prod {}
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            def file = output.outputFile
+            def flavorName = variant.flavorName
+            // flavors can't have hyphen in their name so we have to change it
+            if (flavorName == "preProd")
+                flavorName = "pre-prod"
+            def newName = file.name.replace("sdk-${variant.flavorName}", "vodafone-android-sdk-${flavorName}")
+            if (variant.buildType.name == "release")
+                newName = newName.replace("-release", "")
+            output.outputFile = new File(file.parentFile, newName)
         }
     }
 }
@@ -37,7 +60,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-task zip2jar(type: Zip, dependsOn: "compileReleaseJava") {
+task zip2jar(type: Zip, dependsOn: "compileDitReleaseJava") {
     from 'build/intermediates/classes/release'
     destinationDir = file('build/libs')
     extension = "jar"

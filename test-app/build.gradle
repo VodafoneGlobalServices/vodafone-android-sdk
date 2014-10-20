@@ -24,10 +24,34 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+        dit {}
+        preProd {}
+        prod {}
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def file = output.outputFile
+            def flavorName = variant.flavorName
+            // flavors can't have hyphen in their name so we have to change it
+            if (flavorName == "preProd")
+                flavorName = "pre-prod"
+            def newName = file.name.replace("test-app-${variant.flavorName}", "vodafone-android-sdk-testing-${flavorName}")
+            if (variant.buildType.name == "release")
+                newName = newName.replace("-release", "")
+            output.outputFile = new File(file.parentFile, newName)
+            if (output.zipAlign)
+                output.outputFile = new File(file.parentFile, newName.replace("-unaligned", ""))
+        }
+    }
 }
 
 dependencies {
-    compile project(path: ':sdk', configuration: 'debug')
+    ditCompile project(path: ':sdk', configuration: 'ditDebug')
+    preProdCompile project(path: ':sdk', configuration: 'preProdDebug')
+    prodCompile project(path: ':sdk', configuration: 'prodDebug')
     compile 'com.jakewharton:butterknife:5.1.1'
     compile 'com.jakewharton.timber:timber:2.4.1'
     apt 'net.simonvt.schematic:schematic-compiler:0.5.3'
