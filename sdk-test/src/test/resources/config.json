@@ -1,24 +1,30 @@
 {
-    "apix": {
+    "oauth": {
         "protocol": "https",
-        "host": "OAUTH",
+        "host": "apisit.developer.vodafone.com",
         "path": "/2/oauth/access-token"
     },
     "hap": {
-        "protocol": "https",
-        "host": "APIX",
-        "path": "/he/users/resolve"
-    },
-    "oauth": {
         "protocol": "http",
-        "host": "HAP",
-        "path": "/he/users/resolve"
+        "host": "SeamId-4090514559.eu-de1.plex.vodafone.com",
+        "path": "/seamless-id/users/tokens"
     },
-    "configurationUpdateCheckTimeSpan": 1,
-    "defaultHttpConnectionTimeout": 1,
-    "requestsThrottlingLimit": 1,
-    "requestsThrottlingPeriod": 1,
-    "oAuthTokenScope": "",
-    "oAuthTokenGrantType": "",
-    "msisdnValidationRegex": ""
+    "apix": {
+        "protocol": "http",
+        "host": "SeamId-4090514559.eu-de1.plex.vodafone.com",
+        "path": "/seamless-id/users/tokens"
+    },
+    "country code": {
+        "DE": "0049",
+        "PL": "0048"
+    },
+    "configurationUpdateCheckTimeSpan":  60,
+    "defaultHttpConnectionTimeout": 300,
+    "requestsThrottlingLimit": 10,
+    "requestsThrottlingPeriod": 60000,
+    "oAuthTokenScope": "SSO_OAUTH2_INPUT",
+    "oAuthTokenGrantType": "client_credentials",
+    "msisdnValidationRegex": ".*",
+    "availableMccMnc": ["26801","22210","26202","21401","27201","20404","23415","22601","21670","20205","27801","27602","23003","65501"],
+    "availableMarkets" : {"PT": 351,"IT": 39,"DE": 49,"ES": 34,"IE": 353,"NL": 31,"GB": 44,"RO": 40,"HU": 36,"GR": 30,"MT": 356,"AL": 355,"CZ": 420,"ZA": 27}
 }

@@ -4,14 +4,19 @@ apply plugin: 'jacoco'
 
 dependencies {
     testCompile project(':sdk')
+    testCompile ('com.octo.android.robospice:robospice-okhttp:1.4.14') {
+        exclude group: 'com.squareup.okhttp'
+    }
+    testCompile 'com.google.guava:guava:17.0'
     testCompile 'com.squareup.okhttp:mockwebserver:2.0.0'
     testCompile 'org.robospock:robospock:0.4.4'
     testCompile 'cglib:cglib-nodep:3.1'
     testCompile 'org.objenesis:objenesis:2.1'
+    testCompile fileTree(dir: project(":sdk").file("libs"), include: "*.jar")
     testCompile fileTree(dir: project(":sdk").file("build/libs"), include: "*.jar")
 }
 
-sourceSets.test.java.srcDirs += ['../sdk/build/generated/source/r/release']
+sourceSets.test.java.srcDirs += ['../sdk/build/generated/source/r/dit/release']
 
 jacoco {
     toolVersion = "0.7.1.201405082137"
@@ -21,8 +26,8 @@ jacocoTestReport {
     group = "Reporting"
     description = "Generate Jacoco coverage reports after running tests."
     executionData = fileTree(dir: "${buildDir}/jacoco", include: '**/*.exec')
-    additionalSourceDirs = files(['../sdk/build/generated/source/r/release', '../sdk/src/main/java'])
-    additionalClassDirs = files(["../sdk/build/intermediates/classes/release/com/vodafone/global/sdk"])
+    additionalSourceDirs = files(['../sdk/build/generated/source/r/dit/release', '../sdk/src/main/java'])
+    additionalClassDirs = files(["../sdk/build/intermediates/classes/dit/release/com/vodafone/global/sdk"])
 }
 
 test {

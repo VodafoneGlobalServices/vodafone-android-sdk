@@ -61,7 +61,7 @@ dependencies {
 }
 
 task zip2jar(type: Zip, dependsOn: "compileDitReleaseJava") {
-    from 'build/intermediates/classes/release'
+    from 'build/intermediates/classes/dit/release'
     destinationDir = file('build/libs')
     extension = "jar"
 }
