@@ -2,14 +2,14 @@ package com.vodafone.global.sdk;
 
 public class CallThresholdReached extends VodafoneException {
     public CallThresholdReached() {
-        super(ExceptionType.CALL_THRESHOLD_REACHED);
+        super(Type.THROTTLING_LIMIT_EXCEEDED);
     }
 
     public CallThresholdReached(String detailMessage) {
-        super(ExceptionType.CALL_THRESHOLD_REACHED, detailMessage);
+        super(Type.THROTTLING_LIMIT_EXCEEDED, detailMessage);
     }
 
-    public CallThresholdReached(ExceptionType exceptionType, String detailMessage, Throwable throwable) {
-        super(ExceptionType.CALL_THRESHOLD_REACHED, detailMessage, throwable);
+    public CallThresholdReached(Type type, String detailMessage, Throwable throwable) {
+        super(Type.THROTTLING_LIMIT_EXCEEDED, detailMessage, throwable);
     }
 }

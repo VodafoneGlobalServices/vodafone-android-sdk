@@ -1,49 +1,48 @@
 package com.vodafone.global.sdk;
 
 public abstract class VodafoneException extends RuntimeException {
-    public enum ExceptionType {
-        TOKEN_NOT_FOUND(""),
+    public enum Type {
         GENERIC_SERVER_ERROR("Generic server failure"),
-        INTERNAL_SDK_ERROR("Internal SDK error"),
-        REQUEST_VALIDATION_ERROR("Request validation error"),
-        REQUEST_NOT_AUTHORIZED("Request not authorized"),
-        WRONG_OTP_PROVIDED("Wrong OTP provided"),
-        INVALID_OTP_FORMAT("Invalid OTP format"),
-        INVALID_TOKEN_STATE("Invalid token state"),
-        INVALID_MSISDN("Invalid MSISDN"),
-        CALL_THRESHOLD_REACHED("Call threshold reached"),
-        BAD_REQUEST("Bad request"),
-        NO_INTERNET_CONNECTION("No internet connection");
+        THROTTLING_LIMIT_EXCEEDED("Call threshold reached"),
+        NO_INTERNET_CONNECTION("No internet connection"),
+        CONNECTION_TIMEOUT("Connection timeout"),
+        INVALID_INPUT("Invalid input"),
+        RESOLUTION_TIMEOUT("Resolution timeout"),
+        WRONG_SMS_CODE("Wrong sms code"),
+        AUTHORIZATION_FAILED("Authorization failed"),
+        OPERATOR_NOT_SUPPORTED("Operator not supported"),
+        NOT_INITIALIZED("Not initialized");
 
         private final String message;
 
-        ExceptionType(String message) {
+        Type(String message) {
             this.message = message;
         }
     }
-    private ExceptionType exceptionType;
 
-    public ExceptionType getExceptionType() {
-        return exceptionType;
+    private final Type type;
+
+    public Type getType() {
+        return type;
     }
 
-    public VodafoneException(ExceptionType exceptionType) {
+    public VodafoneException(Type type) {
         super();
-        this.exceptionType = exceptionType;
+        this.type = type;
     }
 
-    public VodafoneException(ExceptionType exceptionType, Throwable t) {
+    public VodafoneException(Type type, Throwable t) {
         super(t);
-        this.exceptionType = exceptionType;
+        this.type = type;
     }
 
-    public VodafoneException(ExceptionType exceptionType, String detailMessage) {
+    public VodafoneException(Type type, String detailMessage) {
         super(detailMessage);
-        this.exceptionType = exceptionType;
+        this.type = type;
     }
 
-    public VodafoneException(ExceptionType exceptionType, String detailMessage, Throwable throwable) {
+    public VodafoneException(Type type, String detailMessage, Throwable throwable) {
         super(detailMessage, throwable);
-        this.exceptionType = exceptionType;
+        this.type = type;
     }
 }

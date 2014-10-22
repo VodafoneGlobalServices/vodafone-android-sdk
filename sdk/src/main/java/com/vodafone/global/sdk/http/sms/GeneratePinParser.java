@@ -1,16 +1,21 @@
 package com.vodafone.global.sdk.http.sms;
 
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.ValidateSmsCallbacks;
 
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
 public class GeneratePinParser {
+    private final ResolveCallbacks resolveCallbacks;
     private final ValidateSmsCallbacks validateSmsCallbacks;
 
-    public GeneratePinParser(ValidateSmsCallbacks validateSmsCallbacks) {
-
+    public GeneratePinParser(
+            ResolveCallbacks resolveCallbacks,
+            ValidateSmsCallbacks validateSmsCallbacks
+    ) {
+        this.resolveCallbacks = resolveCallbacks;
         this.validateSmsCallbacks = validateSmsCallbacks;
     }
 
@@ -22,13 +27,10 @@ public class GeneratePinParser {
                 break;
             case BAD_REQUEST_400:
             case FORBIDDEN_403:
-                // TODO validate error, error invalid input
-                validateSmsCallbacks.notifyError(new RequestValidationError());
+                validateSmsCallbacks.notifyError(new InvalidInput());
                 break;
-            case NOT_FOUND_404: // TODO
-                // TODO notify user details callback about
-                // TODO validate error
-                validateSmsCallbacks.notifyError(new TokenNotFound());
+            case NOT_FOUND_404:
+                resolveCallbacks.unableToResolve();
                 break;
             default:
                 validateSmsCallbacks.notifyError(new GenericServerError("unknown http code " + code));

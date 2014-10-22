@@ -57,7 +57,7 @@ public class CheckStatusParser {
                 worker.sendMessageDelayed(message, redirectDetails.retryAfter.get());
                 break;
             case BAD_REQUEST_400:
-                resolutionFailed();
+                unableToResolve();
                 break;
             case FORBIDDEN_403:
                 String body = response.body().string();
@@ -73,7 +73,7 @@ public class CheckStatusParser {
                 }
                 break;
             case NOT_FOUND_404:
-                resolutionFailed();
+                unableToResolve();
                 break;
             default:
                 resolveCallbacks.notifyError(new GenericServerError());
@@ -105,7 +105,7 @@ public class CheckStatusParser {
         resolveCallbacks.notifyUserDetailUpdate(userDetailsDTO);
     }
 
-    protected void resolutionFailed() {
-        resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.FAILED);
+    protected void unableToResolve() {
+        resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.UNABLE_TO_RESOLVE);
     }
 }

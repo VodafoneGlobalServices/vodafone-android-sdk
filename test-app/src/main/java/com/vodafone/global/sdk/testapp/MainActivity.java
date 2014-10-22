@@ -104,8 +104,8 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void onFailed() {
-            Timber.d("ResolveCallback::onFailed");
+        public void onUnableToResolve() {
+            Timber.d("ResolveCallback::onUnableToResolve");
         }
 
         @Override

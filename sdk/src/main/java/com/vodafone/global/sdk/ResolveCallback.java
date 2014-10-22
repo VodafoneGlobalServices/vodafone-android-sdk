@@ -12,7 +12,7 @@ public interface ResolveCallback extends VodafoneCallback {
 
     void onValidationRequired();
 
-    void onFailed();
+    void onUnableToResolve();
 
     /**
      * Called when error occurred during retrieving UserDetails.

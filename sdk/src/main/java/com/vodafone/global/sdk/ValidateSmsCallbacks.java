@@ -22,6 +22,28 @@ public class ValidateSmsCallbacks {
         for (final ValidateSmsCallback callback : validateSmsCallbacks) {
             handler.post(new Runnable() {
                 public void run() {
+                    callback.onSmsValidationSuccessful();
+                }
+            });
+        }
+    }
+
+    public void notifyFailure() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        for (final ValidateSmsCallback callback : validateSmsCallbacks) {
+            handler.post(new Runnable() {
+                public void run() {
+                    callback.onSmsValidationFailure();
+                }
+            });
+        }
+    }
+
+    public void notifyPinGenerationSuccess() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        for (final ValidateSmsCallback callback : validateSmsCallbacks) {
+            handler.post(new Runnable() {
+                public void run() {
                     callback.onPinGenerationSuccess();
                 }
             });

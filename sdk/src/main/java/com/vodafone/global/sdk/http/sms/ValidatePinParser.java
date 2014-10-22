@@ -1,10 +1,12 @@
 package com.vodafone.global.sdk.http.sms;
 
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.ValidateSmsCallbacks;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.http.HttpCode;
 import com.vodafone.global.sdk.http.parser.Parsers;
+import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -13,34 +15,38 @@ import static com.vodafone.global.sdk.http.HttpCode.*;
 
 public class ValidatePinParser  {
     private final ResolveCallbacks resolveCallbacks;
+    private final ValidateSmsCallbacks validateSmsCallbacks;
+    private final boolean intercepts = false; // TODO
 
-    public ValidatePinParser(ResolveCallbacks resolveCallbacks) {
+    public ValidatePinParser(
+            ResolveCallbacks resolveCallbacks,
+            ValidateSmsCallbacks validateSmsCallbacks
+    ) {
         this.resolveCallbacks = resolveCallbacks;
+        this.validateSmsCallbacks = validateSmsCallbacks;
     }
 
-    void parseResponse(Response response) throws IOException, JSONException {
+    void parseResponse(Response response, String token) throws IOException, JSONException {
         int code = response.code();
         switch (code) {
             case HttpCode.OK_200:
                 resolveCallbacks.notifyUserDetailUpdate(Parsers.parseUserDetails(response));
-                // TODO ValidateSmsCallback.onSmsValidationSuccessful()
+                validateSmsCallbacks.notifySuccess();
                 break;
             case BAD_REQUEST_400:
-                // TODO verify behaviour with flow diagram
-                resolveCallbacks.notifyError(new RequestValidationError());
+                resolveCallbacks.notifyError(new InvalidInput());
                 break;
             case FORBIDDEN_403:
-                resolveCallbacks.notifyError(new TokenNotFound());
+                resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.validationRequired(token));
                 break;
             case NOT_FOUND_404:
-                resolveCallbacks.notifyError(new TokenNotFound());
+                resolveCallbacks.unableToResolve();
                 break;
             case CONFLICT_409:
-                // TODO pin validated failed
-                // if (intercepts)
-                //   com.vodafone.global.sdk.ResolutionCallback.onFailed()
-                // else
-                //   com.vodafone.global.sdk.ValidateSmsCallback.onSmsValidationError()
+                if (intercepts)
+                   resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.validationRequired(token));
+                else
+                   validateSmsCallbacks.notifyFailure();
                 break;
             default:
                 resolveCallbacks.notifyError(new GenericServerError());

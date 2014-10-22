@@ -32,6 +32,7 @@ public class ValidatePinProcessor {
             Settings settings,
             String backendAppKey,
             ResolveCallbacks resolveCallbacks,
+            ValidateSmsCallbacks validateSmsCallbacks,
             RequestBuilderProvider requestBuilderProvider,
             Logger logger
     ) {
@@ -42,7 +43,7 @@ public class ValidatePinProcessor {
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
         this.logger = logger;
-        parser = new ValidatePinParser(resolveCallbacks);
+        parser = new ValidatePinParser(resolveCallbacks, validateSmsCallbacks);
     }
 
     public void process(Optional<OAuthToken> authToken, Message msg) {
@@ -51,7 +52,7 @@ public class ValidatePinProcessor {
 
         try {
             Response response = queryServer(validatePinParameters);
-            parser.parseResponse(response);
+            parser.parseResponse(response, validatePinParameters.getToken());
         } catch (Exception e) {
             resolveCallbacks.notifyError(new GenericServerError());
         }

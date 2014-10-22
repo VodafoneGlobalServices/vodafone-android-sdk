@@ -75,8 +75,8 @@ public class ExampleActivity extends Activity implements ResolveCallback, Valida
     }
 
     @Override
-    public void onFailed() {
-        Timber.d("ExampleActivity.onFailed");
+    public void onUnableToResolve() {
+        Timber.d("ExampleActivity.onUnableToResolve");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(android.R.drawable.ic_dialog_info)
                 .setMessage("Resolution failed")

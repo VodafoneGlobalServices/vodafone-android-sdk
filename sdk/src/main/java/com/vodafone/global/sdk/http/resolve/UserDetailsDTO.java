@@ -5,7 +5,7 @@ import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.UserDetails;
 
 public class UserDetailsDTO {
-    public static final UserDetailsDTO FAILED = new UserDetailsDTO(ResolutionStatus.FAILED);
+    public static final UserDetailsDTO UNABLE_TO_RESOLVE = new UserDetailsDTO(ResolutionStatus.UNABLE_TO_RESOLVE);
     public final ResolutionStatus status;
     public final Optional<UserDetails> userDetails;
     public final Optional<String> etag;
@@ -30,15 +30,6 @@ public class UserDetailsDTO {
         this.userDetails = Optional.of(userDetails);
         this.etag = Optional.of(etag);
         this.retryAfter = Optional.of(retryAfter);
-    }
-
-    /** @deprecated REMOVE after removal of old resolve queries */
-    @Deprecated
-    public UserDetailsDTO(ResolutionStatus status, UserDetails userDetails, String etag) {
-        this.status = status;
-        this.userDetails = Optional.of(userDetails);
-        this.etag = Optional.of(etag);
-        this.retryAfter = Optional.absent();
     }
 
     public static UserDetailsDTO validationRequired(String token) {

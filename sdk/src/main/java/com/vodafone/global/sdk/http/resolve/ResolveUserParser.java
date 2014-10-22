@@ -2,12 +2,11 @@ package com.vodafone.global.sdk.http.resolve;
 
 import android.content.Context;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.http.BadRequest;
-import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.ResolveCallbacks;
-import com.vodafone.global.sdk.http.parser.Parsers;
 import com.vodafone.global.sdk.Worker;
+import com.vodafone.global.sdk.http.GenericServerError;
+import com.vodafone.global.sdk.http.parser.Parsers;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,12 +51,11 @@ public class ResolveUserParser {
                 }
                 break;
             case NOT_FOUND_404:
-                resolutionFailed();
+                unableToResolve();
                 break;
             case BAD_REQUEST_400:
-                // Application ID doesn't exist on APIX
-                // Application ID has no seamlessID scope associated
-                resolveCallbacks.notifyError(new BadRequest());
+                resolveCallbacks.notifyError(new GenericServerError("Application ID doesn't exist on APIX" +
+                        " OR Application ID has no seamlessID scope associated"));
                 break;
             case FORBIDDEN_403:
                 String body = response.body().string();
@@ -114,7 +112,7 @@ public class ResolveUserParser {
         worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDTO));
     }
 
-    protected void resolutionFailed() {
-        resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.FAILED);
+    protected void unableToResolve() {
+        resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.UNABLE_TO_RESOLVE);
     }
 }

@@ -34,8 +34,8 @@ public class ResolveCallbacks {
                             callback.onCompleted(userDetailsDto.userDetails.get()); // TODO temporary solution, before new token caching solution
                             callback.onValidationRequired();
                             break;
-                        case FAILED:
-                            callback.onFailed();
+                        case UNABLE_TO_RESOLVE:
+                            callback.onUnableToResolve();
                             break;
                     }
                 }
@@ -55,7 +55,7 @@ public class ResolveCallbacks {
         }
     }
 
-    public void resolutionFailed() {
-        notifyUserDetailUpdate(UserDetailsDTO.FAILED);
+    public void unableToResolve() {
+        notifyUserDetailUpdate(UserDetailsDTO.UNABLE_TO_RESOLVE);
     }
 }

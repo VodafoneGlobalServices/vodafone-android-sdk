@@ -10,6 +10,7 @@ import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.NoInternetConnection;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
+import com.vodafone.global.sdk.http.sms.InvalidInput;
 import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 
@@ -83,14 +84,14 @@ public class ResolveUserProcessor {
             if (msisdn.isValid()) {
                 resolveWithMsisdn(msisdn);
             } else {
-                resolveCallbacks.resolutionFailed();
+                resolveCallbacks.notifyError(new InvalidInput());
             }
         } else if (overWifi() && imsi.isValid()) {
             resolveThroughApix(smsValidation);
         } else if (overMobileNetwork() && imsi.isValid()) {
             resolveThroughHap(smsValidation);
         } else {
-            resolveCallbacks.resolutionFailed();
+            resolveCallbacks.unableToResolve();
         }
     }
 
