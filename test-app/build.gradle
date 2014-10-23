@@ -18,10 +18,20 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
 
+    signingConfigs {
+        release {
+            storeFile file("vodafone-incubation.keystore")
+            storePassword SEAMLESSID_TEST_APP_RELEASE_STORE_PASSWORD
+            keyAlias "releasekey"
+            keyPassword SEAMLESSID_TEST_APP_RELEASE_KEY_PASSWORD
+        }
+    }
+
     buildTypes {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
