@@ -18,12 +18,12 @@ public class Settings {
     public final PathSettings hap;
     public final PathSettings oauth;
 
-    public final long configurationUpdateCheckTimeSpan;   //Time interval (in seconds) - time to wait until next configuration update can run.
-    public final long defaultHttpConnectionTimeout;       //Http connection time out.
-    public final long requestsThrottlingLimit;            //Number of maximum requests which can be performed in specified time period.
-    public final long requestsThrottlingPeriod;           //Time period for requestsThrottlingLimit, time period in seconds.l.
-    public final String oAuthTokenScope;                  //Scope for oAuthToken retrieval.
-    public final String msisdnValidationRegex;              //Regular expression for imsi validation.
+    public final long defaultHttpConnectionTimeout;
+    public final long requestsThrottlingLimit;
+    public final long requestsThrottlingPeriod;
+    public final String oAuthTokenScope;
+    public final String phoneNumberRegex;
+    public final String smsInterceptionRegex;
     public final String oAuthTokenGrantType;
     public final String sdkId = "VFSeamlessID SDK/Android (v1.0.0)";
     public List<String> availableMccMnc;
@@ -32,21 +32,46 @@ public class Settings {
     public Settings(Context context) {
         JSONObject json = parseJSON(context);
         try {
-            apix = new PathSettings(json.getJSONObject("apix"));
-            hap = new PathSettings(json.getJSONObject("hap"));
-            oauth = new PathSettings(json.getJSONObject("oauth"));
-            configurationUpdateCheckTimeSpan = json.getInt("configurationUpdateCheckTimeSpan");
+            apix = readApix(json);
+            hap = readHap(json);
+            oauth = readOAuth(json);
             defaultHttpConnectionTimeout = json.getInt("defaultHttpConnectionTimeout");
             requestsThrottlingLimit = json.getInt("requestsThrottlingLimit");
             requestsThrottlingPeriod = json.getInt("requestsThrottlingPeriod");
-            oAuthTokenScope = json.getString("oAuthTokenScope");
-            oAuthTokenGrantType = json.getString("oAuthTokenGrantType");
-            msisdnValidationRegex = json.getString("msisdnValidationRegex");
+            JSONObject apix = json.getJSONObject("apix");
+            oAuthTokenScope = apix.getString("oAuthTokenScope");
+            oAuthTokenGrantType = apix.getString("oAuthTokenGrantType");
+            phoneNumberRegex = json.getString("phoneNumberRegex");
             availableMccMnc = getAvailableMccMnc(json);
             availableMarkets = getAvailableMarkets(json);
+            smsInterceptionRegex = json.getString("smsInterceptionRegex");
         } catch (JSONException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private PathSettings readOAuth(JSONObject json) throws JSONException {
+        JSONObject apix = json.getJSONObject("apix");
+        String protocol = apix.getString("protocol");
+        String host = apix.getString("host");
+        String path = apix.getString("oAuthTokenPath");
+        return new PathSettings(protocol, host, path);
+    }
+
+    private PathSettings readHap(JSONObject json) throws JSONException {
+        JSONObject hap = json.getJSONObject("hap");
+        String protocol = hap.getString("protocol");
+        String host = hap.getString("host");
+        String path = json.getString("basePath");
+        return new PathSettings(protocol, host, path);
+    }
+
+    private PathSettings readApix(JSONObject json) throws JSONException {
+        JSONObject apix = json.getJSONObject("apix");
+        String protocol = apix.getString("protocol");
+        String host = apix.getString("host");
+        String path = json.getString("basePath");
+        return new PathSettings(protocol, host, path);
     }
 
     private List<String> getAvailableMccMnc(JSONObject json) throws JSONException {
@@ -115,6 +140,12 @@ public class Settings {
             protocol = json.getString("protocol");
             host = json.getString("host");
             path = json.getString("path");
+        }
+
+        PathSettings(String protocol, String host, String path) {
+            this.protocol = protocol;
+            this.host = host;
+            this.path = path;
         }
     }
 }
