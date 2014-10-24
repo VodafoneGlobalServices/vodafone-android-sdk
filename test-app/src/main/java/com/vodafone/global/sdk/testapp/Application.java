@@ -20,10 +20,8 @@ public class Application extends android.app.Application {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree());
-            Timber.plant(new PersistTree(this));
-        }
+        Timber.plant(new Timber.DebugTree());
+        Timber.plant(new PersistTree(this));
 
         SharedPreferences preferences = getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);
         String appKey = preferences.getString(Preferences.APP_KEY, "");
