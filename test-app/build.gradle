@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/repo' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/repo' }
+}
+
 apply plugin: 'android-apt'
 
 android {
@@ -67,6 +82,9 @@ dependencies {
     apt 'net.simonvt.schematic:schematic-compiler:0.5.3'
     compile 'net.simonvt.schematic:schematic:0.5.3'
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile('com.crashlytics.sdk.android:crashlytics:2.0.0@aar') {
+        transitive = true;
+    }
 }
 
 apt {

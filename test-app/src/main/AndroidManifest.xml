@@ -8,6 +8,8 @@
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
+
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:icon="@drawable/ic_launcher"
         android:allowBackup="false"
@@ -26,5 +28,6 @@
             android:authorities="com.vodafone.global.sdk.testapp.LogsProvider"
             android:name="com.vodafone.global.sdk.testapp.provider.LogsProvider"
             android:exported="false"/>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="f187f87cab2f203ae74c6430a91d7330f4c94ec0"/>
     </application>
 </manifest>

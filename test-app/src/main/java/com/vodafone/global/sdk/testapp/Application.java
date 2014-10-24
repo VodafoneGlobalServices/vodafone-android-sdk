@@ -3,8 +3,10 @@ package com.vodafone.global.sdk.testapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Process;
+import com.crashlytics.android.Crashlytics;
 import com.vodafone.global.sdk.Vodafone;
 import com.vodafone.global.sdk.testapp.logging.PersistTree;
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class Application extends android.app.Application {
@@ -16,6 +18,7 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
