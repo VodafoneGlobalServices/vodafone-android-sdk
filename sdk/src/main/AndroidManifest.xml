@@ -8,9 +8,4 @@
     <!-- ACCESS_NETWORK_STATE is required to check connection type -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <application>
-        <service
-            android:name=".http.VodafoneService"
-            android:exported="false" />
-    </application>
 </manifest>
