@@ -14,6 +14,7 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.vodafone.global.sdk.testapp.R;
+import com.vodafone.global.sdk.testapp.logging.database.LogColumns;
 import com.vodafone.global.sdk.testapp.logging.database.LogsProvider;
 
 public class LogFragment extends Fragment {
@@ -45,7 +46,7 @@ public class LogFragment extends Fragment {
         ButterKnife.inject(this, view);
         listView.setEmptyView(emptyView);
         if (adapter != null) listView.setAdapter(adapter);
-        Loader<Cursor> cursorLoader = getLoaderManager().initLoader(LOADER_ID, null, new LoaderCallback());
+        getLoaderManager().initLoader(LOADER_ID, null, new LoaderCallback());
     }
 
     @Override
@@ -80,7 +81,7 @@ public class LogFragment extends Fragment {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(getActivity(), LogsProvider.Logs.LOGS, null, null, null, null);
+            return new CursorLoader(getActivity(), LogsProvider.Logs.LOGS, null, null, null, LogColumns._ID + " DESC");
         }
 
         @Override
