@@ -3,6 +3,7 @@ package com.vodafone.global.sdk;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 public class Worker extends Thread {
     private final Handler.Callback callback;
@@ -18,8 +19,8 @@ public class Worker extends Thread {
             Looper.prepare();
             handler = new Handler(callback);
             Looper.loop();
-        } catch (Throwable t) {
-            // TODO can't be left like that
+        } catch (Exception e) {
+            Log.e("WORKER", e.getMessage(), e);
         }
     }
 

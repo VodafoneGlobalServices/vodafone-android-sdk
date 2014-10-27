@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.squareup.okhttp.OkHttpClient;
@@ -247,7 +248,7 @@ public class VodafoneManager {
         try {
             authToken = Optional.of(retrieveOAuthToken());
         } catch (Exception e) {
-            //TODO: ERROR authentication failure
+            Log.e("AUTH", e.getMessage(), e);
         }
     }
 
