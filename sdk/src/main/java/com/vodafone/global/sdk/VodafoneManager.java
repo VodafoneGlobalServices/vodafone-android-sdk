@@ -1,15 +1,14 @@
 package com.vodafone.global.sdk;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import com.squareup.okhttp.OkHttpClient;
+import com.vodafone.global.sdk.http.oauth.AuthorizationFailed;
+import com.vodafone.global.sdk.http.oauth.OAuthProcessor;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.http.oauth.OAuthTokenRequest;
 import com.vodafone.global.sdk.http.resolve.CheckStatusProcessor;
 import com.vodafone.global.sdk.http.resolve.ResolveUserProcessor;
 import com.vodafone.global.sdk.http.sms.GeneratePinProcessor;
@@ -35,6 +34,7 @@ public class VodafoneManager {
     private final Settings settings;
     private final Worker worker;
 
+    private final OAuthProcessor oAuthProc;
     private final ResolveUserProcessor resolveUserProc;
     private final CheckStatusProcessor checkStatusProc;
     private final GeneratePinProcessor generatePinProc;
@@ -70,6 +70,7 @@ public class VodafoneManager {
         worker = new Worker(callback);
         Logger networkLogger = LoggerFactory.getNetworkLogger();
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey, clientAppKey);
+        oAuthProc = new OAuthProcessor(clientAppKey, clientAppSecret, settings);
         resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider, networkLogger);
         checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider, networkLogger);
         generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, networkLogger);
@@ -223,7 +224,13 @@ public class VodafoneManager {
             MessageType id = MessageType.values()[msg.what];
             switch (id) {
                 case AUTHENTICATE:
-                    authenticate();
+                    try {
+                        authToken = Optional.of(oAuthProc.process());
+                    } catch (AuthorizationFailed e) {
+                        resolveCallbacks.notifyError(e);
+                    } catch (Exception e) {
+                        Log.e("AUTH", e.getMessage(), e);
+                    }
                     break;
                 case RETRIEVE_USER_DETAILS:
                     resolveUserProc.process(authToken, msg);
@@ -243,28 +250,4 @@ public class VodafoneManager {
             return true;
         }
     };
-
-    private void authenticate() {
-        try {
-            authToken = Optional.of(retrieveOAuthToken());
-        } catch (Exception e) {
-            Log.e("AUTH", e.getMessage(), e);
-        }
-    }
-
-    private OAuthToken retrieveOAuthToken() throws Exception {
-        Uri.Builder builder = new Uri.Builder();
-        Uri uri = builder.scheme(settings.oauth.protocol).authority(settings.oauth.host).path(settings.oauth.path).build();
-        OAuthTokenRequest request = OAuthTokenRequest.builder()
-                .url(uri.toString())
-                .clientId(clientAppKey)
-                .clientSecret(clientAppSecret)
-                .scope(settings.oAuthTokenScope)
-                .grantType(settings.oAuthTokenGrantType)
-                .build();
-
-        request.setRetryPolicy(null);
-        request.setOkHttpClient(new OkHttpClient());
-        return request.loadDataFromNetwork();
-    }
 }

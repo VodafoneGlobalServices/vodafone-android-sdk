@@ -68,7 +68,7 @@ class OAuthTokenRequestSpec extends Specification {
         request.loadDataFromNetwork()
 
         then:
-        thrown(IllegalStateException)
+        thrown(AuthorizationFailed)
 
         RecordedRequest request1 = server.takeRequest()
         request1.path == path

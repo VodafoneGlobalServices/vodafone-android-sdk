@@ -45,7 +45,7 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
     @Override
     public OAuthToken loadDataFromNetwork() throws Exception {
         RequestBody body = new FormEncodingBuilder()
-                .add("grant_type", grantType) // TODO might need to change, depends on 3rd party
+                .add("grant_type", grantType)
                 .add("client_id", clientId)
                 .add("client_secret", clientSecret)
                 .add("scope", scope)
@@ -65,7 +65,7 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
             case OK_200:
                 return parseJson(response);
             default:
-                throw new IllegalStateException(); // TODO better exception
+                throw new AuthorizationFailed();
         }
     }
 
