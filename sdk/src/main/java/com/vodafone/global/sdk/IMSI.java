@@ -25,9 +25,13 @@ public class IMSI {
      * @return {@code true} if it's supported, {@code false} otherwise
      */
     private boolean checkMccAndMnc(String imsi, List<String> supportedMccAndMnc) {
-        for (String mccAndMnc : supportedMccAndMnc)
-            if (imsi.startsWith(mccAndMnc))
-                return true;
+        if ((imsi != null && !imsi.isEmpty())) {
+            for (String mccAndMnc : supportedMccAndMnc) {
+                if (imsi.startsWith(mccAndMnc)) {
+                    return true;
+                }
+            }
+        }
 
         return false;
     }
@@ -45,7 +49,8 @@ public class IMSI {
     }
 
     public String get() {
-        if (!isPresent()) throw new IllegalStateException("IMSI.get() cannot be called on an absent value");
+        if (!isPresent())
+            throw new IllegalStateException("IMSI.get() cannot be called on an absent value");
         return imsi;
     }
 }
