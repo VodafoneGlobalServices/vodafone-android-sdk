@@ -47,9 +47,6 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
         RequestBody body = RequestBody.create(JSON, content);
         Request request = requestBuilderProvider.builder()
                 .url(url)
-                .addHeader("scope", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
-                .addHeader("backendScopes", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
-                .addHeader("x-int-opco", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .post(body)
                 .build();

@@ -41,9 +41,6 @@ public class PinRequest extends OkHttpSpiceRequest<Response> {
         Request request = requestBuilderProvider.builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken)
-                .addHeader("scope", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
-                .addHeader("backendScopes", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
-                .addHeader("x-int-opco", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
                 .get()
                 .build();
 

@@ -45,9 +45,6 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("etag", etag)
-                .addHeader("scope", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
-                .addHeader("backendScopes", "seamless_id_user_details_all") //TODO: REMOVE ONLY FOR TESTING!!!
-                .addHeader("x-int-opco", "DE") //TODO: REMOVE ONLY FOR TESTING!!!
                 .get()
                 .build();
 
