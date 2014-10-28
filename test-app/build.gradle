@@ -77,7 +77,7 @@ dependencies {
     ditCompile project(path: ':sdk', configuration: 'ditDebug')
     preProdCompile project(path: ':sdk', configuration: 'preProdDebug')
     prodCompile project(path: ':sdk', configuration: 'prodDebug')
-    compile 'com.jakewharton:butterknife:5.1.1'
+    compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.jakewharton.timber:timber:2.4.1'
     apt 'net.simonvt.schematic:schematic-compiler:0.5.3'
     compile 'net.simonvt.schematic:schematic:0.5.3'
