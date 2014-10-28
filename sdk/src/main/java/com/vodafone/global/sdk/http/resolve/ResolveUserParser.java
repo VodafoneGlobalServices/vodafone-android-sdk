@@ -2,11 +2,10 @@ package com.vodafone.global.sdk.http.resolve;
 
 import android.content.Context;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.ResolutionStatus;
 import com.vodafone.global.sdk.ResolveCallbacks;
+import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.Worker;
 import com.vodafone.global.sdk.http.GenericServerError;
-import com.vodafone.global.sdk.http.parser.Parsers;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,7 +33,7 @@ public class ResolveUserParser {
         int code = response.code();
         switch (code) {
             case CREATED_201:
-                resolveCallbacks.notifyUserDetailUpdate(Parsers.resolutionCompleted(response));
+                resolveCallbacks.completed(UserDetails.fromJson(response.body().string()));
                 break;
             case FOUND_302:
                 String location = response.header("Location");
@@ -51,7 +50,7 @@ public class ResolveUserParser {
                 }
                 break;
             case NOT_FOUND_404:
-                unableToResolve();
+                resolveCallbacks.unableToResolve();
                 break;
             case BAD_REQUEST_400:
                 resolveCallbacks.notifyError(new GenericServerError("Application ID doesn't exist on APIX" +
@@ -96,9 +95,8 @@ public class ResolveUserParser {
         return matcher.group(1);
     }
 
-    protected void validationRequired(String token) {
-        UserDetailsDTO userDetailsDTO = UserDetailsDTO.validationRequired(token);
-        resolveCallbacks.notifyUserDetailUpdate(userDetailsDTO);
+    private void validationRequired(String token) {
+        resolveCallbacks.validationRequired(token);
     }
 
     private boolean resolutionIsOngoing(String location) {
@@ -108,11 +106,6 @@ public class ResolveUserParser {
     }
 
     private void checkStatus() {
-        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(ResolutionStatus.STILL_RUNNING);
-        worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDTO));
-    }
-
-    protected void unableToResolve() {
-        resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.UNABLE_TO_RESOLVE);
+        worker.sendMessage(worker.createMessage(CHECK_STATUS, new CheckStatusParameters()));
     }
 }

@@ -3,11 +3,11 @@ package com.vodafone.global.sdk.http.resolve;
 import android.content.Context;
 import android.os.Message;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.ResolveCallbacks;
-import com.vodafone.global.sdk.http.HttpCode;
-import com.vodafone.global.sdk.http.parser.Parsers;
+import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.Worker;
+import com.vodafone.global.sdk.http.GenericServerError;
+import com.vodafone.global.sdk.http.HttpCode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,11 +31,11 @@ public class CheckStatusParser {
         this.context = context;
     }
 
-    void parseResponse(Response response, UserDetailsDTO userDetailsDto) throws IOException, JSONException {
+    void parseResponse(Response response, CheckStatusParameters parameters) throws IOException, JSONException {
         int code = response.code();
         switch (code) {
             case OK_200:
-                resolveCallbacks.notifyUserDetailUpdate(Parsers.resolutionCompleted(response));
+                resolveCallbacks.completed(UserDetails.fromJson(response.body().string()));
                 break;
             case FOUND_302:
                 String location = response.header("Location");
@@ -43,21 +43,23 @@ public class CheckStatusParser {
                     if (canReadSMS()) {
                         generatePin(extractToken(location));
                     } else {
-                        validationRequired(extractToken(location));
+                        resolveCallbacks.validationRequired(extractToken(location));
                     }
                 } else {
                     int retryAfter = Integer.valueOf(response.header("Retry-After", "500"));
-                    Message message = worker.createMessage(CHECK_STATUS, userDetailsDto);
+                    Message message = worker.createMessage(CHECK_STATUS, parameters);
                     worker.sendMessageDelayed(message, retryAfter);
                 }
                 break;
             case HttpCode.NOT_MODIFIED_304:
-                UserDetailsDTO redirectDetails = Parsers.updateRetryAfter(userDetailsDto, response);
-                Message message = worker.createMessage(CHECK_STATUS, redirectDetails);
-                worker.sendMessageDelayed(message, redirectDetails.retryAfter.get());
+                int retryAfter = Integer.valueOf(response.header("RetryAfter", "500"));
+                CheckStatusParameters newParameters = new CheckStatusParameters(
+                        parameters.userDetails.get(), parameters.etag.get(), retryAfter);
+                Message message = worker.createMessage(CHECK_STATUS, newParameters);
+                worker.sendMessageDelayed(message, newParameters.retryAfter.get());
                 break;
             case BAD_REQUEST_400:
-                unableToResolve();
+                resolveCallbacks.unableToResolve();
                 break;
             case FORBIDDEN_403:
                 String body = response.body().string();
@@ -66,14 +68,14 @@ public class CheckStatusParser {
                     String id = json.getString("id");
                     if (id.equals("POL0002")) {
                         worker.sendMessage(worker.createMessage(AUTHENTICATE));
-                        worker.sendMessage(worker.createMessage(CHECK_STATUS, userDetailsDto));
+                        worker.sendMessage(worker.createMessage(CHECK_STATUS, parameters));
                     }
                 } else {
                     resolveCallbacks.notifyError(new GenericServerError());
                 }
                 break;
             case NOT_FOUND_404:
-                unableToResolve();
+                resolveCallbacks.unableToResolve();
                 break;
             default:
                 resolveCallbacks.notifyError(new GenericServerError());
@@ -98,14 +100,5 @@ public class CheckStatusParser {
         Pattern pattern = Pattern.compile(".*/users/tokens/(.*)[/?].*");
         Matcher matcher = pattern.matcher(location);
         return matcher.group(1);
-    }
-
-    protected void validationRequired(String token) {
-        UserDetailsDTO userDetailsDTO = UserDetailsDTO.validationRequired(token);
-        resolveCallbacks.notifyUserDetailUpdate(userDetailsDTO);
-    }
-
-    protected void unableToResolve() {
-        resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.UNABLE_TO_RESOLVE);
     }
 }

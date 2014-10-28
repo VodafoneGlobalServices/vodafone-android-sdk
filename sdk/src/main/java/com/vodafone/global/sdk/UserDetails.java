@@ -31,10 +31,6 @@ public class UserDetails {
         return new UserDetails(token, expires, acr);
     }
 
-    public static UserDetails validationRequired(String token) {
-        return new UserDetails(token, new Date(), "");
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

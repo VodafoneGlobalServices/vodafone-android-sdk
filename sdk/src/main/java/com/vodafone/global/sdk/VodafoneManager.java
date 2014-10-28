@@ -44,7 +44,6 @@ public class VodafoneManager {
     ValidateSmsCallbacks validateSmsCallbacks = new ValidateSmsCallbacks();
     private IMSI imsi;
     private Optional<OAuthToken> authToken = Optional.absent();
-    private Optional<UserDetails> cachedUserDetails = Optional.absent();
 
     private MaximumThresholdChecker thresholdChecker;
 
@@ -65,7 +64,6 @@ public class VodafoneManager {
         registrars = prepareRegistrars();
         settings = new Settings(context);
         imsi = new IMSI(context, settings.availableMccMnc);
-        register(new CacheResolutionCallback());
 
         worker = new Worker(callback);
         Logger networkLogger = LoggerFactory.getNetworkLogger();
@@ -177,8 +175,13 @@ public class VodafoneManager {
      * @param code code send to user via SMS
      */
     public void validateSmsCode(String code) {
+        Optional<String> sessionToken = resolveCallbacks.getSessionToken();
+        if (!sessionToken.isPresent()) {
+            return;
+        }
+
         ValidatePinParameters parameters = ValidatePinParameters.builder()
-                .token(cachedUserDetails.get().token)
+                .token(sessionToken.get())
                 .pin(code).build();
         worker.sendMessage(worker.createMessage(VALIDATE_PIN, parameters));
     }
@@ -187,35 +190,12 @@ public class VodafoneManager {
      * Validates identity by providing code send by server via SMS.
      */
     public void generatePin() {
-        worker.sendMessage(worker.createMessage(GENERATE_PIN, cachedUserDetails.get().token));
-    }
-
-    /**
-     * Callback used internally to cache UserDetails.
-     */
-    private class CacheResolutionCallback implements ResolveCallback {
-        @Override
-        public void onCompleted(UserDetails userDetails) {
-            cachedUserDetails = Optional.of(userDetails);
+        Optional<String> sessionToken = resolveCallbacks.getSessionToken();
+        if (!sessionToken.isPresent()) {
+            return;
         }
 
-        @Override
-        public void onValidationRequired() {
-        }
-
-        @Override
-        public void onUnableToResolve() {
-            clearCache();
-        }
-
-        @Override
-        public void onError(VodafoneException ex) {
-            clearCache();
-        }
-
-        private void clearCache() {
-            cachedUserDetails = Optional.absent();
-        }
+        worker.sendMessage(worker.createMessage(GENERATE_PIN, sessionToken.get()));
     }
 
     private Handler.Callback callback  = new Handler.Callback() {

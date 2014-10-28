@@ -2,12 +2,15 @@ package com.vodafone.global.sdk;
 
 import android.os.Handler;
 import android.os.Looper;
-import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
+import com.google.common.base.Optional;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ResolveCallbacks {
+
+    private Optional<String> sessionToken = Optional.absent();
+
     Set<ResolveCallback> resolveCallbacks = new CopyOnWriteArraySet<ResolveCallback>();
 
     public void add(ResolveCallback callback) {
@@ -18,32 +21,37 @@ public class ResolveCallbacks {
         resolveCallbacks.remove(callback);
     }
 
-    public void notifyUserDetailUpdate(final UserDetailsDTO userDetailsDto) {
+    public void completed(final UserDetails userDetails) {
+        clearSessionToken();
+
         Handler handler = new Handler(Looper.getMainLooper());
         for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    switch (userDetailsDto.status) {
-                        case COMPLETED:
-                            callback.onCompleted(userDetailsDto.userDetails.get());
-                            break;
-                        case STILL_RUNNING:
-                            break;
-                        case VALIDATION_REQUIRED:
-                            callback.onCompleted(userDetailsDto.userDetails.get()); // TODO temporary solution, before new token caching solution
-                            callback.onValidationRequired();
-                            break;
-                        case UNABLE_TO_RESOLVE:
-                            callback.onUnableToResolve();
-                            break;
-                    }
+                    callback.onCompleted(userDetails);
+                }
+            });
+        }
+    }
+
+    public void validationRequired(String token) {
+        setSessionToken(token);
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        for (final ResolveCallback callback : resolveCallbacks) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onValidationRequired();
                 }
             });
         }
     }
 
     public void notifyError(final VodafoneException exception) {
+        clearSessionToken();
+
         Handler handler = new Handler(Looper.getMainLooper());
         for (final ResolveCallback callback : resolveCallbacks) {
             handler.post(new Runnable() {
@@ -56,6 +64,27 @@ public class ResolveCallbacks {
     }
 
     public void unableToResolve() {
-        notifyUserDetailUpdate(UserDetailsDTO.UNABLE_TO_RESOLVE);
+        clearSessionToken();
+        Handler handler = new Handler(Looper.getMainLooper());
+        for (final ResolveCallback callback : resolveCallbacks) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onUnableToResolve();
+                }
+            });
+        }
+    }
+
+    private void setSessionToken(String token) {
+        sessionToken = Optional.of(token);
+    }
+
+    private void clearSessionToken() {
+        sessionToken = Optional.absent();
+    }
+
+    public Optional<String> getSessionToken() {
+        return sessionToken;
     }
 }

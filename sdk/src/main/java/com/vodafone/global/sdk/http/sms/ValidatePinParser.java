@@ -1,12 +1,11 @@
 package com.vodafone.global.sdk.http.sms;
 
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.ResolveCallbacks;
+import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.ValidateSmsCallbacks;
 import com.vodafone.global.sdk.http.GenericServerError;
-import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.http.HttpCode;
-import com.vodafone.global.sdk.http.parser.Parsers;
-import com.vodafone.global.sdk.http.resolve.UserDetailsDTO;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -30,21 +29,21 @@ public class ValidatePinParser  {
         int code = response.code();
         switch (code) {
             case HttpCode.OK_200:
-                resolveCallbacks.notifyUserDetailUpdate(Parsers.parseUserDetails(response));
+                resolveCallbacks.completed(UserDetails.fromJson(response.body().string()));
                 validateSmsCallbacks.notifySuccess();
                 break;
             case BAD_REQUEST_400:
                 resolveCallbacks.notifyError(new InvalidInput());
                 break;
             case FORBIDDEN_403:
-                resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.validationRequired(token));
+                resolveCallbacks.validationRequired(token);
                 break;
             case NOT_FOUND_404:
                 resolveCallbacks.unableToResolve();
                 break;
             case CONFLICT_409:
                 if (intercepts)
-                   resolveCallbacks.notifyUserDetailUpdate(UserDetailsDTO.validationRequired(token));
+                   resolveCallbacks.validationRequired(token);
                 else
                    validateSmsCallbacks.notifyFailure();
                 break;

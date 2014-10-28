@@ -25,7 +25,7 @@ public class CheckStatusProcessor {
     private Optional<OAuthToken> authToken;
     private RequestBuilderProvider requestBuilderProvider;
     private final Logger logger;
-    private UserDetailsDTO userDetailsDto;
+    private CheckStatusParameters checkStatusParameters;
 
     public CheckStatusProcessor(
             Context context,
@@ -46,11 +46,11 @@ public class CheckStatusProcessor {
 
     public void process(Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
-        userDetailsDto = (UserDetailsDTO) msg.obj;
+        checkStatusParameters = (CheckStatusParameters) msg.obj;
 
         try {
             Response response = queryServer();
-            parser.parseResponse(response, userDetailsDto);
+            parser.parseResponse(response, checkStatusParameters);
         } catch (IOException e) {
             resolveCallbacks.notifyError(new GenericServerError());
         } catch (JSONException e) {
@@ -73,8 +73,8 @@ public class CheckStatusProcessor {
                 .accessToken(authToken.get().accessToken)
                 .requestBuilderProvider(requestBuilderProvider)
                 .logger(logger);
-        if (!userDetailsDto.etag.isPresent())
-            requestBuilder.etag(userDetailsDto.etag.get());
+        if (!checkStatusParameters.etag.isPresent())
+            requestBuilder.etag(checkStatusParameters.etag.get());
         return requestBuilder.build();
     }
 
@@ -82,7 +82,7 @@ public class CheckStatusProcessor {
         return new Uri.Builder().scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
-                .appendPath(userDetailsDto.userDetails.get().token)
+                .appendPath(checkStatusParameters.userDetails.get().token)
                 .appendQueryParameter("backendId", backendAppKey)
                 .build().toString();
     }
