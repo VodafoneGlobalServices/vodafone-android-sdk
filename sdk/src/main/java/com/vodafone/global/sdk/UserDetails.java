@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import java.util.Date;
 
 public class UserDetails {
-    public final String token;
+    public final String tokenId;
     public final Date expires;
     public final String acr;
 
@@ -14,8 +14,8 @@ public class UserDetails {
         return new Builder();
     }
 
-    protected UserDetails(String token, Date expires, String acr) {
-        this.token = token;
+    protected UserDetails(String tokenId, Date expires, String acr) {
+        this.tokenId = tokenId;
         this.expires = expires;
         this.acr = acr;
     }
@@ -23,12 +23,12 @@ public class UserDetails {
     public static UserDetails fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
         String acr = json.getString("acr");
-        String token = json.getString("token");
+        String tokenId = json.getString("tokenId");
         int expiresIn = json.getInt("expiresIn"); //times in milliseconds
         long currentTime = System.currentTimeMillis();
         long expirationTime = currentTime + expiresIn;
         Date expires = new Date(expirationTime);
-        return new UserDetails(token, expires, acr);
+        return new UserDetails(tokenId, expires, acr);
     }
 
     @Override
@@ -40,14 +40,14 @@ public class UserDetails {
 
         if (!acr.equals(that.acr)) return false;
         if (!expires.equals(that.expires)) return false;
-        if (!token.equals(that.token)) return false;
+        if (!tokenId.equals(that.tokenId)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = token.hashCode();
+        int result = tokenId.hashCode();
         result = 31 * result + expires.hashCode();
         result = 31 * result + acr.hashCode();
         return result;
@@ -56,7 +56,7 @@ public class UserDetails {
     @Override
     public String toString() {
         return "UserDetails{" +
-                "token='" + token + '\'' +
+                "tokenId='" + tokenId + '\'' +
                 ", expires=" + expires +
                 ", acr='" + acr + '\'' +
                 '}';

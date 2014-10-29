@@ -10,7 +10,7 @@
         android:text="@string/token" />
 
     <TextView
-        android:id="@+id/token"
+        android:id="@+id/tokenId"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 

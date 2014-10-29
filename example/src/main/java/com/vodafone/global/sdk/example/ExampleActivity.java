@@ -14,7 +14,7 @@ import timber.log.Timber;
 
 public class ExampleActivity extends Activity implements ResolveCallback, ValidateSmsCallback
 {
-    @InjectView(R.id.token) TextView token;
+    @InjectView(R.id.tokenId) TextView tokenId;
     @InjectView(R.id.expires) TextView expires;
     @InjectView(R.id.acr) TextView acr;
 
@@ -42,7 +42,7 @@ public class ExampleActivity extends Activity implements ResolveCallback, Valida
     @Override
     public void onCompleted(UserDetails userDetails) {
         Timber.d("completed %s", userDetails.toString());
-        token.setText(userDetails.token);
+        tokenId.setText(userDetails.tokenId);
         expires.setText(userDetails.expires.toString());
         acr.setText(userDetails.acr);
     }

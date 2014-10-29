@@ -82,7 +82,7 @@ public class CheckStatusProcessor {
         return new Uri.Builder().scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
-                .appendPath(checkStatusParameters.userDetails.get().token)
+                .appendPath(checkStatusParameters.userDetails.get().tokenId)
                 .appendQueryParameter("backendId", backendAppKey)
                 .build().toString();
     }
