@@ -69,12 +69,12 @@ public class LogUtil {
     }
 
     private static void addResponseBody(Response response, StringBuilder builder) {
-        try {
-            String body = String.format("\n%s", response.body().string());
-            builder.append(body);
-        } catch (IOException e) {
-            addExceptionMsg(e, builder);
-        }
+//        try {
+//            String body = String.format("\n%s", response.body().string());
+//            builder.append(body);
+//        } catch (IOException e) {
+//            addExceptionMsg(e, builder);
+//        }
     }
 
     private static void addExceptionMsg(IOException exception, StringBuilder builder) {
