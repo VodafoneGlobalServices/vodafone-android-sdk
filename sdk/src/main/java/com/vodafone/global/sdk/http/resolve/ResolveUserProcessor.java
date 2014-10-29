@@ -61,9 +61,9 @@ public class ResolveUserProcessor {
             } catch (VodafoneException e) {
                 resolveCallbacks.notifyError(e);
             } catch (IOException e) {
-                resolveCallbacks.notifyError(new GenericServerError());
+                resolveCallbacks.notifyError(new GenericServerError(e));
             } catch (JSONException e) {
-                resolveCallbacks.notifyError(new GenericServerError());
+                resolveCallbacks.notifyError(new GenericServerError(e));
             }
         }
     }
