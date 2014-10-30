@@ -3,7 +3,6 @@ package com.vodafone.global.sdk;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 
 public class Worker extends Thread {
     private final Handler.Callback callback;
@@ -15,13 +14,9 @@ public class Worker extends Thread {
 
     @Override
     public void run() {
-        try {
-            Looper.prepare();
-            handler = new Handler(callback);
-            Looper.loop();
-        } catch (Exception e) {
-            Log.e("WORKER", e.getMessage(), e);
-        }
+        Looper.prepare();
+        handler = new Handler(callback);
+        Looper.loop();
     }
 
     public Message createMessage(MessageType messageType) {

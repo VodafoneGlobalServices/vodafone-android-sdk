@@ -198,37 +198,42 @@ public class VodafoneManager {
         worker.sendMessage(worker.createMessage(GENERATE_PIN, sessionToken.get()));
     }
 
-    private Handler.Callback callback  = new Handler.Callback() {
+    private Handler.Callback callback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
-            MessageType id = MessageType.values()[msg.what];
-            switch (id) {
-                case AUTHENTICATE:
-                    try {
-                        authToken = Optional.of(oAuthProc.process());
-                    } catch (AuthorizationFailed e) {
-                        worker.clearMessageQueue();
-                        resolveCallbacks.notifyError(e);
-                    } catch (Exception e) {
-                        Log.e("AUTH", e.getMessage(), e);
-                    }
-                    break;
-                case RETRIEVE_USER_DETAILS:
-                    resolveUserProc.process(authToken, msg);
-                    break;
-                case CHECK_STATUS:
-                    checkStatusProc.process(authToken, msg);
-                    break;
-                case GENERATE_PIN:
-                    generatePinProc.process(authToken, msg);
-                    break;
-                case VALIDATE_PIN:
-                    validatePinProc.process(authToken, msg);
-                    break;
-                default:
-                    return false;
+            try {
+                MessageType id = MessageType.values()[msg.what];
+                switch (id) {
+                    case AUTHENTICATE:
+                        try {
+                            authToken = Optional.of(oAuthProc.process());
+                        } catch (AuthorizationFailed e) {
+                            worker.clearMessageQueue();
+                            resolveCallbacks.notifyError(e);
+                        } catch (Exception e) {
+                            Log.e("AUTH", e.getMessage(), e);
+                        }
+                        break;
+                    case RETRIEVE_USER_DETAILS:
+                        resolveUserProc.process(authToken, msg);
+                        break;
+                    case CHECK_STATUS:
+                        checkStatusProc.process(authToken, msg);
+                        break;
+                    case GENERATE_PIN:
+                        generatePinProc.process(authToken, msg);
+                        break;
+                    case VALIDATE_PIN:
+                        validatePinProc.process(authToken, msg);
+                        break;
+                    default:
+                        return false;
+                }
+                return true;
+            } catch (Exception e) {
+                Log.e("WORKER", e.getMessage(), e);
+                return false;
             }
-            return true;
         }
     };
 }
