@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(com.vodafone.global.sdk.testapp.R.layout.activity_main);
         ButterKnife.inject(this);
+        setTitle(getTitle() + " v" + BuildConfig.VERSION_NAME);
 
         if (savedInstanceState == null) {
             Fragment f = LogFragment.newInstance();

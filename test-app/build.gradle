@@ -8,13 +8,16 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
 apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/repo' }
 }
 
-apply plugin: 'android-apt'
+def gitSha = 'git rev-parse HEAD'.execute([], project.rootDir).text.trim()
+def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"))
+def versionBuild = System.getenv("BUILD_NUMBER") != null ? "b${System.getenv("BUILD_NUMBER")}" : ""
 
 android {
     compileSdkVersion 19
@@ -25,7 +28,10 @@ android {
         minSdkVersion 15
         targetSdkVersion 19
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0" + versionBuild
+
+        buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
+        buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
     }
 
     packagingOptions {
