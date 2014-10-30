@@ -68,21 +68,20 @@ public class CheckStatusProcessor {
     }
 
     private ResolveGetRequest getRequest() {
-        ResolveGetRequest.Builder requestBuilder = ResolveGetRequest.builder()
+        return ResolveGetRequest.builder()
                 .url(getUrl())
                 .accessToken(authToken.get().accessToken)
                 .requestBuilderProvider(requestBuilderProvider)
-                .logger(logger);
-        if (!checkStatusParameters.etag.isPresent())
-            requestBuilder.etag(checkStatusParameters.etag.get());
-        return requestBuilder.build();
+                .logger(logger)
+                .etag(checkStatusParameters.etag)
+                .build();
     }
 
     private String getUrl() {
         return new Uri.Builder().scheme(settings.apix.protocol)
                 .authority(settings.apix.host)
                 .path(settings.apix.path)
-                .appendPath(checkStatusParameters.userDetails.get().tokenId)
+                .appendPath(checkStatusParameters.tokenId.get())
                 .appendQueryParameter("backendId", backendAppKey)
                 .build().toString();
     }

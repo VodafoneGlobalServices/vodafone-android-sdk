@@ -37,14 +37,15 @@ public class ResolveUserParser {
                 break;
             case FOUND_302:
                 String location = response.header("Location");
+                String token = extractToken(location);
                 if (requiresSmsValidation(location)) {
                     if (canReadSMS()) {
-                        generatePin(extractToken(location));
+                        generatePin(token);
                     } else {
-                        validationRequired(extractToken(location));
+                        validationRequired(token);
                     }
                 } else if (resolutionIsOngoing(location)) {
-                    checkStatus();
+                    checkStatus(token);
                 } else {
                     resolveCallbacks.notifyError(new GenericServerError());
                 }
@@ -89,7 +90,7 @@ public class ResolveUserParser {
     }
 
     protected String extractToken(String location) {
-        String regex = ".*/users/tokens/([^/]*).*";
+        String regex = ".*/users/tokens/([^/^?]*).*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(location);
         if (!matcher.matches()) throw new IllegalStateException("can't extract token from 'Location' header");
@@ -106,7 +107,7 @@ public class ResolveUserParser {
         return matcher.matches();
     }
 
-    private void checkStatus() {
-        worker.sendMessage(worker.createMessage(CHECK_STATUS, new CheckStatusParameters()));
+    private void checkStatus(String tokenId) {
+        worker.sendMessage(worker.createMessage(CHECK_STATUS, new CheckStatusParameters(tokenId)));
     }
 }

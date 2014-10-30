@@ -1,11 +1,12 @@
 package com.vodafone.global.sdk.http.resolve;
 
+import com.google.common.base.Optional;
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.logging.LogUtil;
 import com.vodafone.global.sdk.RequestBuilderProvider;
+import com.vodafone.global.sdk.logging.LogUtil;
 import com.vodafone.global.sdk.logging.Logger;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.io.IOException;
 public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
     private final String url;
     private final String accessToken;
-    private final String etag;
+    private final Optional<String> etag;
     private final RequestBuilderProvider requestBuilderProvider;
     private final Logger logger;
 
@@ -27,7 +28,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
     protected ResolveGetRequest(
             String url,
             String accessToken,
-            String etag,
+            Optional<String> etag,
             RequestBuilderProvider requestBuilderProvider,
             Logger logger
     ) {
@@ -41,12 +42,13 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
 
     @Override
     public Response loadDataFromNetwork() throws IOException {
-        Request request = requestBuilderProvider.builder()
+        Request.Builder builder = requestBuilderProvider.builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + accessToken)
-                .addHeader("etag", etag)
-                .get()
-                .build();
+                .addHeader("Authorization", "Bearer " + accessToken);
+        if (etag.isPresent()) {
+            builder.addHeader("If-None-Match", etag.get());
+        }
+        Request request = builder.get().build();
 
         logger.d(LogUtil.prepareRequestLogMsg(request));
 
@@ -65,7 +67,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
 
         private String url;
         private String accessToken;
-        private String etag;
+        private Optional<String> etag;
         private RequestBuilderProvider requestBuilderProvider;
         private Logger logger;
 
@@ -82,7 +84,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
             return this;
         }
 
-        public Builder etag(String etag) {
+        public Builder etag(Optional<String> etag) {
             this.etag = etag;
             return this;
         }

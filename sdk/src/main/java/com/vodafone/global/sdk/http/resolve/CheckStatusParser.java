@@ -47,14 +47,17 @@ public class CheckStatusParser {
                     }
                 } else {
                     int retryAfter = Integer.valueOf(response.header("Retry-After", "500"));
-                    Message message = worker.createMessage(CHECK_STATUS, parameters);
+                    String etag = response.header("Etag");
+                    CheckStatusParameters newParameters = new CheckStatusParameters(
+                            parameters.tokenId.get(), etag, retryAfter);
+                    Message message = worker.createMessage(CHECK_STATUS, newParameters);
                     worker.sendMessageDelayed(message, retryAfter);
                 }
                 break;
             case HttpCode.NOT_MODIFIED_304:
                 int retryAfter = Integer.valueOf(response.header("RetryAfter", "500"));
                 CheckStatusParameters newParameters = new CheckStatusParameters(
-                        parameters.userDetails.get(), parameters.etag.get(), retryAfter);
+                        parameters.tokenId.get(), parameters.etag.get(), retryAfter);
                 Message message = worker.createMessage(CHECK_STATUS, newParameters);
                 worker.sendMessageDelayed(message, newParameters.retryAfter.get());
                 break;
@@ -62,16 +65,16 @@ public class CheckStatusParser {
                 resolveCallbacks.unableToResolve();
                 break;
             case FORBIDDEN_403:
-                String body = response.body().string();
+                String body = response.body().string().trim();
                 if (!body.isEmpty()) {
-                    JSONObject json = new JSONObject(response.body().string());
+                    JSONObject json = new JSONObject(body);
                     String id = json.getString("id");
                     if (id.equals("POL0002")) {
                         worker.sendMessage(worker.createMessage(AUTHENTICATE));
                         worker.sendMessage(worker.createMessage(CHECK_STATUS, parameters));
                     }
                 } else {
-                    resolveCallbacks.notifyError(new GenericServerError());
+                    resolveCallbacks.notifyError(new GenericServerError("Unrecognized HTTP 403 on check status"));
                 }
                 break;
             case NOT_FOUND_404:
