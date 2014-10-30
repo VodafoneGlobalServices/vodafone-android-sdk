@@ -9,16 +9,10 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <EditText
-        android:id="@+id/et_imsi"
+        android:id="@+id/et_msisdn"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="IMSI" />
-
-    <EditText
-        android:id="@+id/et_token"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="token" />
+        android:hint="MSISDN" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -31,7 +25,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="SMS validation" />
@@ -41,25 +35,32 @@
         android:id="@+id/btn_retrieve"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="retrieve" />
-
-    <EditText
-        android:id="@+id/et_smsCode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="SMS code" />
-
-    <EditText
-        android:id="@+id/et_tokenSms"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="token" />
+        android:text="start retrieve" />
 
     <Button
-        android:id="@+id/btn_sendSmsCode"
+        android:id="@+id/btn_generate"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="generate PIN" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="send" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_smsCode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="SMS PIN" />
+
+        <Button
+            android:id="@+id/btn_sendSmsCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="send PIN" />
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/log"

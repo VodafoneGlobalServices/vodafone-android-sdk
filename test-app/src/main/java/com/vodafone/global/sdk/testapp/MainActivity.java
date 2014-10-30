@@ -15,11 +15,9 @@ import com.vodafone.global.sdk.testapp.logging.ui.LogFragment;
 import timber.log.Timber;
 
 public class MainActivity extends Activity {
-    @InjectView(R.id.et_imsi) EditText imsi;
-    @InjectView(R.id.et_token) EditText token;
+    @InjectView(R.id.et_msisdn) EditText msisdn;
     @InjectView(R.id.cb_smsValidation) CheckBox smsValidation;
     @InjectView(R.id.et_smsCode) EditText smsCode;
-    @InjectView(R.id.et_tokenSms) EditText tokenSms;
 
     private static final String FRAGMENT_LOG =
             "com.vodafone.global.sdk.testapp.MainActivity.LOG";
@@ -76,18 +74,27 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btn_retrieve)
     public void retrieve() {
-        Timber.v("retrieving user data button clicked");
+
+        String msisdn = this.msisdn.getText().toString();
+        boolean smsValidation = this.smsValidation.isChecked();
+        Timber.v("retrieving user data button clicked\nmsisdn: %s\nsms validation: %b",
+                msisdn, smsValidation);
 
         UserDetailsRequestParameters parameters = UserDetailsRequestParameters.builder()
-                .setSmsValidation(smsValidation.isChecked())
-                .build();
+                .msisdn(msisdn).setSmsValidation(smsValidation).build();
         Vodafone.retrieveUserDetails(parameters);
+    }
+
+    @OnClick(R.id.btn_generate)
+    public void generatePin() {
+        Timber.v("generate pin button clicked");
+        Vodafone.generatePin();
     }
 
     @OnClick(R.id.btn_sendSmsCode)
     public void sendSmsCode() {
         String code = smsCode.getText().toString();
-        Timber.v("send sms code button clicked, sms code: " + code);
+        Timber.v("send sms code button clicked\nsms code: %S", code);
         Vodafone.validateSmsCode(code);
     }
 
