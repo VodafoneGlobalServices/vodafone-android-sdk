@@ -40,9 +40,9 @@ public class InitDialog extends DialogFragment {
 
     private void readInitData() {
         SharedPreferences preferences = getActivity().getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);
-        String appKey = preferences.getString(Preferences.APP_KEY, "");
-        String appSecret = preferences.getString(Preferences.APP_SECRET, "");
-        String backendAppKey = preferences.getString(Preferences.BACKEND_APP_KEY, "");
+        String appKey = preferences.getString(Preferences.APP_KEY, Preferences.APP_KEY_DEFAULT);
+        String appSecret = preferences.getString(Preferences.APP_SECRET, Preferences.APP_SECRET_DEFAULT);
+        String backendAppKey = preferences.getString(Preferences.BACKEND_APP_KEY, Preferences.BACKEND_APP_KEY_DEFAULT);
 
         appKeyET.setText(appKey);
         appSecretET.setText(appSecret);

@@ -24,9 +24,9 @@ public class Application extends android.app.Application {
         Timber.plant(new PersistTree(this));
 
         SharedPreferences preferences = getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);
-        String appKey = preferences.getString(Preferences.APP_KEY, "");
-        String appSecret = preferences.getString(Preferences.APP_SECRET, "");
-        String backendAppKey = preferences.getString(Preferences.BACKEND_APP_KEY, "");
+        String appKey = preferences.getString(Preferences.APP_KEY, Preferences.APP_KEY_DEFAULT);
+        String appSecret = preferences.getString(Preferences.APP_SECRET, Preferences.APP_SECRET_DEFAULT);
+        String backendAppKey = preferences.getString(Preferences.BACKEND_APP_KEY, Preferences.BACKEND_APP_KEY_DEFAULT);
 
         Timber.d("initializing; app key: '%s', app secret: '%s', backend key: '%s'",
                 appKey, appSecret, backendAppKey);
