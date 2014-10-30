@@ -47,4 +47,10 @@ public class Worker extends Thread {
     public void sendMessageDelayed(Message msg, long delayMili) {
         handler.sendMessageDelayed(msg, delayMili);
     }
+
+    public void clearMessageQueue() {
+        for (MessageType messageType : MessageType.values()) {
+            handler.removeMessages(messageType.ordinal());
+        }
+    }
 }
