@@ -31,34 +31,48 @@
             android:text="SMS validation" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_retrieve"
-        android:layout_width="fill_parent"
+    <EditText
+        android:id="@+id/et_smsCode"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="start retrieve" />
-
-    <Button
-        android:id="@+id/btn_generate"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="generate PIN" />
+        android:hint="SMS PIN" />
 
     <LinearLayout
+        style="?android:buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/et_smsCode"
-            android:layout_width="0dp"
+        <Button
+            android:id="@+id/btn_init"
+            style="?android:buttonBarButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="SMS PIN" />
+            android:text="init" />
+
+        <Button
+            android:id="@+id/btn_retrieve"
+            style="?android:buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="retrieve" />
+
+        <Button
+            android:id="@+id/btn_generate"
+            style="?android:buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="gen PIN" />
 
         <Button
             android:id="@+id/btn_sendSmsCode"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="send PIN" />
     </LinearLayout>
 
@@ -67,4 +81,3 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </LinearLayout>
-
