@@ -1,11 +1,11 @@
 package com.vodafone.global.sdk.http.resolve;
 
 import android.content.Context;
-import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.Worker;
 import com.vodafone.global.sdk.http.GenericServerError;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,11 +29,11 @@ public class ResolveUserParser {
         this.resolveCallbacks = resolveCallbacks;
     }
 
-    public void parseResponse(Response response) throws IOException, JSONException {
+    public void parseResponse(ResponseHolder response) throws IOException, JSONException {
         int code = response.code();
         switch (code) {
             case CREATED_201:
-                resolveCallbacks.completed(UserDetails.fromJson(response.body().string()));
+                resolveCallbacks.completed(UserDetails.fromJson(response.body()));
                 break;
             case FOUND_302:
                 String location = response.header("Location");
@@ -58,9 +58,9 @@ public class ResolveUserParser {
                         " OR Application ID has no seamlessID scope associated"));
                 break;
             case FORBIDDEN_403:
-                String body = response.body().string();
+                String body = response.body();
                 if (!body.isEmpty()) {
-                    JSONObject json = new JSONObject(response.body().string());
+                    JSONObject json = new JSONObject(response.body());
                     String id = json.getString("id");
                     if (id.equals("POL0002")) {
                         worker.sendMessage(worker.createMessage(AUTHENTICATE));

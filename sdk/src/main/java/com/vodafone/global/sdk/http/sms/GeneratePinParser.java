@@ -1,9 +1,9 @@
 package com.vodafone.global.sdk.http.sms;
 
-import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.ResolveCallbacks;
-import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.ValidateSmsCallbacks;
+import com.vodafone.global.sdk.http.GenericServerError;
+import com.vodafone.global.sdk.http.ResponseHolder;
 
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
@@ -19,7 +19,7 @@ public class GeneratePinParser {
         this.validateSmsCallbacks = validateSmsCallbacks;
     }
 
-    void parseResponse(Response response) {
+    void parseResponse(ResponseHolder response) {
         int code = response.code();
         switch (code) {
             case OK_200:

@@ -9,6 +9,7 @@ import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.NoInternetConnection;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.sms.InvalidInput;
 import com.vodafone.global.sdk.logging.Logger;
@@ -123,11 +124,12 @@ public class ResolveUserProcessor {
                 .accessToken(authToken.get().accessToken)
                 .msisdn(msisdn)
                 .requestBuilderProvider(requestBuilderProvider)
+                .logger(logger)
                 .build();
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
         Response response = request.loadDataFromNetwork();
-        parser.parseResponse(response);
+        parser.parseResponse(new ResponseHolder(response));
     }
 
     private void resolveWithImsi(IMSI imsi, boolean smsValidation, Settings.PathSettings server) throws IOException, JSONException {
@@ -148,7 +150,7 @@ public class ResolveUserProcessor {
         request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
         Response response = request.loadDataFromNetwork();
-        parser.parseResponse(response);
+        parser.parseResponse(new ResponseHolder(response));
     }
 
     private boolean noInternetConnection() {

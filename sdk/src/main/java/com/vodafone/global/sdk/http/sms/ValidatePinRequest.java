@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
+public class ValidatePinRequest extends OkHttpSpiceRequest<ResponseHolder> {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -41,7 +41,7 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
             RequestBuilderProvider requestBuilderProvider,
             Logger logger
     ) {
-        super(Response.class);
+        super(ResponseHolder.class);
         this.url = url;
         this.accessToken = accessToken;
         this.pin = pin;
@@ -50,7 +50,7 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
     }
 
     @Override
-    public Response loadDataFromNetwork() throws IOException, JSONException {
+    public ResponseHolder loadDataFromNetwork() throws IOException, JSONException {
         RequestBody body = RequestBody.create(JSON, prepareBody(pin));
         Request request = requestBuilderProvider.builder()
                 .url(url)
@@ -63,8 +63,9 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<Response> {
         OkHttpClient client = getOkHttpClient();
         Response response = client.newCall(request).execute();
 
-        logger.d(LogUtil.prepareResponseLogMsg(new ResponseHolder(response)));
-        return response;
+        ResponseHolder responseHolder = new ResponseHolder(response);
+        logger.d(LogUtil.prepareResponseLogMsg(responseHolder));
+        return responseHolder;
     }
 
     protected String prepareBody(String pin) throws JSONException {

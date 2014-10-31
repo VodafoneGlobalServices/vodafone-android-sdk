@@ -1,11 +1,11 @@
 package com.vodafone.global.sdk.http.sms;
 
-import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.ValidateSmsCallbacks;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.HttpCode;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -25,11 +25,11 @@ public class ValidatePinParser  {
         this.validateSmsCallbacks = validateSmsCallbacks;
     }
 
-    void parseResponse(Response response, String token) throws IOException, JSONException {
+    void parseResponse(ResponseHolder response, String token) throws IOException, JSONException {
         int code = response.code();
         switch (code) {
             case HttpCode.OK_200:
-                resolveCallbacks.completed(UserDetails.fromJson(response.body().string()));
+                resolveCallbacks.completed(UserDetails.fromJson(response.body()));
                 validateSmsCallbacks.notifySuccess();
                 break;
             case BAD_REQUEST_400:

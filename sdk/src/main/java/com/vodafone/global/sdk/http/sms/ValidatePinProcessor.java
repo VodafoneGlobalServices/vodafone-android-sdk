@@ -5,15 +5,11 @@ import android.net.Uri;
 import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.GenericServerError;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.Worker;
 import com.vodafone.global.sdk.logging.Logger;
-import org.json.JSONException;
-
-import java.io.IOException;
 
 public class ValidatePinProcessor {
     protected final Worker worker;
@@ -51,20 +47,16 @@ public class ValidatePinProcessor {
         ValidatePinParameters validatePinParameters = (ValidatePinParameters) msg.obj;
 
         try {
-            Response response = queryServer(validatePinParameters);
+            ValidatePinRequest request = getRequest(validatePinParameters);
+
+            request.setRetryPolicy(null);
+            request.setOkHttpClient(new OkHttpClient());
+
+            ResponseHolder response = request.loadDataFromNetwork();
             parser.parseResponse(response, validatePinParameters.getToken());
         } catch (Exception e) {
-            resolveCallbacks.notifyError(new GenericServerError());
+            resolveCallbacks.notifyError(new GenericServerError(e));
         }
-    }
-
-    Response queryServer(ValidatePinParameters validatePinParameters) throws IOException, JSONException {
-        ValidatePinRequest request = getRequest(validatePinParameters);
-
-        request.setRetryPolicy(null);
-        request.setOkHttpClient(new OkHttpClient());
-
-        return request.loadDataFromNetwork();
     }
 
     private ValidatePinRequest getRequest(ValidatePinParameters validatePinParameters) {
