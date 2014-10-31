@@ -60,16 +60,24 @@ public class Settings {
 
     private PathSettings readHap(JSONObject json) throws JSONException {
         JSONObject hap = json.getJSONObject("hap");
-        String protocol = hap.getString("protocol");
-        String host = hap.getString("host");
+        String protocol = BuildConfig.DIRECT
+                ? BuildConfig.DIRECT_PROTOCOL
+                : hap.getString("protocol");
+        String host = BuildConfig.DIRECT
+                ? BuildConfig.DIRECT_HOST
+                : hap.getString("host");
         String path = json.getString("basePath");
         return new PathSettings(protocol, host, path);
     }
 
     private PathSettings readApix(JSONObject json) throws JSONException {
         JSONObject apix = json.getJSONObject("apix");
-        String protocol = apix.getString("protocol");
-        String host = apix.getString("host");
+        String protocol = BuildConfig.DIRECT
+                ? BuildConfig.DIRECT_PROTOCOL
+                : apix.getString("protocol");
+        String host = BuildConfig.DIRECT
+                ? BuildConfig.DIRECT_HOST
+                : apix.getString("host");
         String path = json.getString("basePath");
         return new PathSettings(protocol, host, path);
     }

@@ -18,6 +18,14 @@ android {
 
         buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
         buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
+
+        // If you want to enable direct connection to BE set DIRECT
+        // to true and provide protocol and host.
+        // If you want to change opco and msisdn do that in
+        // com.vodafone.global.sdk.RequestBuilderProvider.builder
+        buildConfigField "boolean", "DIRECT", "false"
+        buildConfigField "String", "DIRECT_PROTOCOL", "\"\""
+        buildConfigField "String", "DIRECT_HOST", "\"\""
     }
     buildTypes {
         debug {

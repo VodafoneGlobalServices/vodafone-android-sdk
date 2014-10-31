@@ -21,7 +21,7 @@ public class RequestBuilderProvider {
     }
 
     public Request.Builder builder() {
-        return new Request.Builder()
+        Request.Builder builder = new Request.Builder()
                 .addHeader("Accept", "application/json")
                 .addHeader("User-Agent", sdkId)
                 .addHeader("x-vf-trace-subject-id", Build.MANUFACTURER + " " + Build.MODEL + " \\ "
@@ -29,5 +29,12 @@ public class RequestBuilderProvider {
                 .addHeader("x-vf-trace-subject-region", mobileCountryCode)
                 .addHeader("x-vf-trace-source", sdkId + "-" + clientAppKey + "-" + backendAppKey)
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString());
+        if (BuildConfig.DIRECT) {
+            builder.addHeader("x-int-opco", "");
+            builder.addHeader("x-sdp-msisdn", "");
+            builder.addHeader("scope", "seamless_id_user_details_all");
+            builder.addHeader("backendScopes", "seamless_id_user_details_all");
+        }
+        return builder;
     }
 }
