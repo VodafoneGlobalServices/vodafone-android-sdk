@@ -5,10 +5,10 @@ public class LoggerFactory {
     }
 
     public static Logger getNetworkLogger() {
-        return new DefaultLogger();
+        return new TimberLogger();
     }
 
     public static Logger getDefaultLogger() {
-        return new DefaultLogger();
+        return new TimberLogger();
     }
 }

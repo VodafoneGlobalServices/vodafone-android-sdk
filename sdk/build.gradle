@@ -63,6 +63,7 @@ dependencies {
         exclude group: 'com.squareup.okhttp'
     }
     compile 'com.squareup.okio:okio:1.0.1'
+    debugCompile 'com.jakewharton.timber:timber:+'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
