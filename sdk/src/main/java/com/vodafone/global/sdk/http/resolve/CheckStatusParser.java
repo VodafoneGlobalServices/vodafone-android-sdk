@@ -2,12 +2,12 @@ package com.vodafone.global.sdk.http.resolve;
 
 import android.content.Context;
 import android.os.Message;
-import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.UserDetails;
 import com.vodafone.global.sdk.Worker;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.HttpCode;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,11 +31,11 @@ public class CheckStatusParser {
         this.context = context;
     }
 
-    void parseResponse(Response response, CheckStatusParameters parameters) throws IOException, JSONException {
+    void parseResponse(ResponseHolder response, CheckStatusParameters parameters) throws IOException, JSONException {
         int code = response.code();
         switch (code) {
             case OK_200:
-                resolveCallbacks.completed(UserDetails.fromJson(response.body().string()));
+                resolveCallbacks.completed(UserDetails.fromJson(response.body()));
                 break;
             case FOUND_302:
                 String location = response.header("Location");
@@ -65,16 +65,22 @@ public class CheckStatusParser {
                 resolveCallbacks.unableToResolve();
                 break;
             case FORBIDDEN_403:
-                String body = response.body().string().trim();
+                String body = response.body();
                 if (!body.isEmpty()) {
-                    JSONObject json = new JSONObject(body);
-                    String id = json.getString("id");
-                    if (id.equals("POL0002")) {
-                        worker.sendMessage(worker.createMessage(AUTHENTICATE));
-                        worker.sendMessage(worker.createMessage(CHECK_STATUS, parameters));
+                    try {
+                        JSONObject json = new JSONObject(body);
+                        String id = json.getString("id");
+                        if (id.equals("POL0002")) {
+                            worker.sendMessage(worker.createMessage(AUTHENTICATE));
+                            worker.sendMessage(worker.createMessage(CHECK_STATUS, parameters));
+                        }
+                    } catch (JSONException e) {
+                        resolveCallbacks.notifyError(new GenericServerError("Unrecognized HTTP 403 on check status, " +
+                                "body: '" + body + "'"));
                     }
                 } else {
-                    resolveCallbacks.notifyError(new GenericServerError("Unrecognized HTTP 403 on check status"));
+                    resolveCallbacks.notifyError(new GenericServerError("Unrecognized HTTP 403 on check status, " +
+                            "body: '" + body + "'"));
                 }
                 break;
             case NOT_FOUND_404:

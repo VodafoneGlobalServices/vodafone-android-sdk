@@ -10,6 +10,7 @@ import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.Settings;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.Worker;
 import com.vodafone.global.sdk.logging.Logger;
@@ -49,7 +50,7 @@ public class CheckStatusProcessor {
         checkStatusParameters = (CheckStatusParameters) msg.obj;
 
         try {
-            Response response = queryServer();
+            ResponseHolder response = queryServer();
             parser.parseResponse(response, checkStatusParameters);
         } catch (IOException e) {
             resolveCallbacks.notifyError(new GenericServerError());
@@ -58,7 +59,7 @@ public class CheckStatusProcessor {
         }
     }
 
-    Response queryServer() throws IOException, JSONException {
+    ResponseHolder queryServer() throws IOException, JSONException {
         ResolveGetRequest request = getRequest();
 
         request.setRetryPolicy(null);

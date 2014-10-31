@@ -6,12 +6,13 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.RequestBuilderProvider;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.logging.LogUtil;
 import com.vodafone.global.sdk.logging.Logger;
 
 import java.io.IOException;
 
-public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
+public class ResolveGetRequest extends OkHttpSpiceRequest<ResponseHolder> {
     private final String url;
     private final String accessToken;
     private final Optional<String> etag;
@@ -32,7 +33,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
             RequestBuilderProvider requestBuilderProvider,
             Logger logger
     ) {
-        super(Response.class);
+        super(ResponseHolder.class);
         this.url = url;
         this.accessToken = accessToken;
         this.etag = etag;
@@ -41,7 +42,7 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
     }
 
     @Override
-    public Response loadDataFromNetwork() throws IOException {
+    public ResponseHolder loadDataFromNetwork() throws IOException {
         Request.Builder builder = requestBuilderProvider.builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken);
@@ -55,8 +56,9 @@ public class ResolveGetRequest extends OkHttpSpiceRequest<Response> {
         OkHttpClient client = getOkHttpClient();
         Response response = client.newCall(request).execute();
 
-        logger.d(LogUtil.prepareResponseLogMsg(response));
-        return response;
+        ResponseHolder responseHolder = new ResponseHolder(response);
+        logger.d(LogUtil.prepareResponseLogMsg(responseHolder));
+        return responseHolder;
     }
 
     /**

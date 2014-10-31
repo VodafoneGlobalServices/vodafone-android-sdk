@@ -3,7 +3,7 @@ package com.vodafone.global.sdk.logging;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import okio.Buffer;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class LogUtil {
         return builder.toString();
     }
 
-    public static String prepareResponseLogMsg(Response response) {
+    public static String prepareResponseLogMsg(ResponseHolder response) {
         StringBuilder b = new StringBuilder();
         addTitle(response, b);
         addHeaders(response.headers(), b);
@@ -32,15 +32,15 @@ public class LogUtil {
     private static void addTitle(Request request, StringBuilder builder) {
         String method = request.method();
         String url = request.urlString();
-        String title = String.format("Request:\n%s %s\n", method, url);
+        String title = String.format("Request:\n%s %s", method, url);
         builder.append(title);
     }
 
-    private static void addTitle(Response response, StringBuilder builder) {
+    private static void addTitle(ResponseHolder response, StringBuilder builder) {
         String protocol = response.protocol().toString();
         int code = response.code();
         String message = response.message();
-        String title = String.format("Response:\n%s %d %s\n", protocol, code, message);
+        String title = String.format("Response:\n%s %d %s", protocol, code, message);
         builder.append(title);
     }
 
@@ -48,7 +48,7 @@ public class LogUtil {
         String[] values = headers.toString().split("\\n");
         Arrays.sort(values);
         for (String header : values) {
-            String line = String.format(":: %s\n", header);
+            String line = String.format("\n:: %s", header);
             builder.append(line);
         }
     }
@@ -59,22 +59,22 @@ public class LogUtil {
             RequestBody body = request.body();
             if (body != null) {
                 body.writeTo(buffer);
-                builder.append(String.format("\n%s", buffer.readUtf8()));
+                builder.append(String.format("\nbodyStart>%s<bodyEnd", buffer.readUtf8()));
             } else {
-                builder.append("EMPTY BODY");
+                builder.append("\nbodyStart><bodyEnd");
             }
         } catch (IOException e) {
             addExceptionMsg(e, builder);
         }
     }
 
-    private static void addResponseBody(Response response, StringBuilder builder) {
-//        try {
-//            String body = String.format("\n%s", response.body().string());
-//            builder.append(body);
-//        } catch (IOException e) {
-//            addExceptionMsg(e, builder);
-//        }
+    private static void addResponseBody(ResponseHolder response, StringBuilder builder) {
+        try {
+            String body = String.format("\nbodyStart>%s<bodyEnd", response.body());
+            builder.append(body);
+        } catch (IOException e) {
+            addExceptionMsg(e, builder);
+        }
     }
 
     private static void addExceptionMsg(IOException exception, StringBuilder builder) {

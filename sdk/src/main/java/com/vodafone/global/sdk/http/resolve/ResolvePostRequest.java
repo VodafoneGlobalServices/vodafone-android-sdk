@@ -3,6 +3,7 @@ package com.vodafone.global.sdk.http.resolve;
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.*;
 import com.vodafone.global.sdk.IMSI;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.logging.LogUtil;
 import com.vodafone.global.sdk.MSISDN;
 import com.vodafone.global.sdk.RequestBuilderProvider;
@@ -57,7 +58,7 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
         client.setFollowRedirects(false);
         Response response = client.newCall(request).execute();
 
-        logger.d(LogUtil.prepareResponseLogMsg(response));
+        logger.d(LogUtil.prepareResponseLogMsg(new ResponseHolder(response)));
         return response;
     }
 

@@ -4,6 +4,7 @@ import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.logging.LogUtil;
 import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.logging.Logger;
@@ -49,7 +50,7 @@ public class PinRequest extends OkHttpSpiceRequest<Response> {
         OkHttpClient client = getOkHttpClient();
         Response response = client.newCall(request).execute();
 
-        logger.d(LogUtil.prepareResponseLogMsg(response));
+        logger.d(LogUtil.prepareResponseLogMsg(new ResponseHolder(response)));
         return response;
     }
 
