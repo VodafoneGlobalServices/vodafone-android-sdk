@@ -1,23 +1,12 @@
 package com.vodafone.global.sdk.http.oauth;
 
-import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
-import static com.vodafone.global.sdk.http.HttpCode.OK_200;
+import com.squareup.okhttp.*;
+import com.vodafone.global.sdk.http.ResponseHolder;
 
 /**
  * OAuth 2 request processor. Builds HTTP request and handles response.
  */
-public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
+public class OAuthTokenRequest extends com.vodafone.global.sdk.http.Request {
 
     private final String url;
     private final String clientId;
@@ -34,7 +23,6 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
     }
 
     protected OAuthTokenRequest(String url, String clientId, String clientSecret, String scope, String grantType) {
-        super(OAuthToken.class);
         this.url = url;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
@@ -43,7 +31,7 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
     }
 
     @Override
-    public OAuthToken loadDataFromNetwork() throws Exception {
+    public ResponseHolder loadDataFromNetwork() throws Exception {
         RequestBody body = new FormEncodingBuilder()
                 .add("grant_type", grantType)
                 .add("client_id", clientId)
@@ -60,22 +48,7 @@ public class OAuthTokenRequest extends OkHttpSpiceRequest<OAuthToken> {
 
         OkHttpClient client = getOkHttpClient();
         Response response = client.newCall(request).execute();
-        int code = response.code();
-        switch (code) {
-            case OK_200:
-                return parseJson(response);
-            default:
-                throw new AuthorizationFailed();
-        }
-    }
-
-    private OAuthToken parseJson(Response response) throws JSONException, IOException {
-        JSONObject json = new JSONObject(response.body().string());
-        String accessToken = json.getString("access_token");
-        String tokenType = json.getString("token_type");
-        String expiresIn = json.getString("expires_in");
-        long expirationTime = System.currentTimeMillis() + Integer.getInteger(expiresIn, 0);
-        return new OAuthToken(accessToken, tokenType, expiresIn, expirationTime);
+        return new ResponseHolder(response);
     }
 
     /**

@@ -1,18 +1,17 @@
 package com.vodafone.global.sdk.http.resolve;
 
-import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.*;
 import com.vodafone.global.sdk.IMSI;
-import com.vodafone.global.sdk.http.ResponseHolder;
-import com.vodafone.global.sdk.logging.LogUtil;
 import com.vodafone.global.sdk.MSISDN;
 import com.vodafone.global.sdk.RequestBuilderProvider;
+import com.vodafone.global.sdk.http.ResponseHolder;
+import com.vodafone.global.sdk.logging.LogUtil;
 import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 
 import java.io.IOException;
 
-public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
+public abstract class ResolvePostRequest extends com.vodafone.global.sdk.http.Request {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private final String url;
@@ -34,7 +33,6 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
             RequestBuilderProvider requestBuilderProvider,
             Logger logger
     ) {
-        super(Response.class);
         this.url = url;
         this.accessToken = accessToken;
         this.smsValidation = smsValidation;
@@ -43,7 +41,7 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
     }
 
     @Override
-    public Response loadDataFromNetwork() throws IOException, JSONException {
+    public ResponseHolder loadDataFromNetwork() throws IOException, JSONException {
         String content = prepareBody();
         RequestBody body = RequestBody.create(JSON, content);
         Request request = requestBuilderProvider.builder()
@@ -58,8 +56,9 @@ public abstract class ResolvePostRequest extends OkHttpSpiceRequest<Response> {
         client.setFollowRedirects(false);
         Response response = client.newCall(request).execute();
 
-        logger.d(LogUtil.prepareResponseLogMsg(new ResponseHolder(response)));
-        return response;
+        ResponseHolder responseHolder = new ResponseHolder(response);
+        logger.d(LogUtil.prepareResponseLogMsg(responseHolder));
+        return responseHolder;
     }
 
     protected abstract String prepareBody() throws JSONException;

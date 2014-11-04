@@ -49,7 +49,6 @@ public class ValidatePinProcessor {
         try {
             ValidatePinRequest request = getRequest(validatePinParameters);
 
-            request.setRetryPolicy(null);
             request.setOkHttpClient(new OkHttpClient());
 
             ResponseHolder response = request.loadDataFromNetwork();

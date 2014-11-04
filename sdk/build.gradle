@@ -66,10 +66,10 @@ dependencies {
     // compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.google.guava:guava:17.0'
     compile 'joda-time:joda-time:2.4'
-    compile 'com.octo.android.robospice:robospice:1.4.14'
-    compile ('com.octo.android.robospice:robospice-okhttp:1.4.14') {
-        exclude group: 'com.squareup.okhttp'
-    }
+//    compile 'com.octo.android.robospice:robospice:1.4.14'
+//    compile ('com.octo.android.robospice:robospice-okhttp:1.4.14') {
+//        exclude group: 'com.squareup.okhttp'
+//    }
     compile 'com.squareup.okio:okio:1.0.1'
     debugCompile 'com.jakewharton.timber:timber:+'
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -79,4 +79,26 @@ task zip2jar(type: Zip, dependsOn: "compileDitReleaseJava") {
     from 'build/intermediates/classes/dit/release'
     destinationDir = file('build/libs')
     extension = "jar"
+}
+
+task createPom {
+    apply plugin: 'maven'
+    description "Generates pom.xml"
+    pom {
+        project {
+            groupId 'com.vodafone.global'
+            artifactId 'android-sdk'
+            version '0.0.1-SNAPSHOT'
+            packaging 'aar'
+        }
+    }.withXml {
+        def dependenciesNode = asNode().appendNode('dependencies')
+
+        configurations.compile.allDependencies.each { dependency ->
+            def dependencyNode = dependenciesNode.appendNode('dependency')
+            dependencyNode.appendNode('groupId', dependency.group)
+            dependencyNode.appendNode('artifactId', dependency.name)
+            dependencyNode.appendNode('version', dependency.version)
+        }
+    }.writeTo("$buildDir/pom.xml")
 }

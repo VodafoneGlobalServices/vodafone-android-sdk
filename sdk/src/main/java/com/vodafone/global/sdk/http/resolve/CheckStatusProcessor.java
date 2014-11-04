@@ -5,14 +5,13 @@ import android.net.Uri;
 import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Response;
-import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.Settings;
+import com.vodafone.global.sdk.Worker;
+import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
-import com.vodafone.global.sdk.Worker;
 import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 
@@ -62,7 +61,6 @@ public class CheckStatusProcessor {
     ResponseHolder queryServer() throws IOException, JSONException {
         ResolveGetRequest request = getRequest();
 
-        request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
 
         return request.loadDataFromNetwork();

@@ -1,23 +1,17 @@
 package com.vodafone.global.sdk.http.sms;
 
 
-import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.squareup.okhttp.*;
+import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.logging.LogUtil;
-import com.vodafone.global.sdk.RequestBuilderProvider;
-
 import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class ValidatePinRequest extends OkHttpSpiceRequest<ResponseHolder> {
+public class ValidatePinRequest extends com.vodafone.global.sdk.http.Request {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -41,7 +35,6 @@ public class ValidatePinRequest extends OkHttpSpiceRequest<ResponseHolder> {
             RequestBuilderProvider requestBuilderProvider,
             Logger logger
     ) {
-        super(ResponseHolder.class);
         this.url = url;
         this.accessToken = accessToken;
         this.pin = pin;

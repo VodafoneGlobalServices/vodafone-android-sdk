@@ -5,15 +5,11 @@ import android.net.Uri;
 import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.logging.Logger;
-import org.json.JSONException;
-
-import java.io.IOException;
 
 public class GeneratePinProcessor {
     protected final Worker worker;
@@ -51,21 +47,13 @@ public class GeneratePinProcessor {
         String token = (String) msg.obj;
 
         try {
-            ResponseHolder responseHolder = queryServer(token);
-            parser.parseResponse(responseHolder);
+            PinRequest request = getRequest(token);
+            request.setOkHttpClient(new OkHttpClient());
+            ResponseHolder response = request.loadDataFromNetwork();
+            parser.parseResponse(response);
         } catch (Exception e) {
             validateSmsCallbacks.notifyError(new GenericServerError(e));
         }
-    }
-
-    ResponseHolder queryServer(String token) throws IOException, JSONException {
-        PinRequest request = getRequest(token);
-
-        request.setRetryPolicy(null);
-        request.setOkHttpClient(new OkHttpClient());
-
-        Response response = request.loadDataFromNetwork();
-        return new ResponseHolder(response);
     }
 
     private PinRequest getRequest(String token) {

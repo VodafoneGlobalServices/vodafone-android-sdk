@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Message;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Response;
 import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.NoInternetConnection;
@@ -126,10 +125,9 @@ public class ResolveUserProcessor {
                 .requestBuilderProvider(requestBuilderProvider)
                 .logger(logger)
                 .build();
-        request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
-        Response response = request.loadDataFromNetwork();
-        parser.parseResponse(new ResponseHolder(response));
+        ResponseHolder response = request.loadDataFromNetwork();
+        parser.parseResponse(response);
     }
 
     private void resolveWithImsi(IMSI imsi, boolean smsValidation, Settings.PathSettings server) throws IOException, JSONException {
@@ -147,10 +145,9 @@ public class ResolveUserProcessor {
                 .requestBuilderProvider(requestBuilderProvider)
                 .logger(logger)
                 .build();
-        request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
-        Response response = request.loadDataFromNetwork();
-        parser.parseResponse(new ResponseHolder(response));
+        ResponseHolder responseHolder = request.loadDataFromNetwork();
+        parser.parseResponse(responseHolder);
     }
 
     private boolean noInternetConnection() {

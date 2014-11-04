@@ -3,6 +3,13 @@ package com.vodafone.global.sdk.http.oauth;
 import android.net.Uri;
 import com.squareup.okhttp.OkHttpClient;
 import com.vodafone.global.sdk.Settings;
+import com.vodafone.global.sdk.http.ResponseHolder;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
 public class OAuthProcessor {
     private final String clientAppKey;
@@ -26,8 +33,23 @@ public class OAuthProcessor {
                 .grantType(settings.oAuthTokenGrantType)
                 .build();
 
-        request.setRetryPolicy(null);
         request.setOkHttpClient(new OkHttpClient());
-        return request.loadDataFromNetwork();
+        ResponseHolder responseHolder = request.loadDataFromNetwork();
+        int code = responseHolder.code();
+        switch (code) {
+            case OK_200:
+                return parseJson(responseHolder);
+            default:
+                throw new AuthorizationFailed();
+        }
+    }
+
+    private OAuthToken parseJson(ResponseHolder responseHolder) throws JSONException, IOException {
+        JSONObject json = new JSONObject(responseHolder.body());
+        String accessToken = json.getString("access_token");
+        String tokenType = json.getString("token_type");
+        String expiresIn = json.getString("expires_in");
+        long expirationTime = System.currentTimeMillis() + Integer.getInteger(expiresIn, 0);
+        return new OAuthToken(accessToken, tokenType, expiresIn, expirationTime);
     }
 }
