@@ -3,8 +3,10 @@ import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.mockwebserver.MockResponse
 import com.squareup.okhttp.mockwebserver.MockWebServer
 import com.squareup.okhttp.mockwebserver.RecordedRequest
+import spock.lang.Ignore
 import spock.lang.Specification
 
+@Ignore
 class OAuthTokenRequestSpec extends Specification {
 
     def POST = "POST"
