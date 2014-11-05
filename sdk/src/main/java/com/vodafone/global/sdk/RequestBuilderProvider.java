@@ -30,8 +30,10 @@ public class RequestBuilderProvider {
                 .addHeader("x-vf-trace-source", sdkId + "-" + clientAppKey + "-" + backendAppKey)
                 .addHeader("x-vf-trace-transaction-id", UUID.randomUUID().toString());
         if (BuildConfig.DIRECT) {
-            builder.addHeader("x-intp-opco", "");
-            builder.addHeader("x-sdp-msisdn", "");
+            if (Utils.isDataOverMobileNetwork(Vodafone.getAppContext())) {
+                builder.addHeader("x-intp-opco", "DE");
+                builder.addHeader("x-sdp-msisdn", "4915220440681");
+            }
             builder.addHeader("scope", "seamless_id_user_details_all");
             builder.addHeader("backendScopes", "seamless_id_user_details_all");
         }

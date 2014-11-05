@@ -1,6 +1,7 @@
 package com.vodafone.global.sdk;
 
 import android.app.Application;
+import android.content.Context;
 
 /**
  * Use this class to initialize Vodafone SDK and call backend.
@@ -71,5 +72,9 @@ public class Vodafone {
      */
     public static void unregister(VodafoneCallback callback) {
         manager.unregister(callback);
+    }
+
+    public static Context getAppContext() {
+        return application;
     }
 }
