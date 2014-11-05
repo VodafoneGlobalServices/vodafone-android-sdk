@@ -23,7 +23,7 @@ public class GeneratePinParser {
         int code = response.code();
         switch (code) {
             case OK_200:
-                validateSmsCallbacks.notifySuccess();
+                validateSmsCallbacks.notifyPinGenerationSuccess();
                 break;
             case BAD_REQUEST_400:
             case FORBIDDEN_403:
