@@ -208,6 +208,7 @@ public class VodafoneManager {
                 MessageType id = MessageType.values()[msg.what];
                 switch (id) {
                     case AUTHENTICATE:
+                        logger.d("START Authenticate");
                         try {
                             authToken = Optional.of(oAuthProc.process());
                         } catch (AuthorizationFailed e) {
@@ -217,15 +218,19 @@ public class VodafoneManager {
                         }
                         break;
                     case RETRIEVE_USER_DETAILS:
+                        logger.d("START Retrieve user details");
                         resolveUserProc.process(authToken, msg);
                         break;
                     case CHECK_STATUS:
+                        logger.d("START Check status");
                         checkStatusProc.process(authToken, msg);
                         break;
                     case GENERATE_PIN:
+                        logger.d("START Generate pin");
                         generatePinProc.process(authToken, msg);
                         break;
                     case VALIDATE_PIN:
+                        logger.d("START Validate pin");
                         validatePinProc.process(authToken, msg);
                         break;
                     default:
