@@ -211,8 +211,9 @@ public class VodafoneManager {
                         try {
                             authToken = Optional.of(oAuthProc.process());
                         } catch (AuthorizationFailed e) {
-                            worker.clearMessageQueue();
                             resolveCallbacks.notifyError(e);
+                        } finally {
+                            worker.clearMessageQueue();
                         }
                         break;
                     case RETRIEVE_USER_DETAILS:
