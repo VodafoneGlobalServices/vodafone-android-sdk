@@ -3,7 +3,6 @@ package com.vodafone.global.sdk;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.vodafone.global.sdk.http.oauth.AuthorizationFailed;
@@ -214,8 +213,6 @@ public class VodafoneManager {
                         } catch (AuthorizationFailed e) {
                             worker.clearMessageQueue();
                             resolveCallbacks.notifyError(e);
-                        } catch (Exception e) {
-                            Log.e("AUTH", e.getMessage(), e);
                         }
                         break;
                     case RETRIEVE_USER_DETAILS:
@@ -235,7 +232,7 @@ public class VodafoneManager {
                 }
                 return true;
             } catch (Exception e) {
-                Log.e("WORKER", e.getMessage(), e);
+                logger.e(e, "Uncaught exception");
                 return false;
             }
         }
