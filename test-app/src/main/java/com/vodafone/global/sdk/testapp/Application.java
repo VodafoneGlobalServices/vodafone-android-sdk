@@ -9,6 +9,10 @@ import com.vodafone.global.sdk.testapp.logging.PersistTree;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
+import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.Manifest.permission.RECEIVE_SMS;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 public class Application extends android.app.Application {
 
     static void exit() {
@@ -30,6 +34,9 @@ public class Application extends android.app.Application {
 
         Timber.d("initializing; app key: '%s', app secret: '%s', backend key: '%s'",
                 appKey, appSecret, backendAppKey);
+
+        Timber.d("can read IMSI: " + (checkCallingOrSelfPermission(READ_PHONE_STATE) == PERMISSION_GRANTED));
+        Timber.d("can read SMS: " + (checkCallingOrSelfPermission(RECEIVE_SMS) == PERMISSION_GRANTED));
 
         Vodafone.init(this, appKey, appSecret, backendAppKey);
     }
