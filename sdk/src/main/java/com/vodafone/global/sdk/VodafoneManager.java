@@ -212,9 +212,8 @@ public class VodafoneManager {
                         try {
                             authToken = Optional.of(oAuthProc.process());
                         } catch (AuthorizationFailed e) {
-                            resolveCallbacks.notifyError(e);
-                        } finally {
                             worker.clearMessageQueue();
+                            resolveCallbacks.notifyError(e);
                         }
                         break;
                     case RETRIEVE_USER_DETAILS:
@@ -238,6 +237,7 @@ public class VodafoneManager {
                 }
                 return true;
             } catch (Exception e) {
+                worker.clearMessageQueue();
                 logger.e(e, "Uncaught exception");
                 return false;
             }
