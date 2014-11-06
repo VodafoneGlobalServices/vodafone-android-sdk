@@ -67,7 +67,7 @@ public class VodafoneManager {
         imsi = new IMSI(context, settings.availableMccMnc);
 
         worker = new Worker(callback);
-        logger = LoggerFactory.getNetworkLogger();
+        logger = LoggerFactory.getLogger();
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey, clientAppKey);
         oAuthProc = new OAuthProcessor(clientAppKey, clientAppSecret, settings);
         resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider, logger);

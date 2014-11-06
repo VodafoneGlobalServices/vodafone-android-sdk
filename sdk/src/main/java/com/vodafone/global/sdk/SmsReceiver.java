@@ -35,12 +35,12 @@ public class SmsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
-            LoggerFactory.getDefaultLogger().d(TAG, "received sms");
+            LoggerFactory.getLogger().d(TAG, "received sms");
             List<String> smses = extractSmsesFromIntent(intent);
             List<String> pins = extractCodes(smses);
             notifySdk(pins);
         } else {
-            LoggerFactory.getDefaultLogger().w(TAG, "wrong action: " + intent.getAction());
+            LoggerFactory.getLogger().w(TAG, "wrong action: " + intent.getAction());
         }
     }
 
@@ -75,11 +75,11 @@ public class SmsReceiver extends BroadcastReceiver {
         for (String sms : smses) {
             Matcher matcher = pattern.matcher(sms);
             if (matcher.matches()) {
-                LoggerFactory.getDefaultLogger().d(TAG, sms + ": matches regex");
+                LoggerFactory.getLogger().d(TAG, sms + ": matches regex");
                 String code = matcher.group(1);
                 codes.add(code);
             } else {
-                LoggerFactory.getDefaultLogger().d(TAG, sms + ": doesn't matches regex");
+                LoggerFactory.getLogger().d(TAG, sms + ": doesn't matches regex");
             }
         }
         return codes;
@@ -87,7 +87,7 @@ public class SmsReceiver extends BroadcastReceiver {
 
     private void notifySdk(List<String> pins) {
         for (String pin : pins) {
-            LoggerFactory.getDefaultLogger().d(TAG, "Vodafone.validateSmsCode(" + pin + ")");
+            LoggerFactory.getLogger().d(TAG, "Vodafone.validateSmsCode(" + pin + ")");
             Vodafone.validateSmsCode(pin);
         }
     }

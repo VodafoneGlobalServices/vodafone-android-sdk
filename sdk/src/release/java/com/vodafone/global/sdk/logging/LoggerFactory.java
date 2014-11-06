@@ -4,11 +4,7 @@ public class LoggerFactory {
     private LoggerFactory() {
     }
 
-    public static Logger getNetworkLogger() {
+    public static Logger getLogger() {
         return new NullLogger();
-    }
-
-    public static Logger getDefaultLogger() {
-        return new DefaultLogger();
     }
 }

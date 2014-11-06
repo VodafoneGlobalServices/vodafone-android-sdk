@@ -4,11 +4,7 @@ public class LoggerFactory {
     private LoggerFactory() {
     }
 
-    public static Logger getNetworkLogger() {
-        return new TimberLogger();
-    }
-
-    public static Logger getDefaultLogger() {
+    public static Logger getLogger() {
         return new TimberLogger();
     }
 }
