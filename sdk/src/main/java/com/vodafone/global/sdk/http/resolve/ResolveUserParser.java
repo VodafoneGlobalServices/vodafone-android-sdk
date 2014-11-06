@@ -46,7 +46,8 @@ public class ResolveUserParser {
                         validationRequired(token);
                     }
                 } else if (resolutionIsOngoing(location)) {
-                    checkStatus(token);
+                    int retryAfter = Integer.valueOf(response.header("Retry-After", "1000"));
+                    checkStatus(token, retryAfter);
                 } else {
                     resolveCallbacks.notifyError(new GenericServerError());
                 }
@@ -108,7 +109,7 @@ public class ResolveUserParser {
         return matcher.matches();
     }
 
-    private void checkStatus(String tokenId) {
-        worker.sendMessageDelayed(worker.createMessage(CHECK_STATUS, new CheckStatusParameters(tokenId)), 10000);
+    private void checkStatus(String tokenId, int retryAfter) {
+        worker.sendMessageDelayed(worker.createMessage(CHECK_STATUS, new CheckStatusParameters(tokenId)), retryAfter);
     }
 }
