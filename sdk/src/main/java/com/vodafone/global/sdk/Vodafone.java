@@ -2,6 +2,7 @@ package com.vodafone.global.sdk;
 
 import android.app.Application;
 import android.content.Context;
+import com.vodafone.global.sdk.logging.LoggerFactory;
 
 /**
  * Use this class to initialize Vodafone SDK and call backend.
@@ -23,8 +24,15 @@ public class Vodafone {
      */
     public static void init(Application app, String appKey, String appSecret, String backendAppKey) {
         if (application != null) {
+            LoggerFactory.getLogger().w("SDK is already initialized, ignoring init");
             return; // can't initialize SDK twice
         }
+
+        LoggerFactory.getLogger().d("initialized SDK with:" +
+                        "\napp key: '%s'," +
+                        "\napp secret: '%s'," +
+                        "\nbackend key: '%s'",
+                appKey, appSecret, backendAppKey);
 
         Vodafone.application = app;
         manager = new VodafoneManager(app, appKey, appSecret, backendAppKey);
