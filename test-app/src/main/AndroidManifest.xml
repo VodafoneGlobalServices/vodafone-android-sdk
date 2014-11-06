@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     package="com.vodafone.global.sdk.testapp"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="1"
-    android:versionName="1.0">
-
-    <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="19" />
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:icon="@drawable/ic_launcher"
         android:allowBackup="false"

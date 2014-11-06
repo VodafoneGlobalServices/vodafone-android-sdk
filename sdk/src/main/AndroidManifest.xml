@@ -3,8 +3,6 @@
     package="com.vodafone.global.sdk">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- READ_PHONE_STATE is required to read IMSI -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- ACCESS_NETWORK_STATE is required to check connection type -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 

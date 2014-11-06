@@ -37,10 +37,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     productFlavors {
-        dit {}
         preProd {}
         prod {}
+        dit {}
     }
 
     libraryVariants.all { variant ->
