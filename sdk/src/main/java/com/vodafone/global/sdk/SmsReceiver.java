@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
+import com.vodafone.global.sdk.logging.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +29,18 @@ import java.util.regex.Pattern;
  * <pre>{@code <uses-permission android:name="android.permission.RECEIVE_SMS" />}</pre>
  */
 public class SmsReceiver extends BroadcastReceiver {
+
+    public static final String TAG = "SmsReceiver";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
+            LoggerFactory.getDefaultLogger().d(TAG, "received sms");
             List<String> smses = extractSmsesFromIntent(intent);
             List<String> pins = extractCodes(smses);
             notifySdk(pins);
+        } else {
+            LoggerFactory.getDefaultLogger().w(TAG, "wrong action: " + intent.getAction());
         }
     }
 
@@ -64,19 +71,24 @@ public class SmsReceiver extends BroadcastReceiver {
 
     private List<String> extractCodes(List<String> smses) {
         List<String> codes = new ArrayList<String>();
-        Pattern pattern = Pattern.compile("VF test by JQ (\\d{4})"); // TODO temporary pattern, only for testing
+        Pattern pattern = Pattern.compile("^.+: (\\d{4})$");
         for (String sms : smses) {
             Matcher matcher = pattern.matcher(sms);
             if (matcher.matches()) {
+                LoggerFactory.getDefaultLogger().d(TAG, sms + ": matches regex");
                 String code = matcher.group(1);
                 codes.add(code);
+            } else {
+                LoggerFactory.getDefaultLogger().d(TAG, sms + ": doesn't matches regex");
             }
         }
         return codes;
     }
 
     private void notifySdk(List<String> pins) {
-        for (String pin : pins)
+        for (String pin : pins) {
+            LoggerFactory.getDefaultLogger().d(TAG, "Vodafone.validateSmsCode(" + pin + ")");
             Vodafone.validateSmsCode(pin);
+        }
     }
 }
