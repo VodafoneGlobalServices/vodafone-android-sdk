@@ -40,6 +40,7 @@ public class ResolveUserParser {
                 String token = extractToken(location);
                 if (requiresSmsValidation(location)) {
                     if (canReadSMS()) {
+                        resolveCallbacks.setSessionToken(token);
                         generatePin(token);
                     } else {
                         validationRequired(token);
@@ -108,6 +109,6 @@ public class ResolveUserParser {
     }
 
     private void checkStatus(String tokenId) {
-        worker.sendMessage(worker.createMessage(CHECK_STATUS, new CheckStatusParameters(tokenId)));
+        worker.sendMessageDelayed(worker.createMessage(CHECK_STATUS, new CheckStatusParameters(tokenId)), 10000);
     }
 }

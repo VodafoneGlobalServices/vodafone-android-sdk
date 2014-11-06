@@ -76,7 +76,7 @@ public class ResolveCallbacks {
         }
     }
 
-    private void setSessionToken(String token) {
+    public void setSessionToken(String token) {
         sessionToken = Optional.of(token);
     }
 
