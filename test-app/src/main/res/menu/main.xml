@@ -4,5 +4,5 @@
     <item
         android:id="@+id/action_init"
         android:showAsAction="never"
-        android:title="Init SDK" />
+        android:title="Edit init data" />
 </menu>

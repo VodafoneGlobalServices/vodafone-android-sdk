@@ -12,6 +12,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/init_dialog_description"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="app key" />
 
     <EditText
@@ -43,8 +48,14 @@
         android:inputType="text" />
 
     <Button
-        android:id="@+id/btn_setInitData"
+        android:id="@+id/btn_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="set" />
+        android:text="save" />
+
+    <Button
+        android:id="@+id/btn_save_and_reset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="save &amp; restart" />
 </LinearLayout>

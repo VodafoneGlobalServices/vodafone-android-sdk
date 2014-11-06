@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Seamless ID</string>
     <string name="dismiss">Dismiss</string>
+    <string name="init_dialog_description">This dialog allows you only to set init data. It does not initializes SDK. To initialize SDK you need to restart application.</string>
 </resources>

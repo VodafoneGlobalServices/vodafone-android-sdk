@@ -21,7 +21,7 @@ public class InitDialog extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getDialog().setTitle("Init SDK");
+        getDialog().setTitle("Edit init data");
         return inflater.inflate(R.layout.fragment_init, container, false);
     }
 
@@ -49,33 +49,40 @@ public class InitDialog extends DialogFragment {
         backendAppKeyET.setText(backendAppKey);
     }
 
-    @OnClick(R.id.btn_setInitData)
-    public void setAppId() {
-        String appKey = appKeyET.getText().toString();
-        String appSecret = appSecretET.getText().toString();
-        String backendAppKey = backendAppKeyET.getText().toString();
-        boolean commitSucceeded = persistInitData(appKey, appSecret, backendAppKey);
-        if (commitSucceeded) {
-            Timber.d("setting init data succeeded; app key: '%s', app secret: '%s', backend key: '%s'",
-                    appKey, appSecret, backendAppKey);
-            Application.exit();
-        } else {
-            Timber.e("setting init data failed; app key: '%s', app secret: '%s', backend key: '%s'",
-                    appKey, appSecret, backendAppKey);
-            Toast.makeText(this.getActivity(), "saving app id failed", Toast.LENGTH_LONG).show();
-        }
+    @OnClick(R.id.btn_save)
+    public void save() {
+        Timber.d("init dialog: save clicked");
+        persistInitData();
+    }
+
+    @OnClick(R.id.btn_save_and_reset)
+    public void saveAndReset() {
+        Timber.d("init dialog: save clicked");
+        persistInitData();
+        Application.exit();
     }
 
     /**
      * Saves SDK init data for later use.
-     * @return true if the new values were successfully written to persistent storage
      */
-    private boolean persistInitData(String appId, String appSecret, String backendAppKey) {
+    private void persistInitData() {
+        String appKey = appKeyET.getText().toString();
+        String appSecret = appSecretET.getText().toString();
+        String backendAppKey = backendAppKeyET.getText().toString();
+
         SharedPreferences preferences = getActivity().getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(Preferences.APP_KEY, appId);
+        editor.putString(Preferences.APP_KEY, appKey);
         editor.putString(Preferences.APP_SECRET, appSecret);
         editor.putString(Preferences.BACKEND_APP_KEY, backendAppKey);
-        return editor.commit();
+        boolean commitSucceeded = editor.commit();
+
+        if (commitSucceeded) {
+            Timber.d("saving init data; app key: '%s', app secret: '%s', backend key: '%s'",
+                    appKey, appSecret, backendAppKey);
+        } else {
+            Timber.e("saving init data failed");
+            Toast.makeText(this.getActivity(), "saving app id failed", Toast.LENGTH_LONG).show();
+        }
     }
 }
