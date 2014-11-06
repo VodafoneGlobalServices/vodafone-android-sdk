@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Process;
 import com.crashlytics.android.Crashlytics;
-import com.vodafone.global.sdk.Vodafone;
+import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.testapp.logging.PersistTree;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
@@ -37,6 +37,17 @@ public class Application extends android.app.Application {
 
         Timber.d("can read IMSI: " + (checkCallingOrSelfPermission(READ_PHONE_STATE) == PERMISSION_GRANTED));
         Timber.d("can read SMS: " + (checkCallingOrSelfPermission(RECEIVE_SMS) == PERMISSION_GRANTED));
+
+
+        Timber.d("sdk build time: %s", com.vodafone.global.sdk.BuildConfig.BUILD_TIME);
+        Timber.d("sdk git sha: %s", com.vodafone.global.sdk.BuildConfig.GIT_SHA);
+        Timber.d("sdk version name: %s", com.vodafone.global.sdk.BuildConfig.VERSION_NAME);
+        Timber.d("sdk version code: %d", com.vodafone.global.sdk.BuildConfig.VERSION_CODE);
+
+        Timber.d("test-app build time: %s", BuildConfig.BUILD_TIME);
+        Timber.d("test-app git sha: %s", BuildConfig.GIT_SHA);
+        Timber.d("test-app version name: %s", BuildConfig.VERSION_NAME);
+        Timber.d("test-app version code: %d", BuildConfig.VERSION_CODE);
 
         Vodafone.init(this, appKey, appSecret, backendAppKey);
     }
