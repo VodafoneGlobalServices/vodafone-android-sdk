@@ -46,6 +46,7 @@ public class VodafoneManager {
     private Optional<OAuthToken> authToken = Optional.absent();
 
     private MaximumThresholdChecker thresholdChecker;
+    private final Logger logger;
 
     /**
      * Initializes SDK Manager for a given application.
@@ -66,13 +67,13 @@ public class VodafoneManager {
         imsi = new IMSI(context, settings.availableMccMnc);
 
         worker = new Worker(callback);
-        Logger networkLogger = LoggerFactory.getNetworkLogger();
+        logger = LoggerFactory.getNetworkLogger();
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey, clientAppKey);
         oAuthProc = new OAuthProcessor(clientAppKey, clientAppSecret, settings);
-        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider, networkLogger);
-        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider, networkLogger);
-        generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, networkLogger);
-        validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, networkLogger);
+        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider, logger);
+        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider, logger);
+        generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
+        validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
 
         thresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
@@ -177,8 +178,11 @@ public class VodafoneManager {
     public void validateSmsCode(String code) {
         Optional<String> sessionToken = resolveCallbacks.getSessionToken();
         if (!sessionToken.isPresent()) {
+            logger.w("Vodafone", "session is missing, ignoring pin: " + code);
             return;
         }
+
+        logger.d("Vodafone", "received sms");
 
         ValidatePinParameters parameters = ValidatePinParameters.builder()
                 .token(sessionToken.get())
