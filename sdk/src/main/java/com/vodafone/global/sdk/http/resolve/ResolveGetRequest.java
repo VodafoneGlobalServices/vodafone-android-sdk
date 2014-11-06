@@ -1,9 +1,7 @@
 package com.vodafone.global.sdk.http.resolve;
 
 import com.google.common.base.Optional;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.squareup.okhttp.*;
 import com.vodafone.global.sdk.RequestBuilderProvider;
 import com.vodafone.global.sdk.http.ResponseHolder;
 import com.vodafone.global.sdk.logging.LogUtil;

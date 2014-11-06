@@ -49,21 +49,15 @@ public class CheckStatusProcessor {
         checkStatusParameters = (CheckStatusParameters) msg.obj;
 
         try {
-            ResponseHolder response = queryServer();
+            ResolveGetRequest request = getRequest();
+            request.setOkHttpClient(new OkHttpClient());
+            ResponseHolder response = request.loadDataFromNetwork();
             parser.parseResponse(response, checkStatusParameters);
         } catch (IOException e) {
-            resolveCallbacks.notifyError(new GenericServerError());
+            resolveCallbacks.notifyError(new GenericServerError(e));
         } catch (JSONException e) {
-            resolveCallbacks.notifyError(new GenericServerError());
+            resolveCallbacks.notifyError(new GenericServerError(e));
         }
-    }
-
-    ResponseHolder queryServer() throws IOException, JSONException {
-        ResolveGetRequest request = getRequest();
-
-        request.setOkHttpClient(new OkHttpClient());
-
-        return request.loadDataFromNetwork();
     }
 
     private ResolveGetRequest getRequest() {
