@@ -36,6 +36,7 @@ public class RequestBuilderProvider {
             }
             builder.addHeader("scope", "seamless_id_user_details_all");
             builder.addHeader("backendScopes", "seamless_id_user_details_all");
+            builder.addHeader("x-vf-log-level", "debug");
         }
         return builder;
     }
