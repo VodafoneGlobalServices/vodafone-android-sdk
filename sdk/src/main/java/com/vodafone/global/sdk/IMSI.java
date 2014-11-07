@@ -18,24 +18,24 @@ public class IMSI {
      *   {@link android.Manifest.permission#READ_PHONE_STATE READ_PHONE_STATE}
      */
     public IMSI(Context context, List<String> supportedMccAndMnc) {
+        TelephonyManager systemService = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (context.checkCallingOrSelfPermission(READ_PHONE_STATE) == PERMISSION_GRANTED) {
-            TelephonyManager systemService = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             imsi = systemService.getSubscriberId();
-            mccAndMncOfSimCardBelongToVodafone = checkMccAndMnc(imsi, supportedMccAndMnc);
         } else {
             imsi = null;
-            mccAndMncOfSimCardBelongToVodafone = false;
         }
+        String simOperator = systemService.getSimOperator();
+        mccAndMncOfSimCardBelongToVodafone = checkMccAndMnc(simOperator, supportedMccAndMnc);
     }
 
     /**
      * Checks if SIM/IMSI card is supported by SDK.
      * @return {@code true} if it's supported, {@code false} otherwise
      */
-    private boolean checkMccAndMnc(String imsi, List<String> supportedMccAndMnc) {
-        if ((imsi != null && !imsi.isEmpty())) {
+    private boolean checkMccAndMnc(String simOperator, List<String> supportedMccAndMnc) {
+        if ((simOperator != null && !simOperator.isEmpty())) {
             for (String mccAndMnc : supportedMccAndMnc) {
-                if (imsi.startsWith(mccAndMnc)) {
+                if (simOperator.startsWith(mccAndMnc)) {
                     return true;
                 }
             }

@@ -23,7 +23,9 @@ public class ResolvePostImsiRequest extends ResolvePostRequest {
 
     protected String prepareBody() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("imsi", imsi.get());
+        if (imsi.isPresent()) {
+            json.put("imsi", imsi.get());
+        }
         json.put("smsValidation", smsValidation);
         return json.toString();
     }

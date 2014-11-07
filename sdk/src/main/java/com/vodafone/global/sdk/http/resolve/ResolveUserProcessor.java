@@ -82,16 +82,21 @@ public class ResolveUserProcessor {
         if (noInternetConnection()) {
             resolutionCantBeDoneWithoutNetworkConnection();
         } else if (connectedToInternet() && msisdn.isPresent()) {
+            logger.d("MSISDN is present");
             if (msisdn.isValid()) {
+                logger.d("MSISDN is valid");
                 resolveWithMsisdn(msisdn);
             } else {
+                logger.d("MSISDN is invalid");
                 resolveCallbacks.notifyError(new InvalidInput());
             }
         } else if (overWifi() && imsi.isValid()) {
             resolveThroughApix(smsValidation);
-        } else if (overMobileNetwork() && imsi.isValid()) {
+        } else if (overMobileNetwork() && imsi.mccAndMncOfSimCardBelongToVodafone()) {
+            logger.d("over mobile network, MCC and MNC belongs to Vodafone");
             resolveThroughHap(smsValidation);
         } else {
+            logger.w("no IMSI and no MSISDN, MCC and MNC don't belong to Vodafone");
             resolveCallbacks.unableToResolve();
         }
     }
