@@ -180,11 +180,11 @@ public class VodafoneManager {
         }
         Optional<String> sessionToken = resolveCallbacks.getSessionToken();
         if (!sessionToken.isPresent()) {
-            logger.w("Vodafone", "session is missing, ignoring pin: " + code);
+            logger.w("session is missing, ignoring pin: " + code);
             return;
         }
 
-        logger.d("Vodafone", "received sms");
+        logger.d("received pin: " + code);
 
         ValidatePinParameters parameters = ValidatePinParameters.builder()
                 .token(sessionToken.get())

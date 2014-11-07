@@ -97,20 +97,32 @@ public class MainActivity extends Activity {
 
         UserDetailsRequestParameters parameters = UserDetailsRequestParameters.builder()
                 .msisdn(msisdn).setSmsValidation(smsValidation).build();
-        Vodafone.retrieveUserDetails(parameters);
+        try {
+            Vodafone.retrieveUserDetails(parameters);
+        } catch (CallThresholdReached e) {
+            Timber.w("Threshold reached");
+        }
     }
 
     @OnClick(R.id.btn_generate)
     public void generatePin() {
         Timber.v("generate pin button clicked");
-        Vodafone.generatePin();
+        try {
+            Vodafone.generatePin();
+        } catch (CallThresholdReached e) {
+            Timber.w("Threshold reached");
+        }
     }
 
     @OnClick(R.id.btn_sendSmsCode)
     public void sendSmsCode() {
         String code = smsCode.getText().toString();
         Timber.v("send sms code button clicked\nsms code: %S", code);
-        Vodafone.validateSmsCode(code);
+        try {
+            Vodafone.validateSmsCode(code);
+        } catch (CallThresholdReached e) {
+            Timber.w("Threshold reached");
+        }
     }
 
     class ResolveCallbackImpl implements ResolveCallback {
