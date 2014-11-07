@@ -54,6 +54,7 @@ public class ResolveUserProcessor {
     public void process(Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
         if (!authToken.isPresent()) {
+            logger.w("OAuth token needs to be refreshed");
             requestNewToken(msg);
         } else {
             try {
