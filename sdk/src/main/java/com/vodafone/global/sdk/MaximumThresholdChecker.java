@@ -4,20 +4,20 @@ import java.util.LinkedList;
 
 public class MaximumThresholdChecker {
     private final long maxNumberOfCalls;
-    private final long timeInterval;
+    private final long timeIntervalInMs;
     private final Clock clock;
     private final LinkedList<Long> callTimestamps = new LinkedList<Long>();
 
     /**
      * @param maxNumberOfCalls maximum number of calls
-     * @param timeInterval time interval in ms during which the number of maximum call can be made
+     * @param timeIntervalInSeconds time interval in ms during which the number of maximum call can be made
      */
     public MaximumThresholdChecker(
             long maxNumberOfCalls,
-            long timeInterval
+            long timeIntervalInSeconds
     ) {
         this.maxNumberOfCalls = maxNumberOfCalls;
-        this.timeInterval = timeInterval;
+        this.timeIntervalInMs = timeIntervalInSeconds * 1000;
         clock = new Clock() {
             @Override
             public Long currentTimeMillis() {
@@ -38,7 +38,7 @@ public class MaximumThresholdChecker {
             Clock clock
     ) {
         this.maxNumberOfCalls = maxNumberOfCalls;
-        this.timeInterval = timeInterval;
+        this.timeIntervalInMs = timeInterval * 1000;
         this.clock = clock;
     }
 
@@ -49,13 +49,19 @@ public class MaximumThresholdChecker {
         Long currentTime = clock.currentTimeMillis();
         callTimestamps.add(currentTime);
         filterOutTimestampsBelowTimeThreshold(currentTime);
-        return numberOfCallsMadeInInterval() > maxNumberOfCalls;
+        int numberOfCallsMadeInInterval = numberOfCallsMadeInInterval();
+        return numberOfCallsMadeInInterval > maxNumberOfCalls;
     }
 
     private void filterOutTimestampsBelowTimeThreshold(Long currentTime) {
-        long timeThreshold = currentTime - timeInterval;
-        while (anyTimestampsLeft() && oldestTimestamp() <= timeThreshold) {
+        long timeThreshold = currentTime - timeIntervalInMs;
+        boolean anyTimestampsLeft = anyTimestampsLeft();
+        Long oldestTimestamp = oldestTimestamp();
+        while (anyTimestampsLeft && oldestTimestamp <= timeThreshold) {
             removeOldestTimestamp();
+
+            anyTimestampsLeft = anyTimestampsLeft();
+            oldestTimestamp = oldestTimestamp();
         }
     }
 

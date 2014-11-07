@@ -44,7 +44,9 @@ public class VodafoneManager {
     private IMSI imsi;
     private Optional<OAuthToken> authToken = Optional.absent();
 
-    private MaximumThresholdChecker thresholdChecker;
+    private MaximumThresholdChecker retrieveThresholdChecker;
+    private final MaximumThresholdChecker genPinThresholdChecker;
+    private final MaximumThresholdChecker validatePinThresholdChecker;
     private final Logger logger;
 
     /**
@@ -74,7 +76,9 @@ public class VodafoneManager {
         generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
         validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
 
-        thresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
+        retrieveThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
+        genPinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
+        validatePinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
 
         worker.start();
     }
@@ -159,14 +163,10 @@ public class VodafoneManager {
      * @param parameters parameters specific to this call
      */
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
-        checkCallThreshold();
-        worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS, parameters));
-    }
-
-    private void checkCallThreshold() {
-        if (thresholdChecker.thresholdReached()) {
+        if (retrieveThresholdChecker.thresholdReached()) {
             throw new CallThresholdReached();
         }
+        worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS, parameters));
     }
 
     /**
@@ -175,6 +175,9 @@ public class VodafoneManager {
      * @param code code send to user via SMS
      */
     public void validateSmsCode(String code) {
+        if (validatePinThresholdChecker.thresholdReached()) {
+            throw new CallThresholdReached();
+        }
         Optional<String> sessionToken = resolveCallbacks.getSessionToken();
         if (!sessionToken.isPresent()) {
             logger.w("Vodafone", "session is missing, ignoring pin: " + code);
@@ -193,6 +196,9 @@ public class VodafoneManager {
      * Validates identity by providing code send by server via SMS.
      */
     public void generatePin() {
+        if (genPinThresholdChecker.thresholdReached()) {
+            throw new CallThresholdReached();
+        }
         Optional<String> sessionToken = resolveCallbacks.getSessionToken();
         if (!sessionToken.isPresent()) {
             return;

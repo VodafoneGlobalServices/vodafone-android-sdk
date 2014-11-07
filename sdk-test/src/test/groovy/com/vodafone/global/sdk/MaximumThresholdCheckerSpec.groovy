@@ -21,7 +21,7 @@ class MaximumThresholdCheckerSpec extends Specification {
     }
 
     def "threshold is not reached when max number of calls have been made"() {
-        3 * clock.currentTimeMillis() >>> [1, 2, 3]
+        3 * clock.currentTimeMillis() >>> [1000, 2000, 3000]
 
         when:
         def firstCheck = checker.thresholdReached()
@@ -35,7 +35,7 @@ class MaximumThresholdCheckerSpec extends Specification {
     }
 
     def "threshold is reached with more than max number of calls have been made"() {
-        4 * clock.currentTimeMillis() >>> [1, 2, 3, 4]
+        4 * clock.currentTimeMillis() >>> [1000, 2000, 3000, 4000]
 
         when:
         def firstCheck = checker.thresholdReached()
@@ -50,8 +50,8 @@ class MaximumThresholdCheckerSpec extends Specification {
         forthCheck == true
     }
 
-    def "threshold is not reached when last calls is made outside interval"() {
-        4 * clock.currentTimeMillis() >>> [1, 2, 3, timeInterval + 1]
+    def "threshold is not reached when last calls is made at the end of interval"() {
+        4 * clock.currentTimeMillis() >>> [1000, 2000, timeInterval * 1000, timeInterval * 1000 + 1]
 
         when:
         def firstCheck = checker.thresholdReached()
@@ -63,6 +63,6 @@ class MaximumThresholdCheckerSpec extends Specification {
         firstCheck == false
         secondCheck == false
         thirdCheck == false
-        forthCheck == false
+        forthCheck == true
     }
 }
