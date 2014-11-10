@@ -39,7 +39,7 @@ public class ValidatePinProcessor {
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
         this.logger = logger;
-        parser = new ValidatePinParser(resolveCallbacks, validateSmsCallbacks);
+        parser = new ValidatePinParser(worker, resolveCallbacks, validateSmsCallbacks);
     }
 
     public void process(Optional<OAuthToken> authToken, Message msg) {
@@ -52,7 +52,7 @@ public class ValidatePinProcessor {
             request.setOkHttpClient(new OkHttpClient());
 
             ResponseHolder response = request.loadDataFromNetwork();
-            parser.parseResponse(response, validatePinParameters.getToken());
+            parser.parseResponse(response, validatePinParameters.getToken(), validatePinParameters.getPin());
         } catch (Exception e) {
             resolveCallbacks.notifyError(new GenericServerError(e));
         }

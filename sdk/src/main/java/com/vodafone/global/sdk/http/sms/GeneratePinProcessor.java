@@ -39,7 +39,7 @@ public class GeneratePinProcessor {
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
         this.logger = logger;
-        parser = new GeneratePinParser(resolveCallbacks, validateSmsCallbacks);
+        parser = new GeneratePinParser(worker, resolveCallbacks, validateSmsCallbacks);
     }
 
     public void process(Optional<OAuthToken> authToken, Message msg) {
@@ -50,7 +50,7 @@ public class GeneratePinProcessor {
             PinRequest request = getRequest(token);
             request.setOkHttpClient(new OkHttpClient());
             ResponseHolder response = request.loadDataFromNetwork();
-            parser.parseResponse(response);
+            parser.parseResponse(response, token);
         } catch (Exception e) {
             validateSmsCallbacks.notifyError(new GenericServerError(e));
         }
