@@ -23,14 +23,18 @@ public class OAuthProcessor {
     }
 
     public OAuthToken process() throws Exception {
-        Uri.Builder builder = new Uri.Builder();
-        Uri uri = builder.scheme(settings.oauth.protocol).authority(settings.oauth.host).path(settings.oauth.path).build();
+        String uri = new Uri.Builder()
+                .scheme(settings.oauth().protocol())
+                .authority(settings.oauth().host())
+                .path(settings.oauth().path())
+                .build()
+                .toString();
         OAuthTokenRequest request = OAuthTokenRequest.builder()
-                .url(uri.toString())
+                .url(uri)
                 .clientId(clientAppKey)
                 .clientSecret(clientAppSecret)
-                .scope(settings.oAuthTokenScope)
-                .grantType(settings.oAuthTokenGrantType)
+                .scope(settings.oAuthTokenScope())
+                .grantType(settings.oAuthTokenGrantType())
                 .build();
 
         request.setOkHttpClient(new OkHttpClient());

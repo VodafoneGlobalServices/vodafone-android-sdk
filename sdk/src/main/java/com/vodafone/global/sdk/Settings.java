@@ -14,23 +14,27 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Settings {
-    public final PathSettings apix;
-    public final PathSettings hap;
-    public final PathSettings oauth;
+    private PathSettings apix;
+    private PathSettings hap;
+    private PathSettings oauth;
 
-    public final long defaultHttpConnectionTimeout;
-    public final long requestsThrottlingLimit;
-    public final long requestsThrottlingPeriod;
-    public final String oAuthTokenScope;
-    public final String phoneNumberRegex;
-    public final String smsInterceptionRegex;
-    public final String oAuthTokenGrantType;
-    public final String sdkId = "VFSeamlessID SDK/Android (v1.0.0)";
-    public List<String> availableMccMnc;
-    public final Map<String, String> availableMarkets;
+    private long defaultHttpConnectionTimeout;
+    private long requestsThrottlingLimit;
+    private long requestsThrottlingPeriod;
+    private String oAuthTokenScope;
+    private String phoneNumberRegex;
+    private String smsInterceptionRegex;
+    private String oAuthTokenGrantType;
+    private final static String sdkId = "VFSeamlessID SDK/Android (v1.0.0)";
+    private List<String> availableMccMnc;
+    private Map<String, String> availableMarkets;
 
     public Settings(Context context) {
         JSONObject json = parseJSON(context);
+        setFields(json);
+    }
+
+    private void setFields(JSONObject json) {
         try {
             apix = readApix(json);
             hap = readHap(json);
@@ -42,8 +46,8 @@ public class Settings {
             oAuthTokenScope = apix.getString("oAuthTokenScope");
             oAuthTokenGrantType = apix.getString("oAuthTokenGrantType");
             phoneNumberRegex = json.getString("phoneNumberRegex");
-            availableMccMnc = getAvailableMccMnc(json);
-            availableMarkets = getAvailableMarkets(json);
+            availableMccMnc = Collections.unmodifiableList(getAvailableMccMnc(json));
+            availableMarkets = Collections.unmodifiableMap(getAvailableMarkets(json));
             smsInterceptionRegex = json.getString("smsInterceptionRegex");
         } catch (JSONException e) {
             throw new IllegalStateException(e);
@@ -139,21 +143,79 @@ public class Settings {
         }
     }
 
-    public class PathSettings {
-        public final String protocol;
-        public final String host;
-        public final String path;
+    public PathSettings apix() {
+        return apix;
+    }
 
-        PathSettings(JSONObject json) throws JSONException {
-            protocol = json.getString("protocol");
-            host = json.getString("host");
-            path = json.getString("path");
-        }
+    public PathSettings hap() {
+        return hap;
+    }
+
+    public PathSettings oauth() {
+        return oauth;
+    }
+
+    public long defaultHttpConnectionTimeout() {
+        return defaultHttpConnectionTimeout;
+    }
+
+    public long requestsThrottlingLimit() {
+        return requestsThrottlingLimit;
+    }
+
+    public long requestsThrottlingPeriod() {
+        return requestsThrottlingPeriod;
+    }
+
+    public String oAuthTokenScope() {
+        return oAuthTokenScope;
+    }
+
+    public String phoneNumberRegex() {
+        return phoneNumberRegex;
+    }
+
+    public String smsInterceptionRegex() {
+        return smsInterceptionRegex;
+    }
+
+    public String oAuthTokenGrantType() {
+        return oAuthTokenGrantType;
+    }
+
+    public String sdkId() {
+        return sdkId;
+    }
+
+    public List<String> availableMccMnc() {
+        return availableMccMnc;
+    }
+
+    public Map<String, String> availableMarkets() {
+        return availableMarkets;
+    }
+
+    public class PathSettings {
+        private final String protocol;
+        private final String host;
+        private final String path;
 
         PathSettings(String protocol, String host, String path) {
             this.protocol = protocol;
             this.host = host;
             this.path = path;
+        }
+
+        public String protocol() {
+            return protocol;
+        }
+
+        public String host() {
+            return host;
+        }
+
+        public String path() {
+            return path;
         }
     }
 }

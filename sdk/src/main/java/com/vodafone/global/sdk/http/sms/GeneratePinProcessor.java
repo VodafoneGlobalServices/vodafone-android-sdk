@@ -66,9 +66,10 @@ public class GeneratePinProcessor {
     }
 
     private String getUrl(String token) {
-        return new Uri.Builder().scheme(settings.apix.protocol)
-                .authority(settings.apix.host)
-                .path(settings.apix.path)
+        return new Uri.Builder()
+                .scheme(settings.apix().protocol())
+                .authority(settings.apix().host())
+                .path(settings.apix().path())
                 .appendPath(token)
                 .appendPath("pins")
                 .appendQueryParameter("backendId", backendAppKey)

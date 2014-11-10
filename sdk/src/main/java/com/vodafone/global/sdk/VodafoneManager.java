@@ -65,20 +65,20 @@ public class VodafoneManager {
 
         registrars = prepareRegistrars();
         settings = new Settings(context);
-        imsi = new IMSI(context, settings.availableMccMnc);
+        imsi = new IMSI(context, settings.availableMccMnc());
 
         worker = new Worker(callback);
         logger = LoggerFactory.getLogger();
-        RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId, Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey, clientAppKey);
+        RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId(), Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey, clientAppKey);
         oAuthProc = new OAuthProcessor(clientAppKey, clientAppSecret, settings);
         resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider, logger);
         checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider, logger);
         generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
         validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
 
-        retrieveThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
-        genPinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
-        validatePinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit, settings.requestsThrottlingPeriod);
+        retrieveThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
+        genPinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
+        validatePinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
 
         worker.start();
     }

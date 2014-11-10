@@ -69,11 +69,14 @@ public class ValidatePinProcessor {
     }
 
     private String getUrl(ValidatePinParameters validatePinParameters) {
-        return new Uri.Builder().scheme(settings.apix.protocol)
-                .authority(settings.apix.host)
-                .path(settings.apix.path)
+        return new Uri.Builder()
+                .scheme(settings.apix().protocol())
+                .authority(settings.apix().host())
+                .path(settings.apix().path())
                 .appendPath(validatePinParameters.getToken())
                 .appendPath("pins")
-                .appendQueryParameter("backendId", backendAppKey).build().toString();
+                .appendQueryParameter("backendId", backendAppKey)
+                .build()
+                .toString();
     }
 }

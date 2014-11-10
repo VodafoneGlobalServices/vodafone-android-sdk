@@ -77,7 +77,7 @@ public class ResolveUserProcessor {
     private void startResolve(Message msg) throws IOException, JSONException {
         UserDetailsRequestParameters parameters = (UserDetailsRequestParameters) msg.obj;
         boolean smsValidation = parameters.smsValidation();
-        MSISDN msisdn = new MSISDN(parameters.getMSISDN(), settings.availableMarkets);
+        MSISDN msisdn = new MSISDN(parameters.getMSISDN(), settings.availableMarkets());
 
         if (noInternetConnection()) {
             resolutionCantBeDoneWithoutNetworkConnection();
@@ -103,12 +103,12 @@ public class ResolveUserProcessor {
 
     private void resolveThroughApix(boolean smsValidation) throws IOException, JSONException {
         logger.i("over wifi, resolving through APIX");
-        resolveWithImsi(imsi, smsValidation, settings.apix);
+        resolveWithImsi(imsi, smsValidation, settings.apix());
     }
 
     private void resolveThroughHap(boolean smsValidation) throws IOException, JSONException {
         logger.i("over mobile, resolving through HAP");
-        resolveWithImsi(imsi, smsValidation, settings.hap);
+        resolveWithImsi(imsi, smsValidation, settings.hap());
     }
 
     private void resolutionCantBeDoneWithoutNetworkConnection() {
@@ -118,11 +118,13 @@ public class ResolveUserProcessor {
     private void resolveWithMsisdn(MSISDN msisdn) throws IOException, JSONException {
         logger.i("MSISDN is valid, resolving with MSISDN");
 
-        Uri uri = new Uri.Builder().scheme(settings.apix.protocol)
-                .authority(settings.apix.host)
-                .path(settings.apix.path)
-                .appendQueryParameter("backendId", backendAppKey).build();
-        String url = uri.toString();
+        String url = new Uri.Builder()
+                .scheme(settings.apix().protocol())
+                .authority(settings.apix().host())
+                .path(settings.apix().path())
+                .appendQueryParameter("backendId", backendAppKey)
+                .build()
+                .toString();
 
         ResolvePostRequest request = ResolvePostRequest.builder()
                 .url(url)
@@ -137,11 +139,13 @@ public class ResolveUserProcessor {
     }
 
     private void resolveWithImsi(IMSI imsi, boolean smsValidation, Settings.PathSettings server) throws IOException, JSONException {
-        Uri uri = new Uri.Builder().scheme(server.protocol)
-                .authority(server.host)
-                .path(server.path)
-                .appendQueryParameter("backendId", backendAppKey).build();
-        String url = uri.toString();
+        String url = new Uri.Builder()
+                .scheme(server.protocol())
+                .authority(server.host())
+                .path(server.path())
+                .appendQueryParameter("backendId", backendAppKey)
+                .build()
+                .toString();
 
         ResolvePostRequest request = ResolvePostRequest.builder()
                 .url(url)

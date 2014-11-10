@@ -71,11 +71,13 @@ public class CheckStatusProcessor {
     }
 
     private String getUrl() {
-        return new Uri.Builder().scheme(settings.apix.protocol)
-                .authority(settings.apix.host)
-                .path(settings.apix.path)
+        return new Uri.Builder()
+                .scheme(settings.apix().protocol())
+                .authority(settings.apix().host())
+                .path(settings.apix().path())
                 .appendPath(checkStatusParameters.tokenId.get())
                 .appendQueryParameter("backendId", backendAppKey)
-                .build().toString();
+                .build()
+                .toString();
     }
 }
