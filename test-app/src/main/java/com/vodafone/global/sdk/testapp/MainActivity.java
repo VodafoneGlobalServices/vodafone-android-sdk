@@ -47,17 +47,17 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         Vodafone.register(resolveCallback);
         Vodafone.register(validateSmsCallback);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        Vodafone.register(resolveCallback);
-        Vodafone.register(validateSmsCallback);
+    protected void onStop() {
+        super.onStop();
+        Vodafone.unregister(resolveCallback);
+        Vodafone.unregister(validateSmsCallback);
     }
 
     @Override
