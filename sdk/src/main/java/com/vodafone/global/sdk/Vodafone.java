@@ -44,6 +44,7 @@ public class Vodafone {
      * @param parameters parameters specific to this call
      */
     public static void retrieveUserDetails(UserDetailsRequestParameters parameters) {
+        if (manager == null) throw new NotInitialized();
         manager.retrieveUserDetails(parameters);
     }
 
@@ -60,6 +61,7 @@ public class Vodafone {
      * Used to generate validation PIN
      */
     public static void generatePin() {
+        if (manager == null) throw new NotInitialized();
         manager.generatePin();
     }
 
@@ -69,6 +71,7 @@ public class Vodafone {
      * @param code code send to user via SMS
      */
     public static void validateSmsCode(String code) {
+        if (manager == null) throw new NotInitialized();
         manager.validateSmsCode(code);
     }
 
