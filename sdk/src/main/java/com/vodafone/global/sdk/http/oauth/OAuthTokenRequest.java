@@ -2,6 +2,8 @@ package com.vodafone.global.sdk.http.oauth;
 
 import com.squareup.okhttp.*;
 import com.vodafone.global.sdk.http.ResponseHolder;
+import com.vodafone.global.sdk.logging.LogUtil;
+import com.vodafone.global.sdk.logging.Logger;
 
 /**
  * OAuth 2 request processor. Builds HTTP request and handles response.
@@ -13,6 +15,7 @@ public class OAuthTokenRequest extends com.vodafone.global.sdk.http.Request {
     private final String clientSecret;
     private final String scope;
     private final String grantType;
+    private final Logger logger;
 
 
     /**
@@ -22,12 +25,13 @@ public class OAuthTokenRequest extends com.vodafone.global.sdk.http.Request {
         return new Builder();
     }
 
-    protected OAuthTokenRequest(String url, String clientId, String clientSecret, String scope, String grantType) {
+    protected OAuthTokenRequest(String url, String clientId, String clientSecret, String scope, String grantType, Logger logger) {
         this.url = url;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.scope = scope;
         this.grantType = grantType;
+        this.logger = logger;
     }
 
     @Override
@@ -46,9 +50,14 @@ public class OAuthTokenRequest extends com.vodafone.global.sdk.http.Request {
                 .post(body)
                 .build();
 
+        logger.d(LogUtil.prepareRequestLogMsg(request));
+
         OkHttpClient client = getOkHttpClient();
         Response response = client.newCall(request).execute();
-        return new ResponseHolder(response);
+        ResponseHolder responseHolder = new ResponseHolder(response);
+
+        logger.d(LogUtil.prepareResponseLogMsg(responseHolder));
+        return responseHolder;
     }
 
     /**
@@ -62,6 +71,7 @@ public class OAuthTokenRequest extends com.vodafone.global.sdk.http.Request {
         private String clientSecret;
         private String scope;
         private String grantType;
+        private Logger logger;
 
         private Builder() {
         }
@@ -91,8 +101,13 @@ public class OAuthTokenRequest extends com.vodafone.global.sdk.http.Request {
             return this;
         }
 
+        public Builder logger(Logger logger) {
+            this.logger = logger;
+            return this;
+        }
+
         public OAuthTokenRequest build() {
-            return new OAuthTokenRequest(url, clientId, clientSecret, scope, grantType);
+            return new OAuthTokenRequest(url, clientId, clientSecret, scope, grantType, logger);
         }
     }
 }

@@ -4,6 +4,7 @@ import android.net.Uri;
 import com.squareup.okhttp.OkHttpClient;
 import com.vodafone.global.sdk.Settings;
 import com.vodafone.global.sdk.http.ResponseHolder;
+import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,11 +16,13 @@ public class OAuthProcessor {
     private final String clientAppKey;
     private final String clientAppSecret;
     private final Settings settings;
+    private final Logger logger;
 
-    public OAuthProcessor(String clientAppKey, String clientAppSecret, Settings settings) {
+    public OAuthProcessor(String clientAppKey, String clientAppSecret, Settings settings, Logger logger) {
         this.clientAppKey = clientAppKey;
         this.clientAppSecret = clientAppSecret;
         this.settings = settings;
+        this.logger = logger;
     }
 
     public OAuthToken process() throws Exception {
@@ -35,6 +38,7 @@ public class OAuthProcessor {
                 .clientSecret(clientAppSecret)
                 .scope(settings.oAuthTokenScope())
                 .grantType(settings.oAuthTokenGrantType())
+                .logger(logger)
                 .build();
 
         request.setOkHttpClient(new OkHttpClient());
