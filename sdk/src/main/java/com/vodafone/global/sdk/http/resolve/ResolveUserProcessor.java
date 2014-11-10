@@ -90,8 +90,13 @@ public class ResolveUserProcessor {
                 logger.d("MSISDN is invalid");
                 resolveCallbacks.notifyError(new InvalidInput());
             }
-        } else if (overWifi() && imsi.isValid()) {
-            resolveThroughApix(smsValidation);
+        } else if (overWifi()) {
+            if (imsi.isValid()) {
+                resolveThroughApix(smsValidation);
+            } else {
+                logger.w("when on wifi without IMSI, MSISDN is required");
+                resolveCallbacks.unableToResolve();
+            }
         } else if (overMobileNetwork() && imsi.mccAndMncOfSimCardBelongToVodafone()) {
             logger.d("over mobile network, MCC and MNC belongs to Vodafone");
             resolveThroughHap(smsValidation);
