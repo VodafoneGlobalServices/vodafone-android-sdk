@@ -1,10 +1,7 @@
 package com.vodafone.global.sdk.testapp;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Process;
 import com.crashlytics.android.Crashlytics;
-import com.vodafone.global.sdk.Vodafone;
 import com.vodafone.global.sdk.testapp.logging.PersistTree;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
@@ -27,11 +24,6 @@ public class Application extends android.app.Application {
         Timber.plant(new Timber.DebugTree());
         Timber.plant(new PersistTree(this));
 
-        SharedPreferences preferences = getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);
-        String appKey = preferences.getString(Preferences.APP_KEY, Preferences.APP_KEY_DEFAULT);
-        String appSecret = preferences.getString(Preferences.APP_SECRET, Preferences.APP_SECRET_DEFAULT);
-        String backendAppKey = preferences.getString(Preferences.BACKEND_APP_KEY, Preferences.BACKEND_APP_KEY_DEFAULT);
-
         Timber.d("can read IMSI: " + (checkCallingOrSelfPermission(READ_PHONE_STATE) == PERMISSION_GRANTED));
         Timber.d("can read SMS: " + (checkCallingOrSelfPermission(RECEIVE_SMS) == PERMISSION_GRANTED));
 
@@ -45,7 +37,5 @@ public class Application extends android.app.Application {
         Timber.d("test-app git sha: %s", BuildConfig.GIT_SHA);
         Timber.d("test-app version name: %s", BuildConfig.VERSION_NAME);
         Timber.d("test-app version code: %d", BuildConfig.VERSION_CODE);
-
-        Vodafone.init(this, appKey, appSecret, backendAppKey);
     }
 }

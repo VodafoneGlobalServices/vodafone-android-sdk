@@ -21,6 +21,8 @@ public class MainActivity extends Activity {
     @InjectView(R.id.cb_smsValidation) CheckBox smsValidation;
     @InjectView(R.id.et_smsCode) EditText smsCode;
 
+    private boolean sdkHasBeenInitialized = false;
+
     private static final String FRAGMENT_LOG =
             "com.vodafone.global.sdk.testapp.MainActivity.LOG";
 
@@ -49,8 +51,22 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        Vodafone.register(resolveCallback);
-        Vodafone.register(validateSmsCallback);
+        if (sdkHasBeenInitialized) {
+            Vodafone.register(resolveCallback);
+            Vodafone.register(validateSmsCallback);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("sdkHasBeenInitialized", sdkHasBeenInitialized);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        sdkHasBeenInitialized = savedInstanceState.getBoolean("sdkHasBeenInitialized");
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -85,6 +101,13 @@ public class MainActivity extends Activity {
         String backendAppKey = preferences.getString(Preferences.BACKEND_APP_KEY, Preferences.BACKEND_APP_KEY_DEFAULT);
 
         Vodafone.init(getApplication(), appKey, appSecret, backendAppKey);
+
+
+        if (!sdkHasBeenInitialized) {
+            sdkHasBeenInitialized = true;
+            Vodafone.register(resolveCallback);
+            Vodafone.register(validateSmsCallback);
+        }
     }
 
     @OnClick(R.id.btn_retrieve)
@@ -101,6 +124,8 @@ public class MainActivity extends Activity {
             Vodafone.retrieveUserDetails(parameters);
         } catch (CallThresholdReached e) {
             Timber.w("Threshold reached");
+        } catch (NotInitialized e) {
+            Timber.e(e.getMessage());
         }
     }
 
@@ -111,6 +136,8 @@ public class MainActivity extends Activity {
             Vodafone.generatePin();
         } catch (CallThresholdReached e) {
             Timber.w("Threshold reached");
+        } catch (NotInitialized e) {
+            Timber.e(e.getMessage());
         }
     }
 
@@ -122,6 +149,8 @@ public class MainActivity extends Activity {
             Vodafone.validateSmsCode(code);
         } catch (CallThresholdReached e) {
             Timber.w("Threshold reached");
+        } catch (NotInitialized e) {
+            Timber.e(e.getMessage());
         }
     }
 
