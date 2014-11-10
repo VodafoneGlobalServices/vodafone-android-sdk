@@ -14,6 +14,12 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Settings {
+    public static final String CONFIG_URL = "https://preprod.appconfig.shared.sp.vodafone.com/seamless-id/v1/sdk-config-android/config.json";
+    public static final String LAST_MODIFIED = "Last-Modified";
+    public static final String ETAG = "Etag";
+    public static final String SETTINGS_JSON = "SettingsJSON";
+    public static final String SHARED_PREFERENCES_NAME = "Vodafone";
+
     private PathSettings apix;
     private PathSettings hap;
     private PathSettings oauth;
@@ -32,6 +38,10 @@ public class Settings {
     public Settings(Context context) {
         JSONObject json = parseJSON(context);
         setFields(json);
+    }
+
+    public Settings(String json) throws JSONException {
+        setFields(new JSONObject(json));
     }
 
     private void setFields(JSONObject json) {

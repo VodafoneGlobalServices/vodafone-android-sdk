@@ -1,10 +1,12 @@
 package com.vodafone.global.sdk;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import com.vodafone.global.sdk.http.settings.UpdateSettingsProcessor;
 import com.vodafone.global.sdk.http.oauth.AuthorizationFailed;
 import com.vodafone.global.sdk.http.oauth.OAuthProcessor;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
@@ -14,6 +16,7 @@ import com.vodafone.global.sdk.http.sms.GeneratePinProcessor;
 import com.vodafone.global.sdk.http.sms.ValidatePinProcessor;
 import com.vodafone.global.sdk.logging.Logger;
 import com.vodafone.global.sdk.logging.LoggerFactory;
+import org.json.JSONException;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,23 +33,22 @@ public class VodafoneManager {
     private final String clientAppSecret;
     private final String backendAppKey;
 
-    private final Settings settings;
     private final Worker worker;
 
-    private final OAuthProcessor oAuthProc;
-    private final ResolveUserProcessor resolveUserProc;
-    private final CheckStatusProcessor checkStatusProc;
-    private final GeneratePinProcessor generatePinProc;
-    private final ValidatePinProcessor validatePinProc;
+    private UpdateSettingsProcessor updateSettingsProc;
+    private OAuthProcessor oAuthProc;
+    private ResolveUserProcessor resolveUserProc;
+    private CheckStatusProcessor checkStatusProc;
+    private GeneratePinProcessor generatePinProc;
+    private ValidatePinProcessor validatePinProc;
 
     ResolveCallbacks resolveCallbacks = new ResolveCallbacks();
     ValidateSmsCallbacks validateSmsCallbacks = new ValidateSmsCallbacks();
-    private IMSI imsi;
     private Optional<OAuthToken> authToken = Optional.absent();
 
     private MaximumThresholdChecker retrieveThresholdChecker;
-    private final MaximumThresholdChecker genPinThresholdChecker;
-    private final MaximumThresholdChecker validatePinThresholdChecker;
+    private MaximumThresholdChecker genPinThresholdChecker;
+    private MaximumThresholdChecker validatePinThresholdChecker;
     private final Logger logger;
 
     /**
@@ -63,13 +65,40 @@ public class VodafoneManager {
         this.clientAppSecret = clientAppSecret;
         this.backendAppKey = backendAppKey;
 
+        logger = LoggerFactory.getLogger();
         registrars = prepareRegistrars();
-        settings = new Settings(context);
-        imsi = new IMSI(context, settings.availableMccMnc());
 
         worker = new Worker(callback);
-        logger = LoggerFactory.getLogger();
+
+        Settings settings = readSettings(context);
+        init(context, settings, clientAppKey, clientAppSecret, backendAppKey);
+
+        worker.start();
+    }
+
+    private Settings readSettings(Context context) {
+        Settings settings;
+        SharedPreferences preferences = context.getSharedPreferences(Settings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String json = preferences.getString(Settings.SETTINGS_JSON, "");
+        if (json.isEmpty()) {
+            settings = new Settings(context);
+            logger.d("using internal settings");
+        } else {
+            try {
+                settings = new Settings(json);
+                logger.d("using settings from server");
+            } catch (JSONException e) {
+                settings = new Settings(context);
+                logger.d("using internal settings");
+            }
+        }
+        return settings;
+    }
+
+    private void init(Context context, Settings settings, String clientAppKey, String clientAppSecret, String backendAppKey) {
+        IMSI imsi = new IMSI(context, settings.availableMccMnc());
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId(), Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey, clientAppKey);
+        updateSettingsProc = new UpdateSettingsProcessor(context, requestBuilderProvider,logger);
         oAuthProc = new OAuthProcessor(clientAppKey, clientAppSecret, settings, logger);
         resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider, logger);
         checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider, logger);
@@ -79,8 +108,6 @@ public class VodafoneManager {
         retrieveThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
         genPinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
         validatePinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
-
-        worker.start();
     }
 
     /**
@@ -166,6 +193,7 @@ public class VodafoneManager {
         if (retrieveThresholdChecker.thresholdReached()) {
             throw new CallThresholdReached();
         }
+        worker.sendMessage(worker.createMessage(UPDATE_SETTINGS));
         worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS, parameters));
     }
 
@@ -213,6 +241,17 @@ public class VodafoneManager {
             try {
                 MessageType id = MessageType.values()[msg.what];
                 switch (id) {
+                    case UPDATE_SETTINGS:
+                        logger.d("START Settings update");
+                        try {
+                            Settings newSettings = updateSettingsProc.process();
+                            if (newSettings != null) {
+                                init(context, newSettings, clientAppKey, clientAppSecret, backendAppKey);
+                            }
+                        } catch (Exception e) {
+                            logger.e(e, "An exception occurred during settings update");
+                        }
+                        break;
                     case AUTHENTICATE:
                         logger.d("START Authenticate");
                         try {

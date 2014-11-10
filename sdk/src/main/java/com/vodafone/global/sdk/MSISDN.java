@@ -9,18 +9,21 @@ public class MSISDN {
     private final String msisdn;
     private final Optional<String> marketCode;
 
-    public MSISDN(String msisdn, Map<String, String> availableMarkets) {
+    public MSISDN(String msisdn, Map<String, String> availableMarkets, String phoneNumberRegex) {
         this.msisdn = msisdn;
-        marketCode = getMarketCode(availableMarkets);
+        marketCode = getMarketCode(availableMarkets, phoneNumberRegex);
     }
 
-    private Optional<String> getMarketCode(Map<String, String> availableMarkets) {
+    private Optional<String> getMarketCode(Map<String, String> availableMarkets, String phoneNumberRegex) {
         String shortMsisdn = skipUnwantedChars();
         List<String> marketNumbers = new ArrayList<String>(availableMarkets.keySet());
         sort(marketNumbers);
         for (String marketNumber : marketNumbers) {
             if (shortMsisdn.startsWith(marketNumber)) {
-                return Optional.of(availableMarkets.get(marketNumber));
+                String phoneNumber = shortMsisdn.substring(marketNumber.length());
+                if (phoneNumber.matches(phoneNumberRegex)) {
+                    return Optional.of(availableMarkets.get(marketNumber));
+                }
             }
         }
         return Optional.absent();
