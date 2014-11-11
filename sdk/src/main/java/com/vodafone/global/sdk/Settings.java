@@ -205,6 +205,10 @@ public class Settings {
         return availableMarkets;
     }
 
+    public String pinRegex() {
+        return "^[0-9]{4}$";
+    }
+
     public class PathSettings {
         private final String protocol;
         private final String host;

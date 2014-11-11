@@ -13,6 +13,7 @@ import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.resolve.CheckStatusProcessor;
 import com.vodafone.global.sdk.http.resolve.ResolveUserProcessor;
 import com.vodafone.global.sdk.http.sms.GeneratePinProcessor;
+import com.vodafone.global.sdk.http.sms.InvalidInput;
 import com.vodafone.global.sdk.http.sms.ValidatePinProcessor;
 import com.vodafone.global.sdk.logging.Logger;
 import com.vodafone.global.sdk.logging.LoggerFactory;
@@ -34,6 +35,7 @@ public class VodafoneManager {
     private final String backendAppKey;
 
     private final Worker worker;
+    private Settings settings;
 
     private UpdateSettingsProcessor updateSettingsProc;
     private OAuthProcessor oAuthProc;
@@ -70,7 +72,7 @@ public class VodafoneManager {
 
         worker = new Worker(callback);
 
-        Settings settings = readSettings(context);
+        settings = readSettings(context);
         init(context, settings, clientAppKey, clientAppSecret, backendAppKey);
 
         worker.start();
@@ -206,6 +208,7 @@ public class VodafoneManager {
         if (validatePinThresholdChecker.thresholdReached()) {
             throw new CallThresholdReached();
         }
+
         Optional<String> sessionToken = resolveCallbacks.getSessionToken();
         if (!sessionToken.isPresent()) {
             logger.w("session is missing, ignoring pin: " + code);
@@ -214,10 +217,15 @@ public class VodafoneManager {
 
         logger.d("received pin: " + code);
 
-        ValidatePinParameters parameters = ValidatePinParameters.builder()
-                .token(sessionToken.get())
-                .pin(code).build();
-        worker.sendMessage(worker.createMessage(VALIDATE_PIN, parameters));
+        if (code.matches(settings.pinRegex())) {
+            ValidatePinParameters parameters = ValidatePinParameters.builder()
+                    .token(sessionToken.get())
+                    .pin(code)
+                    .build();
+            worker.sendMessage(worker.createMessage(VALIDATE_PIN, parameters));
+        } else {
+            validateSmsCallbacks.notifyError(new InvalidInput("Invalid PIN"));
+        }
     }
 
     /**
@@ -248,6 +256,7 @@ public class VodafoneManager {
                             if (newSettings != null) {
                                 init(context, newSettings, clientAppKey, clientAppSecret, backendAppKey);
                             }
+                            settings = newSettings;
                         } catch (Exception e) {
                             logger.e(e, "An exception occurred during settings update");
                         }
