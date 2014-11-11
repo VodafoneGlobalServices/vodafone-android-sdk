@@ -255,8 +255,8 @@ public class VodafoneManager {
                             Settings newSettings = updateSettingsProc.process();
                             if (newSettings != null) {
                                 init(context, newSettings, clientAppKey, clientAppSecret, backendAppKey);
+                                settings = newSettings;
                             }
-                            settings = newSettings;
                         } catch (Exception e) {
                             logger.e(e, "An exception occurred during settings update");
                         }
