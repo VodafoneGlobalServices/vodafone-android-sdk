@@ -72,8 +72,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        Vodafone.unregister(resolveCallback);
-        Vodafone.unregister(validateSmsCallback);
+        if (sdkHasBeenInitialized) {
+            Vodafone.unregister(resolveCallback);
+            Vodafone.unregister(validateSmsCallback);
+        }
     }
 
     @Override
