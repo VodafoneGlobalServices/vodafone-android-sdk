@@ -13,6 +13,8 @@ import com.vodafone.global.sdk.logging.Logger;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
@@ -52,12 +54,20 @@ public class UpdateSettingsProcessor {
             case OK_200:
                 String lastModified = responseHolder.header("Last-Modified");
                 String etag = responseHolder.header("Etag");
+                String cacheControl = responseHolder.header("Cache-Control");
+                Pattern pattern = Pattern.compile(".*max-age=(\\d+).*");
+                Matcher matcher = pattern.matcher(cacheControl);
+                if (!matcher.matches()) throw new IllegalStateException("Can't extract max-age");
+                String group = matcher.group(1);
+                Integer maxAgeInMiliSeconds = Integer.valueOf(group) * 1000;
+                long expiresAt = System.currentTimeMillis() + maxAgeInMiliSeconds;
                 String json = responseHolder.body();
                 Settings settings = new Settings(json);
 
                 preferences.edit()
                         .putString(Settings.LAST_MODIFIED, lastModified)
                         .putString(Settings.ETAG, etag)
+                        .putLong(Settings.EXPIREST_AT, expiresAt)
                         .putString(Settings.SETTINGS_JSON, json)
                         .apply();
 

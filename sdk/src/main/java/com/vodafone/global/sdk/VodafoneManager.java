@@ -195,7 +195,17 @@ public class VodafoneManager {
         if (retrieveThresholdChecker.thresholdReached()) {
             throw new CallThresholdReached();
         }
-        worker.sendMessage(worker.createMessage(UPDATE_SETTINGS));
+
+        long currentTimeMillis = System.currentTimeMillis();
+        SharedPreferences preferences = context.getSharedPreferences(Settings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        long configurationExpiresAtTimeMillis = preferences.getLong(Settings.EXPIREST_AT, currentTimeMillis);
+        if (currentTimeMillis >= configurationExpiresAtTimeMillis) {
+            worker.sendMessage(worker.createMessage(UPDATE_SETTINGS));
+        } else {
+            logger.d("Skipping conf update. Time left until next update: %d ms",
+                    configurationExpiresAtTimeMillis - currentTimeMillis);
+        }
+
         worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS, parameters));
     }
 

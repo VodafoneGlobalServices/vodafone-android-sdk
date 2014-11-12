@@ -19,6 +19,7 @@ public class Settings {
     public static final String ETAG = "Etag";
     public static final String SETTINGS_JSON = "SettingsJSON";
     public static final String SHARED_PREFERENCES_NAME = "Vodafone";
+    public static final String EXPIREST_AT = "ExpiresAt";
 
     private PathSettings apix;
     private PathSettings hap;
