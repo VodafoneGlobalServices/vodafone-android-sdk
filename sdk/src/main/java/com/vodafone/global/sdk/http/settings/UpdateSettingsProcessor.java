@@ -22,13 +22,16 @@ public class UpdateSettingsProcessor {
     private final Context context;
     private RequestBuilderProvider requestBuilderProvider;
     private final Logger logger;
+    private OkHttpClient client;
 
     public UpdateSettingsProcessor(
             Context context,
+            OkHttpClient client,
             RequestBuilderProvider requestBuilderProvider,
             Logger logger
     ) {
         this.context = context;
+        this.client = client;
         this.requestBuilderProvider = requestBuilderProvider;
         this.logger = logger;
     }
@@ -44,7 +47,6 @@ public class UpdateSettingsProcessor {
                 .build();
 
         logger.d(LogUtil.prepareRequestLogMsg(request));
-        OkHttpClient client = new OkHttpClient();
         Response response = client.newCall(request).execute();
         ResponseHolder responseHolder = new ResponseHolder(response);
         logger.d(LogUtil.prepareResponseLogMsg(responseHolder));

@@ -13,12 +13,14 @@ import java.io.IOException;
 import static com.vodafone.global.sdk.http.HttpCode.OK_200;
 
 public class OAuthProcessor {
+    private final OkHttpClient httpClient;
     private final String clientAppKey;
     private final String clientAppSecret;
     private final Settings settings;
     private final Logger logger;
 
-    public OAuthProcessor(String clientAppKey, String clientAppSecret, Settings settings, Logger logger) {
+    public OAuthProcessor(OkHttpClient httpClient, String clientAppKey, String clientAppSecret, Settings settings, Logger logger) {
+        this.httpClient = httpClient;
         this.clientAppKey = clientAppKey;
         this.clientAppSecret = clientAppSecret;
         this.settings = settings;
@@ -41,7 +43,7 @@ public class OAuthProcessor {
                 .logger(logger)
                 .build();
 
-        request.setOkHttpClient(new OkHttpClient());
+        request.setOkHttpClient(httpClient);
         ResponseHolder responseHolder = request.loadDataFromNetwork();
         int code = responseHolder.code();
         switch (code) {

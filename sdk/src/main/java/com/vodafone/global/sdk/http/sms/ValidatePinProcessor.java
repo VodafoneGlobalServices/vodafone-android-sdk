@@ -12,6 +12,7 @@ import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.logging.Logger;
 
 public class ValidatePinProcessor {
+    private final OkHttpClient httpClient;
     protected final Worker worker;
     protected final Settings settings;
     protected final Context context;
@@ -24,6 +25,7 @@ public class ValidatePinProcessor {
 
     public ValidatePinProcessor(
             Context context,
+            OkHttpClient httpClient,
             Worker worker,
             Settings settings,
             String backendAppKey,
@@ -33,6 +35,7 @@ public class ValidatePinProcessor {
             Logger logger
     ) {
         this.context = context;
+        this.httpClient = httpClient;
         this.worker = worker;
         this.settings = settings;
         this.resolveCallbacks = resolveCallbacks;
@@ -49,7 +52,7 @@ public class ValidatePinProcessor {
         try {
             ValidatePinRequest request = getRequest(validatePinParameters);
 
-            request.setOkHttpClient(new OkHttpClient());
+            request.setOkHttpClient(httpClient);
 
             ResponseHolder response = request.loadDataFromNetwork();
             parser.parseResponse(response, validatePinParameters.getToken(), validatePinParameters.getPin());

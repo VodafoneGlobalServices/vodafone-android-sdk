@@ -18,6 +18,7 @@ import org.json.JSONException;
 import java.io.IOException;
 
 public class CheckStatusProcessor {
+    private final OkHttpClient httpClient;
     protected final Settings settings;
     protected final ResolveCallbacks resolveCallbacks;
     private final CheckStatusParser parser;
@@ -29,6 +30,7 @@ public class CheckStatusProcessor {
 
     public CheckStatusProcessor(
             Context context,
+            OkHttpClient httpClient,
             Worker worker,
             Settings settings,
             String backendAppKey,
@@ -36,6 +38,7 @@ public class CheckStatusProcessor {
             RequestBuilderProvider requestBuilderProvider,
             Logger logger
     ) {
+        this.httpClient = httpClient;
         this.settings = settings;
         this.resolveCallbacks = resolveCallbacks;
         this.backendAppKey = backendAppKey;
@@ -50,7 +53,7 @@ public class CheckStatusProcessor {
 
         try {
             ResolveGetRequest request = getRequest();
-            request.setOkHttpClient(new OkHttpClient());
+            request.setOkHttpClient(httpClient);
             ResponseHolder response = request.loadDataFromNetwork();
             parser.parseResponse(response, checkStatusParameters);
         } catch (IOException e) {

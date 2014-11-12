@@ -19,6 +19,7 @@ import java.io.IOException;
 import static com.vodafone.global.sdk.MessageType.AUTHENTICATE;
 
 public class ResolveUserProcessor {
+    private final OkHttpClient httpClient;
     protected final Worker worker;
     protected final Settings settings;
     protected final Context context;
@@ -32,6 +33,7 @@ public class ResolveUserProcessor {
 
     public ResolveUserProcessor(
             Context context,
+            OkHttpClient httpClient,
             Worker worker,
             Settings settings,
             String backendAppKey,
@@ -41,6 +43,7 @@ public class ResolveUserProcessor {
             Logger logger
     ) {
         this.context = context;
+        this.httpClient = httpClient;
         this.worker = worker;
         this.settings = settings;
         this.resolveCallbacks = resolveCallbacks;
@@ -138,7 +141,7 @@ public class ResolveUserProcessor {
                 .requestBuilderProvider(requestBuilderProvider)
                 .logger(logger)
                 .build();
-        request.setOkHttpClient(new OkHttpClient());
+        request.setOkHttpClient(httpClient);
         ResponseHolder response = request.loadDataFromNetwork();
         parser.parseResponse(response);
     }
@@ -160,7 +163,7 @@ public class ResolveUserProcessor {
                 .requestBuilderProvider(requestBuilderProvider)
                 .logger(logger)
                 .build();
-        request.setOkHttpClient(new OkHttpClient());
+        request.setOkHttpClient(httpClient);
         ResponseHolder responseHolder = request.loadDataFromNetwork();
         parser.parseResponse(responseHolder);
     }

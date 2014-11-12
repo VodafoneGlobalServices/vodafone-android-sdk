@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import com.squareup.okhttp.OkHttpClient;
 import com.vodafone.global.sdk.http.settings.UpdateSettingsProcessor;
 import com.vodafone.global.sdk.http.oauth.AuthorizationFailed;
 import com.vodafone.global.sdk.http.oauth.OAuthProcessor;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static com.vodafone.global.sdk.MessageType.*;
 
@@ -52,6 +54,7 @@ public class VodafoneManager {
     private MaximumThresholdChecker genPinThresholdChecker;
     private MaximumThresholdChecker validatePinThresholdChecker;
     private final Logger logger;
+    private OkHttpClient httpClient;
 
     /**
      * Initializes SDK Manager for a given application.
@@ -70,6 +73,7 @@ public class VodafoneManager {
         logger = LoggerFactory.getLogger();
         registrars = prepareRegistrars();
 
+        httpClient = new OkHttpClient();
         worker = new Worker(callback);
 
         settings = readSettings(context);
@@ -98,14 +102,15 @@ public class VodafoneManager {
     }
 
     private void init(Context context, Settings settings, String clientAppKey, String clientAppSecret, String backendAppKey) {
+        httpClient.setReadTimeout(settings.defaultHttpConnectionTimeout(), TimeUnit.SECONDS);
         IMSI imsi = new IMSI(context, settings.availableMccMnc());
         RequestBuilderProvider requestBuilderProvider = new RequestBuilderProvider(settings.sdkId(), Utils.getAndroidId(context), Utils.getMCC(context), backendAppKey, clientAppKey);
-        updateSettingsProc = new UpdateSettingsProcessor(context, requestBuilderProvider,logger);
-        oAuthProc = new OAuthProcessor(clientAppKey, clientAppSecret, settings, logger);
-        resolveUserProc = new ResolveUserProcessor(context, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider, logger);
-        checkStatusProc = new CheckStatusProcessor(context, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider, logger);
-        generatePinProc = new GeneratePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
-        validatePinProc = new ValidatePinProcessor(context, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
+        updateSettingsProc = new UpdateSettingsProcessor(context, httpClient, requestBuilderProvider,logger);
+        oAuthProc = new OAuthProcessor(httpClient, clientAppKey, clientAppSecret, settings, logger);
+        resolveUserProc = new ResolveUserProcessor(context, httpClient, worker, settings, backendAppKey, imsi, resolveCallbacks, requestBuilderProvider, logger);
+        checkStatusProc = new CheckStatusProcessor(context, httpClient, worker, settings, backendAppKey, resolveCallbacks, requestBuilderProvider, logger);
+        generatePinProc = new GeneratePinProcessor(context, httpClient, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
+        validatePinProc = new ValidatePinProcessor(context, httpClient, worker, settings, backendAppKey, resolveCallbacks, validateSmsCallbacks, requestBuilderProvider, logger);
 
         retrieveThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
         genPinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
