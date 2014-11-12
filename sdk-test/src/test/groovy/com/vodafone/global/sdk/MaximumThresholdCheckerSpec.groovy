@@ -23,46 +23,45 @@ class MaximumThresholdCheckerSpec extends Specification {
     def "threshold is not reached when max number of calls have been made"() {
         3 * clock.currentTimeMillis() >>> [1000, 2000, 3000]
 
-        when:
-        def firstCheck = checker.thresholdReached()
-        def secondCheck = checker.thresholdReached()
-        def thirdCheck = checker.thresholdReached()
-
-        then:
-        firstCheck == false
-        secondCheck == false
-        thirdCheck == false
+        expect:
+        !checker.thresholdReached()
+        !checker.thresholdReached()
+        !checker.thresholdReached()
     }
 
     def "threshold is reached with more than max number of calls have been made"() {
         4 * clock.currentTimeMillis() >>> [1000, 2000, 3000, 4000]
 
-        when:
-        def firstCheck = checker.thresholdReached()
-        def secondCheck = checker.thresholdReached()
-        def thirdCheck = checker.thresholdReached()
-        def forthCheck = checker.thresholdReached()
-
-        then:
-        firstCheck == false
-        secondCheck == false
-        thirdCheck == false
-        forthCheck == true
+        expect:
+        !checker.thresholdReached()
+        !checker.thresholdReached()
+        !checker.thresholdReached()
+        checker.thresholdReached()
     }
 
     def "threshold is not reached when last calls is made at the end of interval"() {
         4 * clock.currentTimeMillis() >>> [1000, 2000, timeInterval * 1000, timeInterval * 1000 + 1]
 
-        when:
-        def firstCheck = checker.thresholdReached()
-        def secondCheck = checker.thresholdReached()
-        def thirdCheck = checker.thresholdReached()
-        def forthCheck = checker.thresholdReached()
+        expect:
+        !checker.thresholdReached()
+        !checker.thresholdReached()
+        !checker.thresholdReached()
+        checker.thresholdReached()
+    }
 
-        then:
-        firstCheck == false
-        secondCheck == false
-        thirdCheck == false
-        forthCheck == true
+    def "threshold reached when 0|0"() {
+        1 * clock.currentTimeMillis() >>> [1000]
+        def checker = new MaximumThresholdChecker(0, 0, clock);
+
+        expect:
+        checker.thresholdReached()
+    }
+
+    def "threshold reached when 0|30"() {
+        1 * clock.currentTimeMillis() >>> [1000]
+        def checker = new MaximumThresholdChecker(0, 30, clock);
+
+        expect:
+        checker.thresholdReached()
     }
 }

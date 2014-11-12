@@ -50,7 +50,11 @@ public class MaximumThresholdChecker {
         callTimestamps.add(currentTime);
         filterOutTimestampsBelowTimeThreshold(currentTime);
         int numberOfCallsMadeInInterval = numberOfCallsMadeInInterval();
-        return numberOfCallsMadeInInterval > maxNumberOfCalls;
+        if (maxNumberOfCalls > 0) {
+            return numberOfCallsMadeInInterval > maxNumberOfCalls;
+        } else {
+            return true;
+        }
     }
 
     private void filterOutTimestampsBelowTimeThreshold(Long currentTime) {
