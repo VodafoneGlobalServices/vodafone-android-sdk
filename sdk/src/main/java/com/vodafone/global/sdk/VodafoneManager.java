@@ -302,7 +302,7 @@ public class VodafoneManager {
                 return true;
             } catch (Exception e) {
                 worker.clearMessageQueue();
-                logger.e(e, "Uncaught exception");
+                logger.e(e, "Uncaught exception, %s", e.getMessage());
                 return false;
             }
         }
