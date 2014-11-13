@@ -30,6 +30,7 @@ public class ResolveUserProcessor {
     private final Logger logger;
     private Optional<OAuthToken> authToken;
     private final ResolveUserParser parser;
+    private UserDetailsRequestParameters parameters;
 
     public ResolveUserProcessor(
             Context context,
@@ -78,7 +79,7 @@ public class ResolveUserProcessor {
     }
 
     private void startResolve(Message msg) throws IOException, JSONException {
-        UserDetailsRequestParameters parameters = (UserDetailsRequestParameters) msg.obj;
+        parameters = (UserDetailsRequestParameters) msg.obj;
         boolean smsValidation = parameters.smsValidation();
         MSISDN msisdn = new MSISDN(parameters.getMSISDN(), settings.availableMarkets(), settings.phoneNumberRegex());
 
@@ -143,7 +144,7 @@ public class ResolveUserProcessor {
                 .build();
         request.setOkHttpClient(httpClient);
         ResponseHolder response = request.loadDataFromNetwork();
-        parser.parseResponse(response);
+        parser.parseResponse(response, parameters);
     }
 
     private void resolveWithImsi(IMSI imsi, boolean smsValidation, Settings.PathSettings server) throws IOException, JSONException {
@@ -165,7 +166,7 @@ public class ResolveUserProcessor {
                 .build();
         request.setOkHttpClient(httpClient);
         ResponseHolder responseHolder = request.loadDataFromNetwork();
-        parser.parseResponse(responseHolder);
+        parser.parseResponse(responseHolder, parameters);
     }
 
     private boolean noInternetConnection() {

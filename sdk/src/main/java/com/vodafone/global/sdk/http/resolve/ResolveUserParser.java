@@ -3,6 +3,7 @@ package com.vodafone.global.sdk.http.resolve;
 import android.content.Context;
 import com.vodafone.global.sdk.ResolveCallbacks;
 import com.vodafone.global.sdk.UserDetails;
+import com.vodafone.global.sdk.UserDetailsRequestParameters;
 import com.vodafone.global.sdk.Worker;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.ResponseHolder;
@@ -29,7 +30,7 @@ public class ResolveUserParser {
         this.resolveCallbacks = resolveCallbacks;
     }
 
-    public void parseResponse(ResponseHolder response) throws IOException, JSONException {
+    public void parseResponse(ResponseHolder response, UserDetailsRequestParameters parameters) throws IOException, JSONException {
         int code = response.code();
         switch (code) {
             case CREATED_201:
@@ -66,7 +67,7 @@ public class ResolveUserParser {
                     String id = json.getString("id");
                     if (id.equals("POL0002")) {
                         worker.sendMessage(worker.createMessage(AUTHENTICATE));
-                        worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS));
+                        worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS, parameters));
                     }
                 } else {
                     resolveCallbacks.notifyError(new GenericServerError());
