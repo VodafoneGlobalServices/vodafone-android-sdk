@@ -7,6 +7,7 @@ import android.os.Message;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.squareup.okhttp.OkHttpClient;
+import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.settings.UpdateSettingsProcessor;
 import com.vodafone.global.sdk.http.oauth.AuthorizationFailed;
 import com.vodafone.global.sdk.http.oauth.OAuthProcessor;
@@ -307,7 +308,7 @@ public class VodafoneManager {
                 return true;
             } catch (Exception e) {
                 worker.clearMessageQueue();
-                logger.e(e, "Uncaught exception, %s", e.getMessage());
+                resolveCallbacks.notifyError(new GenericServerError(e.getMessage(), e));
                 return false;
             }
         }
