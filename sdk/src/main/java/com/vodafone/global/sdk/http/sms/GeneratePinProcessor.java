@@ -17,7 +17,6 @@ public class GeneratePinProcessor {
     protected final Settings settings;
     protected final Context context;
     private final ValidateSmsCallbacks validateSmsCallbacks;
-    private final GeneratePinParser parser;
     private String backendAppKey;
     private Optional<OAuthToken> authToken;
     private RequestBuilderProvider requestBuilderProvider;
@@ -42,10 +41,9 @@ public class GeneratePinProcessor {
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
         this.logger = logger;
-        parser = new GeneratePinParser(worker, resolveCallbacks, validateSmsCallbacks);
     }
 
-    public void process(Optional<OAuthToken> authToken, Message msg) {
+    public void process(GeneratePinParser parser, Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
         String token = (String) msg.obj;
 

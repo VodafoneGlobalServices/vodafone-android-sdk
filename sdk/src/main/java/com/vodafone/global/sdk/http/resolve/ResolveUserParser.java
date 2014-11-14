@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static android.Manifest.permission.RECEIVE_SMS;
+import static android.Manifest.permission.READ_SMS;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.vodafone.global.sdk.MessageType.*;
 import static com.vodafone.global.sdk.http.HttpCode.*;
@@ -85,7 +85,7 @@ public class ResolveUserParser {
     }
 
     protected boolean canReadSMS() {
-        return context.checkCallingOrSelfPermission(RECEIVE_SMS) == PERMISSION_GRANTED;
+        return context.checkCallingOrSelfPermission(READ_SMS) == PERMISSION_GRANTED;
     }
 
     protected void generatePin(String token) {

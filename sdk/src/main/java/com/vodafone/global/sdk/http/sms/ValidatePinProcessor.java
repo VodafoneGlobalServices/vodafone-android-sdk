@@ -17,7 +17,6 @@ public class ValidatePinProcessor {
     protected final Settings settings;
     protected final Context context;
     protected final ResolveCallbacks resolveCallbacks;
-    private final ValidatePinParser parser;
     private String backendAppKey;
     private final RequestBuilderProvider requestBuilderProvider;
     private final Logger logger;
@@ -42,10 +41,9 @@ public class ValidatePinProcessor {
         this.backendAppKey = backendAppKey;
         this.requestBuilderProvider = requestBuilderProvider;
         this.logger = logger;
-        parser = new ValidatePinParser(worker, resolveCallbacks, validateSmsCallbacks);
     }
 
-    public void process(Optional<OAuthToken> authToken, Message msg) {
+    public void process(ValidatePinParser parser, Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
         ValidatePinParameters validatePinParameters = (ValidatePinParameters) msg.obj;
 

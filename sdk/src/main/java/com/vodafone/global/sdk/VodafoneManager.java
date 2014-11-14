@@ -2,21 +2,20 @@ package com.vodafone.global.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.squareup.okhttp.OkHttpClient;
 import com.vodafone.global.sdk.http.GenericServerError;
-import com.vodafone.global.sdk.http.settings.UpdateSettingsProcessor;
 import com.vodafone.global.sdk.http.oauth.AuthorizationFailed;
 import com.vodafone.global.sdk.http.oauth.OAuthProcessor;
 import com.vodafone.global.sdk.http.oauth.OAuthToken;
 import com.vodafone.global.sdk.http.resolve.CheckStatusProcessor;
 import com.vodafone.global.sdk.http.resolve.ResolveUserProcessor;
-import com.vodafone.global.sdk.http.sms.GeneratePinProcessor;
-import com.vodafone.global.sdk.http.sms.InvalidInput;
-import com.vodafone.global.sdk.http.sms.ValidatePinProcessor;
+import com.vodafone.global.sdk.http.settings.UpdateSettingsProcessor;
+import com.vodafone.global.sdk.http.sms.*;
 import com.vodafone.global.sdk.logging.Logger;
 import com.vodafone.global.sdk.logging.LoggerFactory;
 import org.json.JSONException;
@@ -27,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static android.Manifest.permission.READ_SMS;
 import static com.vodafone.global.sdk.MessageType.*;
 
 public class VodafoneManager {
@@ -38,6 +38,7 @@ public class VodafoneManager {
     private final String backendAppKey;
 
     private final Worker worker;
+    private final VodafoneManager.OnSmsInterceptionTimeoutCallback smsInterceptionTimeoutCallback;
     private Settings settings;
 
     private UpdateSettingsProcessor updateSettingsProc;
@@ -48,7 +49,7 @@ public class VodafoneManager {
     private ValidatePinProcessor validatePinProc;
 
     ResolveCallbacks resolveCallbacks = new ResolveCallbacks();
-    ValidateSmsCallbacks validateSmsCallbacks = new ValidateSmsCallbacks();
+    ValidateSmsCallbacks validateSmsCallbacks;
     private Optional<OAuthToken> authToken = Optional.absent();
 
     private MaximumThresholdChecker retrieveThresholdChecker;
@@ -56,6 +57,7 @@ public class VodafoneManager {
     private MaximumThresholdChecker validatePinThresholdChecker;
     private final Logger logger;
     private OkHttpClient httpClient;
+    private SmsInboxObserver smsReceiver;
 
     /**
      * Initializes SDK Manager for a given application.
@@ -65,6 +67,7 @@ public class VodafoneManager {
      */
     public VodafoneManager(Context context, String clientAppKey, String clientAppSecret, String backendAppKey) {
         this.context = context;
+        validateSmsCallbacks = new ValidateSmsCallbacks(context);
 
         //Application keys
         this.clientAppKey = clientAppKey;
@@ -76,6 +79,8 @@ public class VodafoneManager {
 
         httpClient = new OkHttpClient();
         worker = new Worker(callback);
+
+        smsInterceptionTimeoutCallback = new VodafoneManager.OnSmsInterceptionTimeoutCallback();
 
         settings = readSettings(context);
         init(context, settings, clientAppKey, clientAppSecret, backendAppKey);
@@ -116,6 +121,9 @@ public class VodafoneManager {
         retrieveThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
         genPinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
         validatePinThresholdChecker = new MaximumThresholdChecker(settings.requestsThrottlingLimit(), settings.requestsThrottlingPeriod());
+
+
+        smsReceiver = new SmsInboxObserver(context, settings, smsInterceptionTimeoutCallback);
     }
 
     /**
@@ -259,6 +267,7 @@ public class VodafoneManager {
         worker.sendMessage(worker.createMessage(GENERATE_PIN, sessionToken.get()));
     }
 
+    private boolean intercepting;
     private Handler.Callback callback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
@@ -289,6 +298,10 @@ public class VodafoneManager {
                     case RETRIEVE_USER_DETAILS:
                         logger.d("START Retrieve user details");
                         resolveUserProc.process(authToken, msg);
+                        if (context.checkCallingOrSelfPermission(READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+                            logger.w("can intercept");
+                            intercepting = true;
+                        }
                         break;
                     case CHECK_STATUS:
                         logger.d("START Check status");
@@ -296,11 +309,25 @@ public class VodafoneManager {
                         break;
                     case GENERATE_PIN:
                         logger.d("START Generate pin");
-                        generatePinProc.process(authToken, msg);
+                        GeneratePinParser generatePinParser;
+                        if (intercepting) {
+                            generatePinParser = GeneratePinParser.withInterception(worker, resolveCallbacks, validateSmsCallbacks, smsReceiver);
+                            logger.w("can intercept");
+                        } else {
+                            generatePinParser = GeneratePinParser.withoutInterception(worker, resolveCallbacks, validateSmsCallbacks);
+                        }
+                        generatePinProc.process(generatePinParser, authToken, msg);
                         break;
                     case VALIDATE_PIN:
                         logger.d("START Validate pin");
-                        validatePinProc.process(authToken, msg);
+                        ValidatePinParser parser;
+                        if (intercepting) {
+                            parser = ValidatePinParser.withInterception(worker, resolveCallbacks, validateSmsCallbacks);
+                            intercepting = false;
+                        } else {
+                            parser = ValidatePinParser.withoutInterception(worker, resolveCallbacks, validateSmsCallbacks);
+                        }
+                        validatePinProc.process(parser, authToken, msg);
                         break;
                     default:
                         return false;
@@ -313,4 +340,14 @@ public class VodafoneManager {
             }
         }
     };
+
+    private class OnSmsInterceptionTimeoutCallback
+            implements SmsInboxObserver.OnSmsInterceptionTimeoutCallback
+    {
+        @Override
+        public void onTimeout() {
+            intercepting = false;
+            resolveCallbacks.validationRequired(resolveCallbacks.getSessionToken().get());
+        }
+    }
 }

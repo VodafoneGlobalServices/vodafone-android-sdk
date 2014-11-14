@@ -1,5 +1,6 @@
 package com.vodafone.global.sdk;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -7,6 +8,13 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ValidateSmsCallbacks {
+
+    private final Context context;
+
+    public ValidateSmsCallbacks(Context context) {
+        this.context = context;
+    }
+
     Set<ValidateSmsCallback> validateSmsCallbacks = new CopyOnWriteArraySet<ValidateSmsCallback>();
 
     public void add(ValidateSmsCallback callback) {

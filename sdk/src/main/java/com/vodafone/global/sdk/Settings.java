@@ -35,6 +35,7 @@ public class Settings {
     private final static String sdkId = "VFSeamlessID SDK/Android (v1.0.0)";
     private List<String> availableMccMnc;
     private Map<String, String> availableMarkets;
+    private int smsValidationTimeoutInSeconds;
 
     public Settings(Context context) {
         JSONObject json = parseJSON(context);
@@ -60,6 +61,7 @@ public class Settings {
             availableMccMnc = Collections.unmodifiableList(getAvailableMccMnc(json));
             availableMarkets = Collections.unmodifiableMap(getAvailableMarkets(json));
             smsInterceptionRegex = json.getString("smsInterceptionRegex");
+            smsValidationTimeoutInSeconds = json.getInt("smsValidationTimeoutInSeconds");
         } catch (JSONException e) {
             throw new IllegalStateException(e);
         }
@@ -208,6 +210,10 @@ public class Settings {
 
     public String pinRegex() {
         return "^[0-9]{4}$";
+    }
+
+    public int smsValidationTimeoutInSeconds() {
+        return smsValidationTimeoutInSeconds;
     }
 
     public class PathSettings {
