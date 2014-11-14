@@ -44,7 +44,9 @@ public class Vodafone {
      * @param parameters parameters specific to this call
      */
     public static void retrieveUserDetails(UserDetailsRequestParameters parameters) {
-        if (manager == null) throw new NotInitialized();
+        if (manager == null) {
+            throw new NotInitialized();
+        }
         manager.retrieveUserDetails(parameters);
     }
 
@@ -54,6 +56,9 @@ public class Vodafone {
      * @throws IllegalArgumentException if callback is of unknown type
      */
     public static void register(VodafoneCallback callback) {
+        if (manager == null) {
+            throw new NotInitialized();
+        }
         manager.register(callback);
     }
 
@@ -61,7 +66,9 @@ public class Vodafone {
      * Used to generate validation PIN
      */
     public static void generatePin() {
-        if (manager == null) throw new NotInitialized();
+        if (manager == null) {
+            throw new NotInitialized();
+        }
         manager.generatePin();
     }
 
@@ -71,7 +78,9 @@ public class Vodafone {
      * @param code code send to user via SMS
      */
     public static void validateSmsCode(String code) {
-        if (manager == null) throw new NotInitialized();
+        if (manager == null) {
+            throw new NotInitialized();
+        }
         manager.validateSmsCode(code);
     }
 
@@ -82,6 +91,9 @@ public class Vodafone {
      * @throws IllegalArgumentException if callback is of unknown type
      */
     public static void unregister(VodafoneCallback callback) {
+        if (manager == null) {
+            throw new NotInitialized();
+        }
         manager.unregister(callback);
     }
 
