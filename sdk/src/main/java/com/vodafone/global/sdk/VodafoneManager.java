@@ -206,10 +206,6 @@ public class VodafoneManager {
      * @param parameters parameters specific to this call
      */
     public void retrieveUserDetails(final UserDetailsRequestParameters parameters) {
-        if (retrieveThresholdChecker.thresholdReached()) {
-            throw new CallThresholdReached();
-        }
-
         long currentTimeMillis = System.currentTimeMillis();
         SharedPreferences preferences = context.getSharedPreferences(Settings.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         long configurationExpiresAtTimeMillis = preferences.getLong(Settings.EXPIREST_AT, currentTimeMillis);
@@ -218,6 +214,10 @@ public class VodafoneManager {
         } else {
             logger.d("Skipping conf update. Time left until next update: %d ms",
                     configurationExpiresAtTimeMillis - currentTimeMillis);
+        }
+
+        if (retrieveThresholdChecker.thresholdReached()) {
+            throw new CallThresholdReached();
         }
 
         worker.sendMessage(worker.createMessage(RETRIEVE_USER_DETAILS, parameters));
