@@ -7,5 +7,5 @@ public interface Preferences {
     String APP_SECRET = "app_secret";
     String APP_SECRET_DEFAULT = "eatguVG1CTeCvsST";
     String BACKEND_APP_KEY = "backend_app_key";
-    String BACKEND_APP_KEY_DEFAULT = "l8d0ESc5vk5vHlOosrPaAxqYANKR2KSH";
+    String BACKEND_APP_KEY_DEFAULT = "dee663ce-7c8c-4457-b3a4-9c9c93e0c26a";
 }
