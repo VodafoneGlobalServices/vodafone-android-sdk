@@ -57,19 +57,15 @@ public class ResolveUserProcessor {
 
     public void process(Optional<OAuthToken> authToken, Message msg) {
         this.authToken = authToken;
-        if (!authToken.isPresent()) {
-            logger.w("OAuth token needs to be refreshed");
-            requestNewToken(msg);
-        } else {
-            try {
-              startResolve(msg);
-            } catch (VodafoneException e) {
-                resolveCallbacks.notifyError(e);
-            } catch (IOException e) {
-                resolveCallbacks.notifyError(new GenericServerError(e));
-            } catch (JSONException e) {
-                resolveCallbacks.notifyError(new GenericServerError(e));
-            }
+
+        try {
+          startResolve(msg);
+        } catch (VodafoneException e) {
+            resolveCallbacks.notifyError(e);
+        } catch (IOException e) {
+            resolveCallbacks.notifyError(new GenericServerError(e));
+        } catch (JSONException e) {
+            resolveCallbacks.notifyError(new GenericServerError(e));
         }
     }
 
@@ -89,21 +85,36 @@ public class ResolveUserProcessor {
             logger.d("MSISDN is present");
             if (msisdn.isValid()) {
                 logger.d("MSISDN is valid");
-                resolveWithMsisdn(msisdn);
+                if (!authToken.isPresent()) {
+                    logger.w("OAuth token needs to be refreshed");
+                    requestNewToken(msg);
+                } else {
+                    resolveWithMsisdn(msisdn);
+                }
             } else {
                 logger.d("MSISDN is invalid");
                 resolveCallbacks.notifyError(new InvalidInput());
             }
         } else if (overWifi()) {
             if (imsi.isValid()) {
-                resolveThroughApix(smsValidation);
+                if (!authToken.isPresent()) {
+                    logger.w("OAuth token needs to be refreshed");
+                    requestNewToken(msg);
+                } else {
+                    resolveThroughApix(smsValidation);
+                }
             } else {
                 logger.w("when on wifi without IMSI, MSISDN is required");
                 resolveCallbacks.unableToResolve();
             }
         } else if (overMobileNetwork() && imsi.mccAndMncOfSimCardBelongToVodafone()) {
             logger.d("over mobile network, MCC and MNC belongs to Vodafone");
-            resolveThroughHap(smsValidation);
+            if (!authToken.isPresent()) {
+                logger.w("OAuth token needs to be refreshed");
+                requestNewToken(msg);
+            } else {
+                resolveThroughHap(smsValidation);
+            }
         } else {
             logger.w("no IMSI and no MSISDN, MCC and MNC don't belong to Vodafone");
             resolveCallbacks.unableToResolve();
