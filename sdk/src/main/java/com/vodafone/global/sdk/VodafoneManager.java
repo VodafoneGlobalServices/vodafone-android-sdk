@@ -347,7 +347,9 @@ public class VodafoneManager {
         @Override
         public void onTimeout() {
             intercepting = false;
-            resolveCallbacks.validationRequired(resolveCallbacks.getSessionToken().get());
+            if (resolveCallbacks.getSessionToken().isPresent()) {
+                resolveCallbacks.validationRequired(resolveCallbacks.getSessionToken().get());
+            }
         }
     }
 }
