@@ -1,7 +1,9 @@
 package com.vodafone.global.sdk;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
@@ -39,5 +41,9 @@ public class Utils {
                 MCC = networkOperator.substring(0, 3);
             }
             return MCC;
+    }
+
+    public static boolean canInterceptSms(Context context) {
+        return context.checkCallingOrSelfPermission(Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED;
     }
 }

@@ -1,10 +1,7 @@
 package com.vodafone.global.sdk.http.resolve;
 
 import android.content.Context;
-import com.vodafone.global.sdk.ResolveCallbacks;
-import com.vodafone.global.sdk.UserDetails;
-import com.vodafone.global.sdk.UserDetailsRequestParameters;
-import com.vodafone.global.sdk.Worker;
+import com.vodafone.global.sdk.*;
 import com.vodafone.global.sdk.http.GenericServerError;
 import com.vodafone.global.sdk.http.ResponseHolder;
 import org.json.JSONException;
@@ -14,8 +11,6 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static android.Manifest.permission.READ_SMS;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.vodafone.global.sdk.MessageType.*;
 import static com.vodafone.global.sdk.http.HttpCode.*;
 
@@ -85,7 +80,7 @@ public class ResolveUserParser {
     }
 
     protected boolean canReadSMS() {
-        return context.checkCallingOrSelfPermission(READ_SMS) == PERMISSION_GRANTED;
+        return Utils.canInterceptSms(context);
     }
 
     protected void generatePin(String token) {

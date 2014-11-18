@@ -2,7 +2,6 @@ package com.vodafone.global.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
 import com.google.common.base.Optional;
@@ -26,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static android.Manifest.permission.READ_SMS;
 import static com.vodafone.global.sdk.MessageType.*;
 
 public class VodafoneManager {
@@ -298,7 +296,7 @@ public class VodafoneManager {
                     case RETRIEVE_USER_DETAILS:
                         logger.d("START Retrieve user details");
                         resolveUserProc.process(authToken, msg);
-                        if (context.checkCallingOrSelfPermission(READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+                        if (Utils.canInterceptSms(context)) {
                             logger.w("can intercept");
                             intercepting = true;
                         }
