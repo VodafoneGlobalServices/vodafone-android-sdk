@@ -175,7 +175,11 @@ public class MainActivity extends Activity {
 
         @Override
         public void onError(VodafoneException ex) {
-            Timber.e(ex, "ResolveCallback::onError");
+            String message = "";
+            if (ex.getMessage() != null) {
+                message = "\n" + ex.getMessage();
+            }
+            Timber.e(ex, "ResolveCallback::onError" + message);
         }
     }
 
