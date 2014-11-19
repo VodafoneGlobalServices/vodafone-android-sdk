@@ -231,6 +231,10 @@ public class VodafoneManager {
             throw new CallThresholdReached();
         }
 
+        sendPin(code);
+    }
+
+    private void sendPin(String code) {
         Optional<String> sessionToken = resolveCallbacks.getSessionToken();
         if (!sessionToken.isPresent()) {
             logger.w("session is missing, ignoring pin: " + code);
@@ -348,6 +352,11 @@ public class VodafoneManager {
             if (resolveCallbacks.getSessionToken().isPresent()) {
                 resolveCallbacks.validationRequired(resolveCallbacks.getSessionToken().get());
             }
+        }
+
+        @Override
+        public void validateSmsCode(String pin) {
+            sendPin(pin);
         }
     }
 }

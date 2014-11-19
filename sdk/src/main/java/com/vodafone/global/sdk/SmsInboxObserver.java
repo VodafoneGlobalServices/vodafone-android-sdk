@@ -137,7 +137,7 @@ public class SmsInboxObserver {
         private void notifySdk(List<String> pins) {
             if (pins.size() > 0) {
                 String pin = pins.get(pins.size() - 1);
-                Vodafone.validateSmsCode(pin);
+                callback.validateSmsCode(pin);
                 stop();
             }
         }
@@ -145,5 +145,7 @@ public class SmsInboxObserver {
 
     public interface OnSmsInterceptionTimeoutCallback {
         void onTimeout();
+
+        void validateSmsCode(String pin);
     }
 }
