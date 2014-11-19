@@ -138,6 +138,7 @@ public class SmsInboxObserver {
             if (pins.size() > 0) {
                 String pin = pins.get(pins.size() - 1);
                 Vodafone.validateSmsCode(pin);
+                stop();
             }
         }
     }
