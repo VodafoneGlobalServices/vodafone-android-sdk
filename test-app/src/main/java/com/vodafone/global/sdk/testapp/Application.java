@@ -24,18 +24,18 @@ public class Application extends android.app.Application {
         Timber.plant(new Timber.DebugTree());
         Timber.plant(new PersistTree(this));
 
-        Timber.d("can read IMSI: " + (checkCallingOrSelfPermission(READ_PHONE_STATE) == PERMISSION_GRANTED));
-        Timber.d("can read SMS: " + (checkCallingOrSelfPermission(RECEIVE_SMS) == PERMISSION_GRANTED));
+        Timber.v("can read IMSI: " + (checkCallingOrSelfPermission(READ_PHONE_STATE) == PERMISSION_GRANTED));
+        Timber.v("can read SMS: " + (checkCallingOrSelfPermission(RECEIVE_SMS) == PERMISSION_GRANTED));
 
 
-        Timber.d("sdk build time: %s", com.vodafone.global.sdk.BuildConfig.BUILD_TIME);
-        Timber.d("sdk git sha: %s", com.vodafone.global.sdk.BuildConfig.GIT_SHA);
-        Timber.d("sdk version name: %s", com.vodafone.global.sdk.BuildConfig.VERSION_NAME);
-        Timber.d("sdk version code: %d", com.vodafone.global.sdk.BuildConfig.VERSION_CODE);
+        Timber.v("sdk build time: %s", com.vodafone.global.sdk.BuildConfig.BUILD_TIME);
+        Timber.v("sdk git sha: %s", com.vodafone.global.sdk.BuildConfig.GIT_SHA);
+        Timber.v("sdk version name: %s", com.vodafone.global.sdk.BuildConfig.VERSION_NAME);
+        Timber.v("sdk version code: %d", com.vodafone.global.sdk.BuildConfig.VERSION_CODE);
 
-        Timber.d("test-app build time: %s", BuildConfig.BUILD_TIME);
-        Timber.d("test-app git sha: %s", BuildConfig.GIT_SHA);
-        Timber.d("test-app version name: %s", BuildConfig.VERSION_NAME);
-        Timber.d("test-app version code: %d", BuildConfig.VERSION_CODE);
+        Timber.v("test-app build time: %s", BuildConfig.BUILD_TIME);
+        Timber.v("test-app git sha: %s", BuildConfig.GIT_SHA);
+        Timber.v("test-app version name: %s", BuildConfig.VERSION_NAME);
+        Timber.v("test-app version code: %d", BuildConfig.VERSION_CODE);
     }
 }

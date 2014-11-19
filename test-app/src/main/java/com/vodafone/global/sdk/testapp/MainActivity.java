@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btn_init)
     public void init() {
-        Timber.d("init data button clicked");
+        Timber.v("init data button clicked");
 
         SharedPreferences preferences = getSharedPreferences(Preferences.DEFAULT_PREF, Context.MODE_PRIVATE);
         String appKey = preferences.getString(Preferences.APP_KEY, Preferences.APP_KEY_DEFAULT);
@@ -159,18 +159,18 @@ public class MainActivity extends Activity {
     class ResolveCallbackImpl implements ResolveCallback {
         @Override
         public void onCompleted(UserDetails userDetails) {
-            Timber.d("ResolveCallback::onCompleted");
+            Timber.i("ResolveCallback::onCompleted");
             Timber.i(userDetails.toString());
         }
 
         @Override
         public void onValidationRequired() {
-            Timber.d("ResolveCallback::onValidationRequired");
+            Timber.v("ResolveCallback::onValidationRequired");
         }
 
         @Override
         public void onUnableToResolve() {
-            Timber.d("ResolveCallback::onUnableToResolve");
+            Timber.v("ResolveCallback::onUnableToResolve");
         }
 
         @Override
@@ -186,12 +186,12 @@ public class MainActivity extends Activity {
     class ValidateSmsCallbackImpl implements ValidateSmsCallback {
         @Override
         public void onSmsValidationSuccessful() {
-            Timber.d("ValidateSmsCallback::onSmsValidationSuccessful");
+            Timber.v("ValidateSmsCallback::onSmsValidationSuccessful");
         }
 
         @Override
         public void onSmsValidationFailure() {
-            Timber.d("ValidateSmsCallback::onSmsValidationFailure");
+            Timber.v("ValidateSmsCallback::onSmsValidationFailure");
         }
 
         @Override
@@ -201,7 +201,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onPinGenerationSuccess() {
-            Timber.d("ValidateSmsCallback::onPinGenerationSuccess");
+            Timber.v("ValidateSmsCallback::onPinGenerationSuccess");
         }
     }
 }

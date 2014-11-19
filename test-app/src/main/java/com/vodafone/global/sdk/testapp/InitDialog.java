@@ -51,13 +51,13 @@ public class InitDialog extends DialogFragment {
 
     @OnClick(R.id.btn_save)
     public void save() {
-        Timber.d("init dialog: save clicked");
+        Timber.v("init dialog: save clicked");
         persistInitData();
     }
 
     @OnClick(R.id.btn_save_and_reset)
     public void saveAndReset() {
-        Timber.d("init dialog: save clicked");
+        Timber.v("init dialog: save clicked");
         persistInitData();
         Application.exit();
     }
@@ -78,7 +78,7 @@ public class InitDialog extends DialogFragment {
         boolean commitSucceeded = editor.commit();
 
         if (commitSucceeded) {
-            Timber.d("saving init data; app key: '%s', app secret: '%s', backend key: '%s'",
+            Timber.v("saving init data; app key: '%s', app secret: '%s', backend key: '%s'",
                     appKey, appSecret, backendAppKey);
         } else {
             Timber.e("saving init data failed");
