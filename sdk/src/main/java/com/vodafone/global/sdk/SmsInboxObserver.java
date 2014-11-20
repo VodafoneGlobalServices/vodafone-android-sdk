@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +41,9 @@ public class SmsInboxObserver {
     private SmsContentObserver smsContentObserver;
     private long startTimestamp;
 
+    private Lock lock = new ReentrantLock();
+    private boolean intercepting = false;
+
     public SmsInboxObserver(Context context, Settings settings, OnSmsInterceptionTimeoutCallback callback) {
         this.context = context;
         this.callback = callback;
@@ -48,22 +53,32 @@ public class SmsInboxObserver {
     }
 
     public void start() {
-        log.v("SmsInboxObserver :: starting interception");
+        lock.lock();
 
-        startTimestamp = System.currentTimeMillis();
+        try {
+            if (intercepting) return;
 
-        registerBroadcastReceiver();
-        registerContentObserver();
+            log.v("SmsInboxObserver :: starting interception");
 
-        timer = new Timer("SmsInboxObserver");
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                stop();
-                log.v("SmsInboxObserver :: stopped interception due to timeout");
-                callback.onTimeout();
-            }
-        }, smsValidationTimeoutInSeconds * 1000);
+            startTimestamp = System.currentTimeMillis();
+
+            registerBroadcastReceiver();
+            registerContentObserver();
+
+            timer = new Timer("SmsInboxObserver");
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    stop();
+                    log.v("SmsInboxObserver :: stopped interception due to timeout");
+                    callback.onTimeout();
+                }
+            }, smsValidationTimeoutInSeconds * 1000);
+
+            intercepting = true;
+        } finally {
+            lock.unlock();
+        }
     }
 
     private void registerBroadcastReceiver() {
@@ -82,11 +97,19 @@ public class SmsInboxObserver {
     }
 
     public void stop() {
-        if (smsReceiver != null) {
-            timer.cancel();
-            unregisterBroadcastReceiver();
-            unregisterContentObserver();
-            log.v("SmsInboxObserver :: stopped interception");
+        lock.lock();
+
+        try {
+            if (intercepting) {
+                timer.cancel();
+                unregisterBroadcastReceiver();
+                unregisterContentObserver();
+                log.v("SmsInboxObserver :: stopped interception");
+
+                intercepting = false;
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
