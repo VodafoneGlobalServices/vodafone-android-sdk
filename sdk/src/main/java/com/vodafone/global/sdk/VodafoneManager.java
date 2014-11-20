@@ -301,7 +301,7 @@ public class VodafoneManager {
                         logger.d("START Retrieve user details");
                         resolveUserProc.process(authToken, msg);
                         if (Utils.canInterceptSms(context)) {
-                            logger.w("can intercept");
+                            logger.d("can intercept");
                             intercepting = true;
                         }
                         break;
@@ -356,6 +356,7 @@ public class VodafoneManager {
 
         @Override
         public void validateSmsCode(String pin) {
+            intercepting = false;
             sendPin(pin);
         }
     }
