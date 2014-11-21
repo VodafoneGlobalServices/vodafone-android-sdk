@@ -21,7 +21,7 @@ dependencies {
 sourceSets.test.java.srcDirs += ['../sdk/build/generated/source/r/dit/release']
 
 jacoco {
-    toolVersion = "0.7.1.201405082137"
+    toolVersion = "0.7.2.201409121644"
 }
 
 jacocoTestReport {
