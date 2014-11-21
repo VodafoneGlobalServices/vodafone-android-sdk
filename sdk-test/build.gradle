@@ -5,9 +5,6 @@ apply plugin: 'jacoco'
 dependencies {
     testCompile project(':sdk')
 
-    testCompile ('com.octo.android.robospice:robospice-okhttp:1.4.14') {
-        exclude group: 'com.squareup.okhttp'
-    }
     testCompile 'com.google.guava:guava:18.0'
     testCompile 'com.squareup.okhttp:mockwebserver:2.0.0'
     testCompile "org.codehaus.groovy:groovy-all:1.8.6"
