@@ -21,7 +21,7 @@ def versionBuild = System.getenv("BUILD_NUMBER") != null ? "b${System.getenv("BU
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "21.0.2"
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "com.vodafone.global.sdk.testapp"
