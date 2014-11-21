@@ -60,20 +60,10 @@ android {
 }
 
 dependencies {
-    // SDK is using SNAPSHOT (rev. c3a31993cea76b68d6a9a5fef4036576eb27b98b)
-    // of OkHttp from `libs` because we need custom handling of http
-    // redirection that isn't available in current release.
-    // It should change to release version as soon as possible.
-    // compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.squareup.okhttp:okhttp:2.1.0'
     compile 'com.google.guava:guava:17.0'
     compile 'joda-time:joda-time:2.4'
-//    compile 'com.octo.android.robospice:robospice:1.4.14'
-//    compile ('com.octo.android.robospice:robospice-okhttp:1.4.14') {
-//        exclude group: 'com.squareup.okhttp'
-//    }
-    compile 'com.squareup.okio:okio:1.0.1'
     debugCompile 'com.jakewharton.timber:timber:+'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 task zip2jar(type: Zip, dependsOn: "compileDitReleaseJava") {
