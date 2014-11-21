@@ -4,11 +4,13 @@ apply plugin: 'jacoco'
 
 dependencies {
     testCompile project(':sdk')
+
     testCompile ('com.octo.android.robospice:robospice-okhttp:1.4.14') {
         exclude group: 'com.squareup.okhttp'
     }
     testCompile 'com.google.guava:guava:17.0'
     testCompile 'com.squareup.okhttp:mockwebserver:2.0.0'
+    testCompile "org.codehaus.groovy:groovy-all:1.8.6"
     testCompile 'org.robospock:robospock:0.4.4'
     testCompile 'cglib:cglib-nodep:3.1'
     testCompile 'org.objenesis:objenesis:2.1'
