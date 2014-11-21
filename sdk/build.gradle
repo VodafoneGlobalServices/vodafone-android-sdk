@@ -61,7 +61,7 @@ android {
 
 dependencies {
     compile 'com.squareup.okhttp:okhttp:2.1.0'
-    compile 'com.google.guava:guava:17.0'
+    compile 'com.google.guava:guava:18.0'
     compile 'joda-time:joda-time:2.4'
     debugCompile 'com.jakewharton.timber:timber:+'
 }
