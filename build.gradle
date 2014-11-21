@@ -1,10 +1,5 @@
-def googleLocalRepo = new File(System.getenv("ANDROID_HOME") + "/extras/android/m2repository/").toURI()
-
 allprojects {
     repositories {
-        maven {
-            url googleLocalRepo
-        }
         jcenter()
     }
 }
