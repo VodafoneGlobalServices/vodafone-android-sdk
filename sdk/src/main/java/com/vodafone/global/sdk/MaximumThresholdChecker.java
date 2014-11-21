@@ -2,7 +2,7 @@ package com.vodafone.global.sdk;
 
 import java.util.LinkedList;
 
-public class MaximumThresholdChecker {
+class MaximumThresholdChecker {
     private final long maxNumberOfCalls;
     private final long timeIntervalInMs;
     private final Clock clock;
