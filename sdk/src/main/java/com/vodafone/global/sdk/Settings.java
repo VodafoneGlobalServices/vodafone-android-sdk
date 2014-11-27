@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Settings {
-    public static final String CONFIG_URL = "https://preprod.appconfig.shared.sp.vodafone.com/seamless-id/v1/sdk-config-android/config.json";
+    public static final String CONFIG_URL = BuildConfig.CONFIG_URL;
     public static final String LAST_MODIFIED = "Last-Modified";
     public static final String ETAG = "Etag";
     public static final String SETTINGS_JSON = "SettingsJSON";

@@ -39,9 +39,15 @@ android {
     }
 
     productFlavors {
-        preProd {}
-        prod {}
-        dit {}
+        preProd {
+            buildConfigField "String", "CONFIG_URL", "\"https://preprod.appconfig.shared.sp.vodafone.com/seamless-id/v1/sdk-config-android/config.json\""
+        }
+        prod {
+            buildConfigField "String", "CONFIG_URL", "\"https://appconfig.shared.sp.vodafone.com/seamless-id/v1/sdk-config-android/config.json\""
+        }
+        dit {
+            buildConfigField "String", "CONFIG_URL", "\"https://preprod.appconfig.shared.sp.vodafone.com/seamless-id/v1/sdk-config-android/config.json\""
+        }
     }
 
     libraryVariants.all { variant ->
