@@ -56,7 +56,9 @@ public class SmsInboxObserver {
         lock.lock();
 
         try {
-            if (intercepting) return;
+            if (intercepting)
+                return;
+            intercepting = true;
 
             log.v("SmsInboxObserver :: starting interception");
 
@@ -74,8 +76,6 @@ public class SmsInboxObserver {
                     callback.onTimeout();
                 }
             }, smsValidationTimeoutInSeconds * 1000);
-
-            intercepting = true;
         } finally {
             lock.unlock();
         }
@@ -101,12 +101,11 @@ public class SmsInboxObserver {
 
         try {
             if (intercepting) {
+                intercepting = false;
                 timer.cancel();
                 unregisterBroadcastReceiver();
                 unregisterContentObserver();
                 log.v("SmsInboxObserver :: stopped interception");
-
-                intercepting = false;
             }
         } finally {
             lock.unlock();
@@ -142,6 +141,11 @@ public class SmsInboxObserver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!intercepting) {
+                log.w("SmsReceiver :: got invoked with interception tuned off");
+                return;
+            }
+
             if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
                 log.v("SmsReceiver :: received sms :: thread: " + Thread.currentThread().getName());
                 List<String> smses = extractSmsesFromIntent(intent);
@@ -197,6 +201,7 @@ public class SmsInboxObserver {
                 stop();
                 String pin = pins.get(pins.size() - 1);
                 callback.validateSmsCode(pin);
+                log.d("SmsReceiver :: found pin: " + pin);
             }
         }
     }
@@ -222,7 +227,11 @@ public class SmsInboxObserver {
 //            log.d("ContentObserver :: onChange" +
 //                    "\n:: thread: " + Thread.currentThread().getName() +
 //                    "\n:: uri: " + uri.toString());
-            checkForMatchingSmsMessages();
+            if (intercepting) {
+                checkForMatchingSmsMessages();
+            } else {
+                log.w("ContentObserver :: got invoked with interception tuned off");
+            }
         }
 
         void checkForMatchingSmsMessages() {
@@ -253,6 +262,7 @@ public class SmsInboxObserver {
                 stop();
                 Sms newestSms = matchingSmsMessages.get(matchingSmsMessages.size() - 1);
                 callback.validateSmsCode(newestSms.code);
+                log.d("ContentObserver :: found pin: " + newestSms.code);
             }
         }
     }
