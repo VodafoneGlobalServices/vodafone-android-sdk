@@ -60,12 +60,15 @@ android {
         imsiSmsPreProd {}
         imsiPreProd {}
         smsPreProd {}
+        imsiSmsProd {}
+        imsiProd {}
+        smsProd {}
     }
 
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
-            def file = output.outputFile
-            def flavorName = variant.flavorName
+            File file = output.outputFile
+            String flavorName = variant.flavorName
             // flavors can't have hyphen in their name so we have to change it
             if (flavorName == "imsiSmsPreProd") {
                 flavorName = "imsi-sms-pre-prod"
@@ -73,6 +76,12 @@ android {
                 flavorName = "imsi-pre-prod"
             } else if (flavorName == "smsPreProd") {
                 flavorName = "sms-pre-prod"
+            } else if (flavorName == "imsiSmsProd") {
+                flavorName = "imsi-sms-prod"
+            } else if (flavorName == "imsiProd") {
+                flavorName = "imsi-prod"
+            } else if (flavorName == "smsProd") {
+                flavorName = "sms-prod"
             }
             def newName = file.name.replace("test-app-${variant.flavorName}", "vodafone-android-sdk-testing-${flavorName}")
             if (variant.buildType.name == "release")
@@ -85,9 +94,16 @@ android {
 }
 
 dependencies {
+    // pre-prod env dependencies
     imsiSmsPreProdCompile project(path: ':sdk', configuration: 'preProdDebug')
     imsiPreProdCompile project(path: ':sdk', configuration: 'preProdDebug')
     smsPreProdCompile project(path: ':sdk', configuration: 'preProdDebug')
+
+    // prod dependencies
+    imsiSmsProdCompile project(path: ':sdk', configuration: 'prodDebug')
+    imsiProdCompile project(path: ':sdk', configuration: 'prodDebug')
+    smsProdCompile project(path: ':sdk', configuration: 'prodDebug')
+
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.jakewharton.timber:timber:2.4.1'
     apt 'net.simonvt.schematic:schematic-compiler:0.5.3'
