@@ -10,7 +10,6 @@ android {
     publishNonDefault true
 
     defaultConfig {
-        applicationId "com.vodafone.global"
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
