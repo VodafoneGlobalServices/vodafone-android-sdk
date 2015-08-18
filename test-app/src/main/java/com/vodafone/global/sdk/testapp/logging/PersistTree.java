@@ -13,18 +13,13 @@ import timber.log.Timber;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PersistTree implements Timber.TaggedTree {
+public class PersistTree extends Timber.Tree {
     private static final Pattern ANONYMOUS_CLASS = Pattern.compile("\\$\\d+$");
     private static final ThreadLocal<String> NEXT_TAG = new ThreadLocal<String>();
     private final Context appContext;
 
     public PersistTree(Context context) {
         this.appContext = context.getApplicationContext();
-    }
-
-    @Override
-    public void tag(String tag) {
-        NEXT_TAG.set(tag);
     }
 
     @Override
@@ -75,6 +70,11 @@ public class PersistTree implements Timber.TaggedTree {
     @Override
     public void e(Throwable t, String message, Object... args) {
         throwShade(Log.ERROR, formatString(message, args), t);
+    }
+
+    @Override
+    protected void log(int priority, String tag, String message, Throwable t) {
+        throwShade(priority, formatString(message), t);
     }
 
     static String formatString(String message, Object... args) {
