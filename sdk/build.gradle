@@ -14,7 +14,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 19
         versionCode 1
-        versionName "0.0.1"
+        versionName "1.0.1"
 
         buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
         buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
@@ -95,7 +95,7 @@ task createPom {
         project {
             groupId 'com.vodafone.global'
             artifactId 'android-sdk'
-            version '0.0.1-SNAPSHOT'
+            version '1.0.1'
             packaging 'aar'
         }
     }.withXml {
