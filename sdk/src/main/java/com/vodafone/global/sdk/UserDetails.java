@@ -24,7 +24,7 @@ public class UserDetails {
         JSONObject json = new JSONObject(jsonString);
         String acr = json.getString("acr");
         String tokenId = json.getString("tokenId");
-        int expiresIn = json.getInt("expiresIn"); //times in milliseconds
+        int expiresIn = json.getInt("expiresIn") * 1000; //times in milliseconds
         long currentTime = System.currentTimeMillis();
         long expirationTime = currentTime + expiresIn;
         Date expires = new Date(expirationTime);
