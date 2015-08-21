@@ -1,5 +1,10 @@
+def googleLocalRepo = new File(System.getenv("ANDROID_HOME") + "/extras/android/m2repository/").toURI()
+
 allprojects {
     repositories {
+        maven {
+            url googleLocalRepo
+        }
         jcenter()
     }
 }
@@ -9,7 +14,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0-rc1'
+        classpath 'com.android.tools.build:gradle:0.14.2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

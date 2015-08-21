@@ -105,8 +105,10 @@ public class CheckStatusParser {
     }
 
     protected String extractToken(String location) {
-        Pattern pattern = Pattern.compile(".*/users/tokens/(.*)[/?].*");
+        String regex = ".*/users/tokens/([^/^?]*).*";
+        Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(location);
+        if (!matcher.matches()) throw new IllegalStateException("can't extract token from 'Location' header");
         return matcher.group(1);
     }
 }
