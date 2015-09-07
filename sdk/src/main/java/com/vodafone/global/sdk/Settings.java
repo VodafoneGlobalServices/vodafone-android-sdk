@@ -208,10 +208,6 @@ public class Settings {
         return availableMarkets;
     }
 
-    public String pinRegex() {
-        return "^[0-9]{4}$";
-    }
-
     public int smsValidationTimeoutInSeconds() {
         return smsValidationTimeoutInSeconds;
     }

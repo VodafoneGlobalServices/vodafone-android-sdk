@@ -243,7 +243,7 @@ public class VodafoneManager {
 
         logger.d("received pin: " + code);
 
-        if (code.matches(settings.pinRegex())) {
+        if (code.matches(settings.smsInterceptionRegex())) {
             ValidatePinParameters parameters = ValidatePinParameters.builder()
                     .token(sessionToken.get())
                     .pin(code)
