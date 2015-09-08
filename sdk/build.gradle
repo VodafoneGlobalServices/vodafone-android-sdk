@@ -68,7 +68,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'joda-time:joda-time:2.4'
     // Timber is used only in debug version of SDK to expose logs to testing application
-    debugCompile 'com.jakewharton.timber:timber:2.5.0'
+    debugCompile 'com.jakewharton.timber:timber:3.0.0'
 }
 
 task zip2jar(type: Zip, dependsOn: "compileDitReleaseJava") {

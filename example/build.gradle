@@ -28,6 +28,5 @@ android {
 dependencies {
     compile project(path: ':sdk', configuration: 'preProdDebug')
     compile 'com.jakewharton:butterknife:6.0.0'
-    compile 'com.jakewharton.timber:timber:2.4.1'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
