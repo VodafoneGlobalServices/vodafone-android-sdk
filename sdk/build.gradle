@@ -71,7 +71,7 @@ dependencies {
     debugCompile 'com.jakewharton.timber:timber:3.0.0'
 }
 
-task zip2jar(type: Zip, dependsOn: "compileDitReleaseJava") {
+task zip2jar(type: Zip, dependsOn: "compileDitReleaseSources") {
     from 'build/intermediates/classes/dit/release'
     destinationDir = file('build/libs')
     extension = "jar"
