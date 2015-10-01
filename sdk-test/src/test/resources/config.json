@@ -18,5 +18,6 @@
     "phoneNumberRegex": "^[0-9]{7,12}$",
     "availableMccMnc": ["26801","22210","26202","21401","27201","20404","23415","22601","21670","20205","27801","27602","23003","65501"],
     "smsInterceptionRegex": "^.+: ([0-9]{4})$",
-    "smsValidationTimeoutInSeconds": 30
+    "smsValidationTimeoutInSeconds": 30,
+    "pinParameterValidationRegexp": "^[0-9]{4}$"
 }
