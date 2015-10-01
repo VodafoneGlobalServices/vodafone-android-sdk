@@ -36,6 +36,7 @@ public class Settings {
     private List<String> availableMccMnc;
     private Map<String, String> availableMarkets;
     private int smsValidationTimeoutInSeconds;
+    private String pinParameterValidationRegexp;
 
     public Settings(Context context) {
         JSONObject json = parseJSON(context);
@@ -62,6 +63,7 @@ public class Settings {
             availableMarkets = Collections.unmodifiableMap(getAvailableMarkets(json));
             smsInterceptionRegex = json.getString("smsInterceptionRegex");
             smsValidationTimeoutInSeconds = json.getInt("smsValidationTimeoutInSeconds");
+            pinParameterValidationRegexp = json.getString("pinParameterValidationRegexp");
         } catch (JSONException e) {
             throw new IllegalStateException(e);
         }
@@ -190,6 +192,10 @@ public class Settings {
 
     public String smsInterceptionRegex() {
         return smsInterceptionRegex;
+    }
+
+    public String pinParameterValidationRegexp() {
+        return pinParameterValidationRegexp;
     }
 
     public String oAuthTokenGrantType() {

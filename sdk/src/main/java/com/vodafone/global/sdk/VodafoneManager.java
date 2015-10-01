@@ -243,13 +243,15 @@ public class VodafoneManager {
 
         logger.d("received pin: " + code);
 
-        if (code.matches(settings.smsInterceptionRegex())) {
+        if (code.matches(settings.pinParameterValidationRegexp())) {
             ValidatePinParameters parameters = ValidatePinParameters.builder()
                     .token(sessionToken.get())
                     .pin(code)
                     .build();
             worker.sendMessage(worker.createMessage(VALIDATE_PIN, parameters));
         } else {
+            logger.w("pin " + code + " does not match " + settings.pinParameterValidationRegexp());
+
             validateSmsCallbacks.notifyError(new InvalidInput("Invalid PIN"));
         }
     }
